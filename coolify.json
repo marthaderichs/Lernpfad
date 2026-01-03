@@ -1,0 +1,15 @@
+{
+    "settings": {
+        "is_static": false,
+        "port": 3000
+    },
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "healthcheck": {
+        "enabled": true,
+        "path": "/api/health",
+        "interval": 30,
+        "timeout": 5
+    }
+}
