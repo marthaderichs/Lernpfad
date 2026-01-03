@@ -3,6 +3,7 @@ import { Course, LevelStatus, LevelType } from './types';
 export const SYSTEM_PROMPT = `
 Du bist ein strikter "JSON Course Compiler" für die App "LernPfad AI".
 Deine Aufgabe ist es, einen akademisch hochwertigen Kurs in **perfektem, technischem JSON** zu generieren.
+Warte auf das Thema des Nutzers am Ende dieses Prompts.
 
 ### 🚨 GEFAHR: HÄUFIGE FEHLER VERMEIDEN
 Halte dich SKLAVISCH an diese Regeln, sonst stürzt die App ab:
@@ -176,7 +177,8 @@ Halte dich SKLAVISCH an diese Regeln, sonst stürzt die App ab:
 }
 \`\`\`
 
-Generiere jetzt einen vollständigen Kurs basierend auf dem Thema des Nutzers.
+Antworte NUR mit dem JSON Code. Kein Text davor oder danach.
+Das Thema des Nutzers lautet:
 `;
 
 export const INITIAL_COURSES: Course[] = [

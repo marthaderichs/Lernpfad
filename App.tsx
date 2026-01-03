@@ -6,7 +6,7 @@ import { loadCourses, addCourse, saveCourses, loadUserStats, updateUserProgress 
 import { Course, Level, ViewState, LevelType, LevelStatus, UserStats } from './types';
 import { Button } from './components/Button';
 import { SYSTEM_PROMPT } from './constants';
-import { X, Bot, Sparkles, Terminal, Copy, Check, FileJson } from 'lucide-react';
+import { X, Bot, Sparkles, Terminal, Copy, Check, FileJson, ExternalLink } from 'lucide-react';
 
 const App: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -217,11 +217,13 @@ const App: React.FC = () => {
       {/* Import Modal */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 bg-brand-purple/20 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl border-4 border-white animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+          <div className="bg-white w-full max-w-3xl rounded-3xl p-8 shadow-2xl border-4 border-white animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3 text-brand-purple font-black text-2xl uppercase">
-                <FileJson size={32} />
-                <span>Kurs Importieren</span>
+                <div className="p-3 bg-brand-purple/10 rounded-xl">
+                  <Sparkles size={28} className="text-brand-purple" />
+                </div>
+                <span>Kurs mit AI erstellen</span>
               </div>
               <button onClick={() => setShowImportModal(false)} className="bg-gray-100 p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors">
                 <X size={24} />
@@ -229,49 +231,71 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-              <div className="mb-8 bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-gray-700 flex items-center gap-2">
-                    <Bot size={18} className="text-brand-sky"/> 
-                    1. Prompt kopieren
+              
+              {/* Step 1 */}
+              <div className="mb-6 bg-blue-50/50 p-6 rounded-3xl border-2 border-blue-100">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-bold text-gray-800 flex items-center gap-2 text-lg">
+                    <span className="w-8 h-8 rounded-full bg-brand-sky text-white flex items-center justify-center text-sm font-black shadow-md shadow-sky-200">1</span>
+                    Prompt Kopieren
                   </h3>
                   <button 
                     onClick={handleCopyPrompt}
-                    className={`text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all ${
+                    className={`text-sm font-bold px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-sm ${
                       copied 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-sky hover:text-brand-sky'
+                        ? 'bg-green-500 text-white border-green-600' 
+                        : 'bg-white border-2 border-gray-200 text-gray-600 hover:border-brand-sky hover:text-brand-sky hover:shadow-md'
                     }`}
                   >
-                    {copied ? <Check size={14} /> : <Copy size={14} />}
+                    {copied ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
                     {copied ? 'Kopiert!' : 'Kopieren'}
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mb-3">
-                  Sende diesen Text an eine KI, um den Kurs-Code zu generieren.
-                </p>
-                <div className="bg-gray-800 rounded-xl p-3 relative group">
-                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-gray-900/90 pointer-events-none rounded-xl" />
-                   <code className="text-gray-400 text-xs font-mono block whitespace-pre-wrap h-20 overflow-hidden group-hover:text-gray-200 transition-colors">
-                     {SYSTEM_PROMPT}
-                   </code>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="text-sm text-gray-600 leading-relaxed">
+                    <p className="mb-2 font-bold text-gray-700">Wie es funktioniert:</p>
+                    <p className="mb-4">Dieser Prompt enthält das <strong>Design-Konzept</strong> für unsere App. Er erklärt der KI, wie Lernkarten, Quizze und interaktive Level aufgebaut sein müssen.</p>
+                    <p className="font-bold text-gray-700 mb-2">Benutze eine dieser KIs:</p>
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 flex items-center gap-1"><Bot size={12}/> ChatGPT</span>
+                      <span className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 flex items-center gap-1"><Sparkles size={12}/> Gemini</span>
+                      <span className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 flex items-center gap-1"><Terminal size={12}/> Claude</span>
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 rounded-xl p-4 relative group overflow-hidden border border-gray-700 shadow-inner">
+                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/90 pointer-events-none rounded-xl" />
+                     <code className="text-gray-400 text-[10px] font-mono block whitespace-pre-wrap h-32 opacity-70">
+                       {SYSTEM_PROMPT.substring(0, 400)}...
+                     </code>
+                  </div>
                 </div>
               </div>
 
+              {/* Step 2 */}
               <div className="mb-2">
-                <h3 className="font-bold text-gray-700 flex items-center gap-2 mb-2">
-                  <Terminal size={18} className="text-brand-orange"/> 
-                  2. JSON Code einfügen
+                <h3 className="font-bold text-gray-800 flex items-center gap-2 text-lg mb-3">
+                  <span className="w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center text-sm font-black shadow-md shadow-orange-200">2</span>
+                  Generierten Code einfügen
                 </h3>
+                
+                <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 mb-4 text-sm text-orange-800 flex items-start gap-3">
+                   <div className="bg-white p-1 rounded-full"><Bot size={16} className="text-orange-500"/></div>
+                   <div>
+                      <strong>Wichtig:</strong> Schreibe nach dem Einfügen des Prompts noch dein Thema dazu! <br/>
+                      <span className="italic opacity-80">Beispiel: "Erstelle einen Kurs über Quantenphysik" oder "Geschichte Roms".</span>
+                   </div>
+                </div>
+
                 <textarea 
                   value={jsonInput}
                   onChange={(e) => setJsonInput(e.target.value)}
-                  placeholder='Füge hier das generierte JSON ein...' 
-                  className="w-full h-48 p-4 bg-gray-50 rounded-xl font-mono text-sm text-gray-700 border-2 border-gray-200 focus:border-brand-purple outline-none resize-none transition-all placeholder:text-gray-400" 
+                  placeholder='Füge hier das JSON Ergebnis ein (beginnend mit { "id": ... })' 
+                  className="w-full h-48 p-4 bg-gray-50 rounded-2xl font-mono text-sm text-gray-700 border-2 border-gray-200 focus:border-brand-purple focus:bg-white outline-none resize-none transition-all placeholder:text-gray-400 shadow-inner" 
                 />
                 {jsonError && (
-                  <div className="mt-2 text-red-500 text-sm font-bold bg-red-50 p-2 rounded-lg flex items-center gap-2">
-                    <span className="text-lg">⚠️</span> {jsonError}
+                  <div className="mt-3 text-red-600 text-sm font-bold bg-red-50 p-3 rounded-xl border border-red-100 flex items-center gap-2 animate-pulse">
+                    <span className="text-xl">⚠️</span> {jsonError}
                   </div>
                 )}
               </div>
@@ -280,7 +304,7 @@ const App: React.FC = () => {
             <div className="mt-6 pt-6 border-t border-gray-100 flex gap-4">
                <Button variant="secondary" onClick={() => setShowImportModal(false)}>Abbrechen</Button>
                <Button variant="primary" fullWidth onClick={handleImportJson} className="!bg-brand-purple !border-purple-700 shadow-purple-200">
-                  Kurs Hinzufügen
+                  Kurs jetzt erstellen
                </Button>
             </div>
           </div>
