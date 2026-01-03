@@ -1,12 +1,12 @@
-# Build stage
-FROM node:20-alpine AS builder
+# Single stage build for simplicity
+FROM node:20-alpine
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev for building)
+# Install ALL dependencies (we need vite for build)
 RUN npm install
 
 # Copy source code
@@ -15,22 +15,8 @@ COPY . .
 # Build the frontend
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS production
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm install --omit=dev
-
-# Copy built frontend from builder
-COPY --from=builder /app/dist ./dist
-
-# Copy server
-COPY server.js ./
+# Remove node_modules and reinstall production only
+RUN rm -rf node_modules && npm install --omit=dev
 
 # Create data directory
 RUN mkdir -p /app/data
@@ -42,10 +28,6 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV DATA_DIR=/app/data
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Start the server
 CMD ["node", "server.js"]

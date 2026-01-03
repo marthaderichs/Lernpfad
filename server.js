@@ -122,7 +122,13 @@ app.get('/api/health', (req, res) => {
 
 // ============ SPA FALLBACK ============
 // For client-side routing - serve index.html for all non-API routes
-app.get('*', (req, res) => {
+// Using middleware instead of wildcard route for Express 5 compatibility
+app.use((req, res) => {
+    // Skip API routes (they should already be handled)
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ success: false, message: 'API endpoint not found' });
+    }
+
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
