@@ -1,0 +1,316 @@
+[
+  {
+    "id": "c_research_methodology_nova",
+    "title": "Forschungsfrage & Studiendesigns",
+    "professor": "Ana Maria Rodrigues, MD, PhD",
+    "icon": "🔬",
+    "themeColor": "brand-blue",
+    "totalProgress": 45,
+    "units": [
+      {
+        "id": "u1",
+        "title": "Der Forschungsprozess",
+        "description": "Von der Idee zur wissenschaftlichen Frage",
+        "colorTheme": "brand-blue",
+        "levels": [
+          {
+            "id": "l1_1",
+            "type": "THEORY",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "Phasen der Forschung",
+            "content": {
+              "title": "Der Weg zur Erkenntnis",
+              "description": "Die 6 Schritte des Forschungsprozesses",
+              "markdownContent": "### Der Forschungsprozess\nForschung ist ein strukturierter Weg, um Wissenslücken zu schließen. Der Prozess lässt sich in sechs Schritte unterteilen:\n\n1.  **Wissenslücke identifizieren:** Wo fehlt uns Information?\n2.  **Forschungsfrage formulieren:** Eine präzise Frage stellen.\n3.  **Bestehende Informationen suchen:** Literaturrecherche.\n4.  **Forschungsfrage fokussieren:** Eingrenzung des Themas.\n5.  **Studie entwerfen:** Design festlegen (Protokoll-Implementierung).\n6.  **Ziele verfeinern:** Spezifische Aims und Objektive definieren.\n\nAm Ende stehen Datenanalyse, Interpretation und Verbreitung (Dissemination) der Ergebnisse."
+            }
+          },
+          {
+            "id": "l1_2",
+            "type": "FLASHCARDS",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "Grundbegriffe",
+            "content": {
+              "title": "Wichtige Definitionen",
+              "description": "Begriffe aus Schritt 1 & 2",
+              "flashcards": [
+                {
+                  "front": "Wissenslücke (Knowledge Gap)",
+                  "back": "Ein Bereich, in dem Informationen fehlen oder unzureichend sind, und den die Forschung füllen soll."
+                },
+                {
+                  "front": "Hypothese",
+                  "back": "Eine vorläufige Annahme, die durch die Untersuchung geprüft werden soll. Sie ist der erste Schritt nach der Idee."
+                },
+                {
+                  "front": "Studienprotokoll",
+                  "back": "Der detaillierte Plan zur Durchführung der Studie, der vor der Datenerhebung erstellt wird."
+                }
+              ]
+            }
+          },
+          {
+            "id": "l1_3",
+            "type": "QUIZ",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "Prozess-Check",
+            "content": {
+              "title": "Verständnisprüfung",
+              "description": "Kennst du die Reihenfolge?",
+              "quizQuestions": [
+                {
+                  "question": "Was ist der allererste Schritt im Forschungsprozess laut Schema?",
+                  "options": [
+                    {
+                      "text": "Studiendesign entwerfen",
+                      "explanation": "Das kommt erst in Schritt 5."
+                    },
+                    {
+                      "text": "Wissenslücke identifizieren",
+                      "explanation": "Richtig! Zuerst muss erkannt werden, was wir noch nicht wissen."
+                    },
+                    {
+                      "text": "Daten analysieren",
+                      "explanation": "Dies geschieht erst nach der Datenerhebung."
+                    },
+                    {
+                      "text": "Ergebnisse verbreiten",
+                      "explanation": "Das ist der letzte Schritt (Dissemination)."
+                    }
+                  ],
+                  "answerIndex": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Die Forschungsfrage: PICO & FINER",
+        "description": "Qualitätskriterien und Struktur",
+        "colorTheme": "brand-teal",
+        "levels": [
+          {
+            "id": "l2_1",
+            "type": "THEORY",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "PICO Format",
+            "content": {
+              "title": "Komponenten einer Frage",
+              "description": "Das PICO-Schema erklärt",
+              "markdownContent": "### PICO: Die 4 Säulen\nEine gute klinische Forschungsfrage enthält vier Komponenten:\n\n* **P - Population:** Welche Personengruppe wird untersucht? (z.B. Patienten mit akutem Schlaganfall).\n* **I - Intervention (Exposure):** Welcher Faktor oder welche Behandlung wird untersucht? (z.B. Antikoagulantien).\n* **C - Comparisons:** Womit wird verglichen? (z.B. Antiplättchen-Therapie oder Placebo).\n* **O - Outcomes:** Was ist das Ziel oder Ergebnis? (z.B. Überleben, Heilung)."
+            }
+          },
+          {
+            "id": "l2_2",
+            "type": "SUMMARY",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "FINER Kriterien",
+            "content": {
+              "title": "Was macht eine Frage GUT?",
+              "description": "Das FINER Akronym",
+              "markdownContent": "Eine Forschungsfrage sollte **FINER** sein:\n\n* **F - Feasible (Machbar):** Gibt es genug Teilnehmer, Zeit, Geld und Expertise?.\n* **I - Interesting:** Ist es für Forscher und Geldgeber spannend?.\n* **N - Novel (Neu):** Füllt es eine Lücke? Wurde es schon beantwortet?.\n* **E - Ethical:** Ist die Sicherheit der Teilnehmer gewährleistet? Gibt es einen Informed Consent?.\n* **R - Relevant:** Verbessert es das Wohlbefinden oder die klinische Praxis?."
+            }
+          },
+          {
+            "id": "l2_3",
+            "type": "PRACTICE",
+            "status": "UNLOCKED",
+            "stars": 0,
+            "title": "PICO Training",
+            "content": {
+              "title": "PICO anwenden",
+              "description": "Zerlege die Forschungsfrage",
+              "practiceTasks": [
+                {
+                  "question": "Analysiere folgende Frage nach PICO: **'Verbessern Antikoagulantien das Überleben bei Patienten mit akutem ischämischen Schlaganfall im Vergleich zu Antiplättchen-Therapie?'**",
+                  "hint": "Suche nach: Wer? Was wird gegeben? Womit verglichen? Was wird gemessen?",
+                  "solution": "* **P (Population):** Patienten mit akutem ischämischen Schlaganfall\n* **I (Intervention):** Antikoagulantien\n* **C (Comparison):** Antiplättchen-Therapie\n* **O (Outcome):** Überleben (Survival)"
+                },
+                {
+                  "question": "Ein Forscher fragt: 'Ist Rauchen ein Risikofaktor für tiefe Venenthrombosen bei Frauen zwischen 30-50 Jahren?'. Was ist die **Comparison**?",
+                  "hint": "Wenn die Intervention 'Rauchen' ist, was ist das Gegenteil?",
+                  "solution": "Die Comparison ist **Nicht-Rauchen** (No smoking)."
+                }
+              ]
+            }
+          },
+          {
+            "id": "l2_4",
+            "type": "QUIZ",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "FINER Quiz",
+            "content": {
+              "title": "Kriterien prüfen",
+              "description": "Ist die Frage gut?",
+              "quizQuestions": [
+                {
+                  "question": "Welches FINER-Kriterium prüft, ob genügend finanzielle Ressourcen und Zeit vorhanden sind?",
+                  "options": [
+                    {
+                      "text": "Novel",
+                      "explanation": "Novel bezieht sich auf Neuheit."
+                    },
+                    {
+                      "text": "Relevant",
+                      "explanation": "Relevant bezieht sich auf den Nutzen."
+                    },
+                    {
+                      "text": "Feasible",
+                      "explanation": "Richtig! Feasible (Machbar) prüft Ressourcen, Zeit und Rekrutierungschancen."
+                    },
+                    {
+                      "text": "Ethical",
+                      "explanation": "Ethical bezieht sich auf den Schutz der Teilnehmer."
+                    }
+                  ],
+                  "answerIndex": 2
+                },
+                {
+                  "question": "Was gehört zum Bereich 'Ethical'?",
+                  "options": [
+                    {
+                      "text": "Power Size Berechnung",
+                      "explanation": "Das gehört zur Machbarkeit (Feasible)."
+                    },
+                    {
+                      "text": "Klinische Relevanz",
+                      "explanation": "Das gehört zu Relevant."
+                    },
+                    {
+                      "text": "Confidentiality & Anonymity",
+                      "explanation": "Richtig! Datenschutz und Sicherheit gehören zur Ethik."
+                    },
+                    {
+                      "text": "Literaturrecherche",
+                      "explanation": "Das gehört zu Novel."
+                    }
+                  ],
+                  "answerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Studiendesigns",
+        "description": "Methodik passend zur Frage",
+        "colorTheme": "brand-purple",
+        "levels": [
+          {
+            "id": "l3_1",
+            "type": "THEORY",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Fragetypen & Designs",
+            "content": {
+              "title": "Welches Design passt?",
+              "description": "Zuordnung von Frage zu Methode",
+              "markdownContent": "Je nach Art der Forschungsfrage wird ein anderes Studiendesign gewählt:\n\n| Art der Frage | Ziel | Empfohlenes Design |\n| :--- | :--- | :--- |\n| **Inzidenz / Prävalenz** | Verteilung von Krankheit | Kohortenstudie, Querschnittsstudie (Cross-sectional) |\n| **Risikofaktor** | Anfälligkeit (Susceptibility) | Kohortenstudien |\n| **Efficacy** | Funktioniert es (unter Idealbedingungen)? | Randomized Controlled Trials (RCT) |\n| **Effectiveness** | Funktioniert es in der 'echten Welt'? | Register, Kohortenstudien |\n| **Cost-effectiveness** | Lohnt es sich? | Pharmakoökonomische Studien |"
+            }
+          },
+          {
+            "id": "l3_2",
+            "type": "SUMMARY",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Design-Hierarchie",
+            "content": {
+              "title": "Studien-Stammbaum",
+              "description": "Experimentell vs. Beobachtend",
+              "markdownContent": "Man unterscheidet grundsätzlich zwei Hauptgruppen:\n\n1.  **Experimentell:** Hier greift der Forscher aktiv ein.\n    * Beispiel: **Randomised Controlled Trial (RCT)**.\n2.  **Beobachtend (Observational):** Der Forscher beobachtet nur.\n    * **Individuen-basiert:** Kohortenstudie (Längsschnitt), Fall-Kontroll-Studie, Querschnittsstudie.\n    * **Populations-basiert:** Ökologische Studien."
+            }
+          },
+          {
+            "id": "l3_3",
+            "type": "PRACTICE",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Design wählen",
+            "content": {
+              "title": "Fallbeispiele",
+              "description": "Wähle das richtige Design",
+              "practiceTasks": [
+                {
+                  "question": "Du möchtest untersuchen, ob **Rauchen** ein Risikofaktor für **Thrombosen** ist. Es ist eine Frage der Anfälligkeit (Susceptibility). Welches Design wählst du?",
+                  "hint": "Schau in die Tabelle bei 'Risk factor'.",
+                  "solution": "Eine **Kohortenstudie (Cohort study)**. RCTs sind hier oft unethisch (man kann niemanden zum Rauchen zwingen)."
+                },
+                {
+                  "question": "Du willst wissen: **'Verbessern Antikoagulantien das Überleben?'**. Es geht um **Efficacy** (Wirksamkeit). Welches Design ist der Goldstandard?",
+                  "hint": "Experimentelles Design.",
+                  "solution": "**Randomized Control Trial (RCT)**."
+                }
+              ]
+            }
+          },
+          {
+            "id": "l3_4",
+            "type": "QUIZ",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Methodik Quiz",
+            "content": {
+              "title": "Experten-Wissen",
+              "description": "Teste deine Methodik-Skills",
+              "quizQuestions": [
+                {
+                  "question": "Welche Studie ist NICHT 'Individual-based' (auf Einzelpersonen bezogen), sondern 'Population-based'?",
+                  "options": [
+                    {
+                      "text": "Kohortenstudie",
+                      "explanation": "Diese ist individual-based."
+                    },
+                    {
+                      "text": "Fall-Kontroll-Studie",
+                      "explanation": "Diese ist individual-based."
+                    },
+                    {
+                      "text": "Ökologische Studie",
+                      "explanation": "Richtig! Ecological studies betrachten Populationen als Einheit."
+                    },
+                    {
+                      "text": "Querschnittsstudie",
+                      "explanation": "Diese ist individual-based."
+                    }
+                  ],
+                  "answerIndex": 2
+                },
+                {
+                  "question": "Was ist der Unterschied zwischen Efficacy und Effectiveness?",
+                  "options": [
+                    {
+                      "text": "Es gibt keinen.",
+                      "explanation": "Doch, der Kontext ist anders."
+                    },
+                    {
+                      "text": "Efficacy = Echte Welt, Effectiveness = Idealbedingungen",
+                      "explanation": "Genau verkehrt herum."
+                    },
+                    {
+                      "text": "Efficacy = Idealbedingungen, Effectiveness = Echte Welt",
+                      "explanation": "Korrekt! Efficacy fragt 'Does it work?', Effectiveness fragt 'Does it work in the real world?'."
+                    },
+                    {
+                      "text": "Effectiveness ist immer billiger.",
+                      "explanation": "Das ist keine Definition."
+                    }
+                  ],
+                  "answerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

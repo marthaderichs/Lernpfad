@@ -86,10 +86,24 @@ export interface Course {
   units: Unit[]; 
 }
 
-export interface UserStats {
-  totalXp: number;
-  currentStreak: number;
-  lastStudyDate: string | null; // ISO Date String "YYYY-MM-DD"
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  icon: string;
+  category: 'avatar' | 'theme' | 'powerup' | 'badge';
+  unlocked?: boolean;
 }
 
-export type ViewState = 'DASHBOARD' | 'COURSE_MAP';
+export interface UserStats {
+  totalXp: number;
+  coins: number; // Spendable currency (earned from XP)
+  currentStreak: number;
+  lastStudyDate: string | null; // ISO Date String "YYYY-MM-DD"
+  purchasedItems: string[]; // IDs of purchased shop items
+  activeAvatar: string; // Currently selected avatar emoji
+  darkMode: boolean;
+}
+
+export type ViewState = 'DASHBOARD' | 'COURSE_MAP' | 'SHOP';

@@ -1,5 +1,27 @@
-import { Course, LevelStatus, LevelType } from './types';
+import { Course, LevelStatus, LevelType, ShopItem } from './types';
 
+export const SHOP_ITEMS: ShopItem[] = [
+  // Avatars
+  { id: 'avatar_ninja', name: 'Ninja', description: 'Lerne im Verborgenen', price: 100, icon: '🥷', category: 'avatar' },
+  { id: 'avatar_wizard', name: 'Zauberer', description: 'Magisches Wissen', price: 150, icon: '🧙', category: 'avatar' },
+  { id: 'avatar_robot', name: 'Roboter', description: 'Logik-Genie', price: 200, icon: '🤖', category: 'avatar' },
+  { id: 'avatar_astronaut', name: 'Astronaut', description: 'Strebe nach den Sternen', price: 250, icon: '👨‍🚀', category: 'avatar' },
+  { id: 'avatar_scientist', name: 'Wissenschaftler', description: 'Wissen ist Macht', price: 200, icon: '🧑‍🔬', category: 'avatar' },
+  { id: 'avatar_dragon', name: 'Drache', description: 'Feurige Motivation', price: 500, icon: '🐉', category: 'avatar' },
+
+  // Themes
+  { id: 'dark_mode', name: 'Dunkelmodus', description: 'Augenschonend bei Nacht', price: 300, icon: '🌙', category: 'theme' },
+
+  // Badges
+  { id: 'badge_fire', name: 'Feuer-Badge', description: 'Zeige deine Leidenschaft', price: 150, icon: '🔥', category: 'badge' },
+  { id: 'badge_star', name: 'Stern-Badge', description: 'Du bist ein Star!', price: 200, icon: '⭐', category: 'badge' },
+  { id: 'badge_crown', name: 'Krone', description: 'König des Wissens', price: 400, icon: '👑', category: 'badge' },
+  { id: 'badge_diamond', name: 'Diamant', description: 'Unzerbrechlicher Wille', price: 600, icon: '💎', category: 'badge' },
+
+  // Power-ups
+  { id: 'powerup_hint', name: 'Hinweis-Paket', description: '3 extra Hinweise für Quizze', price: 75, icon: '💡', category: 'powerup' },
+  { id: 'powerup_xp_boost', name: 'XP-Boost', description: '2x XP für 24 Stunden', price: 250, icon: '🚀', category: 'powerup' },
+];
 export const SYSTEM_PROMPT = `
 Du bist ein strikter "JSON Course Compiler" für die App "LernPfad AI".
 Deine Aufgabe ist es, einen akademisch hochwertigen Kurs in **perfektem, technischem JSON** zu generieren.
@@ -229,14 +251,14 @@ export const INITIAL_COURSES: Course[] = [
                   answerIndex: 1
                 },
                 {
-                   question: "Was passiert bei falschen Flashcards?",
-                   options: [
-                      { text: "Sie werden gelöscht", explanation: "Nein, dann würdest du nichts lernen." },
-                      { text: "Man muss bezahlen", explanation: "Quatsch, Lernen ist hier kostenlos." },
-                      { text: "Sie kommen zurück", explanation: "Falsche Karten werden hinten eingereiht und später erneut abgefragt." },
-                      { text: "Das Handy explodiert", explanation: "Bitte nicht! Das wäre ein schlechtes Feature." }
-                   ],
-                   answerIndex: 2
+                  question: "Was passiert bei falschen Flashcards?",
+                  options: [
+                    { text: "Sie werden gelöscht", explanation: "Nein, dann würdest du nichts lernen." },
+                    { text: "Man muss bezahlen", explanation: "Quatsch, Lernen ist hier kostenlos." },
+                    { text: "Sie kommen zurück", explanation: "Falsche Karten werden hinten eingereiht und später erneut abgefragt." },
+                    { text: "Das Handy explodiert", explanation: "Bitte nicht! Das wäre ein schlechtes Feature." }
+                  ],
+                  answerIndex: 2
                 }
               ]
             }
@@ -290,24 +312,24 @@ export const INITIAL_COURSES: Course[] = [
         ]
       },
       {
-         id: 'u3',
-         title: 'Modul 3: Finale',
-         description: 'Zusammenfassung',
-         colorTheme: 'brand-orange',
-         levels: [
-            {
-               id: 'l5_sum',
-               title: 'Abschluss',
-               type: LevelType.SUMMARY,
-               status: LevelStatus.LOCKED,
-               stars: 0,
-               content: {
-                  title: 'Zusammenfassung',
-                  description: 'Das hast du gelernt',
-                  markdownContent: "### Herzlichen Glückwunsch! 🎉\n\nDu hast das Demo-Modul durchgespielt.\n\n**Deine Achievements:**\n- ✅ Umgang mit der UI\n- ✅ Verstehen der Level-Typen\n- ✅ Mathe-Basics wiederholt\n\nDu kannst jetzt eigene Kurse generieren lassen!"
-               }
+        id: 'u3',
+        title: 'Modul 3: Finale',
+        description: 'Zusammenfassung',
+        colorTheme: 'brand-orange',
+        levels: [
+          {
+            id: 'l5_sum',
+            title: 'Abschluss',
+            type: LevelType.SUMMARY,
+            status: LevelStatus.LOCKED,
+            stars: 0,
+            content: {
+              title: 'Zusammenfassung',
+              description: 'Das hast du gelernt',
+              markdownContent: "### Herzlichen Glückwunsch! 🎉\n\nDu hast das Demo-Modul durchgespielt.\n\n**Deine Achievements:**\n- ✅ Umgang mit der UI\n- ✅ Verstehen der Level-Typen\n- ✅ Mathe-Basics wiederholt\n\nDu kannst jetzt eigene Kurse generieren lassen!"
             }
-         ]
+          }
+        ]
       }
     ]
   }
