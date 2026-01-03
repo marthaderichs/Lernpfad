@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LernPfad AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Nunito', 'sans-serif'],
+            },
+            colors: {
+              'brand-purple': '#9956DE', // Amethyst
+              'brand-blue': '#7274ED',   // Slate Blue
+              'brand-sky': '#1FA7E1',    // Summer Sky
+              'brand-teal': '#6ED1CF',   // Downy
+              'brand-green': '#75D06A',  // Pastel Green
+              'brand-orange': '#FFB356', // Texas Rose
+              'brand-red': '#FF8B8B',    // Mona Lisa
+              'brand-pink': '#FB96BB',   // Illusion
+            },
+            animation: {
+              'bounce-subtle': 'bounce-subtle 2s infinite',
+            },
+            keyframes: {
+              'bounce-subtle': {
+                '0%, 100%': { transform: 'translateY(-5%)' },
+                '50%': { transform: 'translateY(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Nunito', sans-serif;
+        background-color: #F0F9FF;
+      }
+      /* Custom Scrollbar for a cleaner look */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+      }
+      
+      /* Markdown Styles */
+      .markdown-content strong {
+        font-weight: 900;
+        color: #374151;
+      }
+      .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+        font-weight: 800;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+      }
+      .markdown-content ul {
+        list-style-type: disc;
+        padding-left: 1.5em;
+        margin-bottom: 1em;
+      }
+      .markdown-content ol {
+        list-style-type: decimal;
+        padding-left: 1.5em;
+        margin-bottom: 1em;
+      }
+      .markdown-content p {
+        margin-bottom: 1em;
+        line-height: 1.6;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-markdown": "https://esm.sh/react-markdown@9",
+    "remark-gfm": "https://esm.sh/remark-gfm@4",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
