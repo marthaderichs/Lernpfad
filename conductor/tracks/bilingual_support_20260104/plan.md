@@ -3,9 +3,9 @@
 ## Phase 1: Data Model & Types
 Goal: Update TypeScript definitions to support secondary language content.
 
-- [ ] Task: Update `Level` interface in `src/types/index.ts` to include optional `contentPT`.
-- [ ] Task: Update `Course` or `Unit` interfaces if titles/descriptions also need translation (Scope: Let's focus on Level Content first, maybe Unit titles too).
-- [ ] Task: Conductor - User Manual Verification 'Data Model & Types'
+- [x] Task: Update `Level` interface in `src/types/index.ts` to include optional `contentPT`. d536109
+- [x] Task: Update `Course` or `Unit` interfaces if titles/descriptions also need translation (Scope: Let's focus on Level Content first, maybe Unit titles too). d536109
+- [x] Task: Conductor - User Manual Verification 'Data Model & Types' d536109
 
 ## Phase 2: State & Store
 Goal: Manage the active language state.
