@@ -10,9 +10,9 @@ Goal: Update TypeScript definitions to support secondary language content.
 ## Phase 2: State & Store
 Goal: Manage the active language state.
 
-- [ ] Task: Add `contentLanguage` ('DE' | 'PT') to `useAppStore` (Global setting).
-- [ ] Task: Add action `toggleContentLanguage`.
-- [ ] Task: Conductor - User Manual Verification 'State & Store'
+- [x] Task: Add `contentLanguage` ('DE' | 'PT') to `useAppStore` (Global setting). be56eec
+- [x] Task: Add action `toggleContentLanguage`. be56eec
+- [x] Task: Conductor - User Manual Verification 'State & Store' be56eec
 
 ## Phase 3: AI Import & Creation
 Goal: Allow generating bilingual courses.
