@@ -9,5 +9,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [x] Track: Nested Folders and Persistence
-*Link: [./conductor/tracks/folders_persistence_20260104/](./conductor/tracks/folders_persistence_20260104/)*
+## [ ] Track: Bilingual Support (German/Portuguese)
+*Link: [./conductor/tracks/bilingual_support_20260104/](./conductor/tracks/bilingual_support_20260104/)*
+
