@@ -78,7 +78,8 @@ const FolderCard: React.FC<{
     isEditMode?: boolean;
     isSelected?: boolean;
     onToggleSelection?: () => void;
-}> = ({ folder, itemCount, onClick, onDelete, isEditMode, isSelected, onToggleSelection }) => {
+    onEdit?: () => void;
+}> = ({ folder, itemCount, onClick, onDelete, isEditMode, isSelected, onToggleSelection, onEdit }) => {
     const cssClass = themeColors[folder.themeColor] || themeColors['brand-blue'];
 
     const handleClick = (e: React.MouseEvent) => {
@@ -112,19 +113,32 @@ const FolderCard: React.FC<{
                             </div>
                         )}
                     </div>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onClick();
-                        }}
-                        className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-xl text-brand-sky shadow-sm hover:bg-brand-sky hover:text-white transition-all active:scale-90 flex items-center gap-1 font-bold text-xs pr-3"
-                    >
-                        <ChevronRight size={18} />
-                        ÖFFNEN
-                    </button>
+
+                    <div className="absolute top-3 right-3 z-20 flex gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (onEdit) onEdit();
+                            }}
+                            className="bg-white/90 p-2 rounded-xl text-gray-500 shadow-sm hover:bg-brand-orange hover:text-white transition-all active:scale-90 flex items-center justify-center"
+                            title="Bearbeiten"
+                        >
+                            <Pencil size={18} />
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClick();
+                            }}
+                            className="bg-white/90 p-2 rounded-xl text-brand-sky shadow-sm hover:bg-brand-sky hover:text-white transition-all active:scale-90 flex items-center gap-1 font-bold text-xs pr-3"
+                        >
+                            <ChevronRight size={18} />
+                            ÖFFNEN
+                        </button>
+                    </div>
                 </>
             )}
-            
+
             <div className={`h-32 ${cssClass} flex items-center justify-center relative overflow-hidden`}>
                 <div className="absolute opacity-20 transform rotate-12 -right-6 -top-6 text-8xl transition-transform group-hover:scale-110 group-hover:rotate-6">
                     {folder.icon}
@@ -235,17 +249,17 @@ const CourseCard: React.FC<{
                     <div className="w-full bg-gray-100 rounded-full h-4 mb-2 overflow-hidden border border-gray-100">
                         <div
                             className={`h-full rounded-full transition-all duration-1000 ease-out ${course.themeColor === 'brand-purple' ? 'bg-brand-purple' :
-                                    course.themeColor === 'brand-green' ? 'bg-brand-green' :
-                                        course.themeColor === 'brand-orange' ? 'bg-brand-orange' :
-                                            course.themeColor === 'brand-red' ? 'bg-brand-red' :
-                                                course.themeColor === 'brand-pink' ? 'bg-brand-pink' :
-                                                    course.themeColor === 'brand-sky' ? 'bg-brand-sky' :
-                                                        course.themeColor === 'brand-teal' ? 'bg-brand-teal' :
-                                                            course.themeColor === 'brand-burgundy' ? 'bg-brand-burgundy' :
-                                                                course.themeColor === 'brand-yellow' ? 'bg-brand-yellow' :
-                                                                    course.themeColor === 'brand-lime' ? 'bg-brand-lime' :
-                                                                        course.themeColor === 'brand-fuchsia' ? 'bg-brand-fuchsia' :
-                                                                            'bg-brand-blue'
+                                course.themeColor === 'brand-green' ? 'bg-brand-green' :
+                                    course.themeColor === 'brand-orange' ? 'bg-brand-orange' :
+                                        course.themeColor === 'brand-red' ? 'bg-brand-red' :
+                                            course.themeColor === 'brand-pink' ? 'bg-brand-pink' :
+                                                course.themeColor === 'brand-sky' ? 'bg-brand-sky' :
+                                                    course.themeColor === 'brand-teal' ? 'bg-brand-teal' :
+                                                        course.themeColor === 'brand-burgundy' ? 'bg-brand-burgundy' :
+                                                            course.themeColor === 'brand-yellow' ? 'bg-brand-yellow' :
+                                                                course.themeColor === 'brand-lime' ? 'bg-brand-lime' :
+                                                                    course.themeColor === 'brand-fuchsia' ? 'bg-brand-fuchsia' :
+                                                                        'bg-brand-blue'
                                 }`}
                             style={{ width: `${course.totalProgress}%` }}
                         />
@@ -280,6 +294,7 @@ export const Dashboard: React.FC = () => {
 
     const [showImportModal, setShowImportModal] = useState(false);
     const [showAddFolderModal, setShowAddFolderModal] = useState(false);
+    const [editingFolder, setEditingFolder] = useState<Folder | undefined>(undefined);
     const [activeId, setActiveId] = useState<string | null>(null);
 
     const sensors = useSensors(
@@ -290,7 +305,7 @@ export const Dashboard: React.FC = () => {
     if (!userStats) return null;
 
     const handleSelectCourse = (course: Course) => {
-        if (isEditMode) return; 
+        if (isEditMode) return;
         selectCourse(course);
         navigateTo('COURSE_MAP');
     };
@@ -339,7 +354,7 @@ export const Dashboard: React.FC = () => {
         if (oldIndex !== -1 && newIndex !== -1) {
             // It's a reorder
             const newOrder = arrayMove(currentItems, oldIndex, newIndex);
-            
+
             // We need to construct the full new courses array
             // Filter out current items from global list, then splice in new order
             const otherItems = courses.filter(item => item.parentFolderId !== (currentFolderId || null));
@@ -348,7 +363,7 @@ export const Dashboard: React.FC = () => {
             // Actually, we just need to persist the order. 
             // For simplicity, let's just update the local order and save.
             // But wait, arrayMove only works on the filtered list.
-            
+
             // Correct approach: Reconstruct the global list based on the new local order + others
             // BUT, others might be scattered.
             // Let's assume the global list order matters for display.
@@ -356,10 +371,10 @@ export const Dashboard: React.FC = () => {
             // A simple approach: remove currentItems from global, then push newOrder? No, that breaks mixed order if flattened.
             // Let's just use reorderItems logic in store to handle the full list update? 
             // Actually, arrayMove works on indices. 
-            
+
             const globalOldIndex = courses.findIndex(i => i.id === activeId);
             const globalNewIndex = courses.findIndex(i => i.id === overId);
-            
+
             const newGlobalOrder = arrayMove(courses, globalOldIndex, globalNewIndex);
             reorderItems(newGlobalOrder);
             return;
@@ -432,8 +447,8 @@ export const Dashboard: React.FC = () => {
                                 <button
                                     onClick={toggleEditMode}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all ${isEditMode
-                                            ? 'bg-brand-orange text-white shadow-lg shadow-orange-200 scale-105'
-                                            : 'bg-white text-gray-500 border-2 border-transparent hover:bg-gray-100'
+                                        ? 'bg-brand-orange text-white shadow-lg shadow-orange-200 scale-105'
+                                        : 'bg-white text-gray-500 border-2 border-transparent hover:bg-gray-100'
                                         }`}
                                 >
                                     {isEditMode ? <Check size={20} /> : <Pencil size={20} />}
@@ -472,6 +487,10 @@ export const Dashboard: React.FC = () => {
                                                 isEditMode={isEditMode}
                                                 isSelected={selectedItemIds.includes(item.id)}
                                                 onToggleSelection={() => toggleItemSelection(item.id)}
+                                                onEdit={() => {
+                                                    setEditingFolder(item as Folder);
+                                                    setShowAddFolderModal(true);
+                                                }}
                                             />
                                         ) : (
                                             <CourseCard
@@ -514,22 +533,22 @@ export const Dashboard: React.FC = () => {
                                 )}
                             </div>
                         </SortableContext>
-                        
+
                         <DragOverlay>
                             {activeItem ? (
                                 <div className="opacity-80 scale-105 rotate-3 cursor-grabbing">
                                     {activeItem.type === 'folder' ? (
-                                         <FolderCard
+                                        <FolderCard
                                             folder={activeItem as Folder}
                                             itemCount={0}
-                                            onClick={() => {}}
-                                            onDelete={() => {}}
+                                            onClick={() => { }}
+                                            onDelete={() => { }}
                                         />
                                     ) : (
                                         <CourseCard
                                             course={activeItem as Course}
-                                            onClick={() => {}}
-                                            onDelete={() => {}}
+                                            onClick={() => { }}
+                                            onDelete={() => { }}
                                         />
                                     )}
                                 </div>
@@ -547,7 +566,7 @@ export const Dashboard: React.FC = () => {
                         {selectedItemIds.length} ausgewählt
                     </div>
                     <div className="h-6 w-px bg-gray-200"></div>
-                    <button 
+                    <button
                         onClick={handleMoveHere}
                         className="bg-brand-sky text-white px-4 py-2 rounded-xl font-bold hover:bg-sky-500 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-sky-200"
                     >
@@ -558,7 +577,15 @@ export const Dashboard: React.FC = () => {
             )}
 
             {showImportModal && <AiImportModal onClose={() => setShowImportModal(false)} />}
-            {showAddFolderModal && <AddFolderModal onClose={() => setShowAddFolderModal(false)} />}
+            {showAddFolderModal && (
+                <AddFolderModal
+                    onClose={() => {
+                        setShowAddFolderModal(false);
+                        setEditingFolder(undefined);
+                    }}
+                    existingFolder={editingFolder}
+                />
+            )}
         </div>
     );
 };

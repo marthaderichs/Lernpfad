@@ -28,6 +28,7 @@ interface AppState {
     addFolder: (folder: Folder) => Promise<void>;
     deleteCourse: (courseId: string) => Promise<void>;
     deleteFolder: (folderId: string) => Promise<void>;
+    updateFolder: (folderId: string, updates: Partial<Folder>) => Promise<void>;
     updateCourseProgress: (courseId: string, progress: Partial<Course>) => void;
     moveItem: (itemId: string, targetFolderId: string | null) => Promise<void>;
     moveItems: (itemIds: string[], targetFolderId: string | null) => Promise<void>;
@@ -63,7 +64,7 @@ export const useAppStore = create<AppState>()(
             error: null,
 
             // Actions
-            toggleEditMode: () => set((state) => ({ 
+            toggleEditMode: () => set((state) => ({
                 isEditMode: !state.isEditMode,
                 selectedItemIds: [] // Clear selection when toggling
             })),
@@ -79,8 +80,8 @@ export const useAppStore = create<AppState>()(
 
             clearSelection: () => set({ selectedItemIds: [] }),
 
-            toggleContentLanguage: () => set((state) => ({ 
-                contentLanguage: state.contentLanguage === 'DE' ? 'PT' : 'DE' 
+            toggleContentLanguage: () => set((state) => ({
+                contentLanguage: state.contentLanguage === 'DE' ? 'PT' : 'DE'
             })),
 
             loadInitialData: async () => {
@@ -100,44 +101,77 @@ export const useAppStore = create<AppState>()(
 
             addCourse: async (course) => {
                 set({ isLoading: true, error: null });
+                const previousCourses = get().courses;
+                // Optimistic update
+                set({ courses: [...previousCourses, course] });
+
                 try {
                     const updatedCourses = await api.addCourse(course);
                     set({ courses: updatedCourses, isLoading: false });
                 } catch (error) {
                     const msg = (error as Error).message;
-                    set({ error: msg, isLoading: false });
-                    throw error;
+                    console.error("Failed to sync addCourse:", msg);
+                    set({ error: "Offline: Kurs nur lokal gespeichert.", isLoading: false });
                 }
             },
 
             addFolder: async (folder) => {
                 set({ isLoading: true });
+                const previousCourses = get().courses;
+                // Optimistic update
+                set({ courses: [...previousCourses, folder] });
+
                 try {
                     const updatedCourses = await api.addCourse(folder);
                     set({ courses: updatedCourses, isLoading: false });
                 } catch (error) {
-                    set({ error: (error as Error).message, isLoading: false });
+                    const msg = (error as Error).message;
+                    console.error("Failed to sync addFolder:", msg);
+                    set({ error: "Offline: Ordner nur lokal gespeichert.", isLoading: false });
                 }
             },
 
             deleteCourse: async (courseId) => {
                 set({ isLoading: true });
+                const previousCourses = get().courses;
+                // Optimistic update
+                set({ courses: previousCourses.filter(c => c.id !== courseId) });
+
                 try {
                     const updatedCourses = await api.deleteCourse(courseId);
                     set({ courses: updatedCourses, isLoading: false });
                 } catch (error) {
-                    set({ error: (error as Error).message, isLoading: false });
+                    const msg = (error as Error).message;
+                    console.error("Failed to sync deleteCourse:", msg);
+                    set({ error: "Offline: Löschen nur lokal ausgeführt.", isLoading: false });
                 }
             },
 
             deleteFolder: async (folderId) => {
                 set({ isLoading: true });
+                const previousCourses = get().courses;
+                // Optimistic update
+                set({ courses: previousCourses.filter(c => c.id !== folderId) });
+
                 try {
                     const updatedCourses = await api.deleteCourse(folderId);
                     set({ courses: updatedCourses, isLoading: false });
                 } catch (error) {
-                    set({ error: (error as Error).message, isLoading: false });
+                    const msg = (error as Error).message;
+                    console.error("Failed to sync deleteFolder:", msg);
+                    set({ error: "Offline: Löschen nur lokal ausgeführt.", isLoading: false });
                 }
+            },
+
+            updateFolder: async (folderId, updates) => {
+                const { courses } = get();
+                const updated = courses.map(item =>
+                    item.id === folderId && item.type === 'folder'
+                        ? { ...item, ...updates } as Folder
+                        : item
+                );
+                set({ courses: updated as DashboardItem[] });
+                await api.saveCourses(updated as DashboardItem[]);
             },
 
             updateCourseProgress: (courseId, progress) => {
@@ -178,8 +212,8 @@ export const useAppStore = create<AppState>()(
             },
 
             reorderItems: async (newOrderItems) => {
-                 set({ courses: newOrderItems });
-                 await api.saveCourses(newOrderItems);
+                set({ courses: newOrderItems });
+                await api.saveCourses(newOrderItems);
             },
 
             setUserStats: (stats) => set({ userStats: stats }),

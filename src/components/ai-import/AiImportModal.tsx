@@ -15,19 +15,22 @@ export const AiImportModal: React.FC<AiImportModalProps> = ({ onClose }) => {
     const [jsonInputPT, setJsonInputPT] = useState('');
     const [isBilingual, setIsBilingual] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { addCourse } = useAppStore();
+    const { addCourse, currentFolderId } = useAppStore();
 
     const handleImport = async () => {
         try {
             setError(null);
             if (!jsonInput) throw new Error("Basis-JSON (DE) fehlt.");
-            
+
             const parsed = JSON.parse(jsonInput);
 
             // Basic validation
             if (!parsed.title || !parsed.units) throw new Error("Format Ungültig: 'title' oder 'units' fehlen.");
 
             let course = sanitizeCourse(parsed);
+
+            // Assign to current folder
+            course.parentFolderId = currentFolderId || null;
 
             if (isBilingual && jsonInputPT) {
                 const parsedPT = JSON.parse(jsonInputPT);
@@ -56,8 +59,8 @@ export const AiImportModal: React.FC<AiImportModalProps> = ({ onClose }) => {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsBilingual(!isBilingual)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all border-2 ${isBilingual 
-                                ? 'bg-brand-sky border-brand-sky text-white shadow-lg' 
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all border-2 ${isBilingual
+                                ? 'bg-brand-sky border-brand-sky text-white shadow-lg'
                                 : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
                         >
                             <Languages size={20} />
@@ -71,7 +74,7 @@ export const AiImportModal: React.FC<AiImportModalProps> = ({ onClose }) => {
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar -mr-4 pr-4">
                     <PromptDisplay />
-                    
+
                     <div className={`grid gap-6 ${isBilingual ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
                         <div>
                             {isBilingual && <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2 ml-2">Deutsch (DE)</label>}

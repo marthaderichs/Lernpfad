@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { useAppStore } from '../../stores/useAppStore';
 import { X } from 'lucide-react';
 
-export const AddFolderModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-    const { addFolder, currentFolderId } = useAppStore();
-    const [title, setTitle] = useState('');
-    const [icon, setIcon] = useState('📁');
-    const [color, setColor] = useState('brand-blue');
+import { Folder } from '../../types';
+
+interface AddFolderModalProps {
+    onClose: () => void;
+    existingFolder?: Folder;
+}
+
+export const AddFolderModal: React.FC<AddFolderModalProps> = ({ onClose, existingFolder }) => {
+    const { addFolder, updateFolder, currentFolderId } = useAppStore();
+    const [title, setTitle] = useState(existingFolder?.title || '');
+    const [icon, setIcon] = useState(existingFolder?.icon || '📁');
+    const [color, setColor] = useState(existingFolder?.themeColor || 'brand-blue');
 
     const colors = [
         'brand-blue', 'brand-purple', 'brand-green', 'brand-orange',
@@ -16,14 +23,22 @@ export const AddFolderModal: React.FC<{ onClose: () => void }> = ({ onClose }) =
     const handleSave = () => {
         if (!title.trim()) return;
 
-        addFolder({
-            id: `f_${Date.now()}`,
-            type: 'folder',
-            title: title.trim(),
-            icon,
-            themeColor: color,
-            parentFolderId: currentFolderId || null
-        });
+        if (existingFolder) {
+            updateFolder(existingFolder.id, {
+                title: title.trim(),
+                icon,
+                themeColor: color
+            });
+        } else {
+            addFolder({
+                id: `f_${Date.now()}`,
+                type: 'folder',
+                title: title.trim(),
+                icon,
+                themeColor: color,
+                parentFolderId: currentFolderId || null
+            });
+        }
         onClose();
     };
 
@@ -31,7 +46,9 @@ export const AddFolderModal: React.FC<{ onClose: () => void }> = ({ onClose }) =
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                 <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50/50">
-                    <h2 className="text-xl font-black text-gray-800 uppercase tracking-wide">Neuer Ordner</h2>
+                    <h2 className="text-xl font-black text-gray-800 uppercase tracking-wide">
+                        {existingFolder ? 'Ordner Bearbeiten' : 'Neuer Ordner'}
+                    </h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500">
                         <X size={24} />
                     </button>
@@ -88,7 +105,7 @@ export const AddFolderModal: React.FC<{ onClose: () => void }> = ({ onClose }) =
                         disabled={!title.trim()}
                         className="font-extrabold text-white uppercase tracking-wide py-3 px-8 rounded-2xl bg-brand-green border-b-4 border-green-600 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-200"
                     >
-                        Erstellen
+                        {existingFolder ? 'Speichern' : 'Erstellen'}
                     </button>
                 </div>
             </div>

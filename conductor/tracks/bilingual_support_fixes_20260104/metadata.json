@@ -1,0 +1,8 @@
+{
+  "track_id": "bilingual_support_fixes_20260104",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-04T12:00:00Z",
+  "updated_at": "2026-01-04T12:00:00Z",
+  "description": "Fix broken course save button and add Portuguese translation import feature for existing courses."
+}

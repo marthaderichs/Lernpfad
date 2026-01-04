@@ -52,6 +52,8 @@ export const sanitizeCourse = (input: any): Course => {
         units: sanitizedUnits,
         // Always generate unique ID to prevent duplicate issues
         id: `c_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-        totalProgress: 0
+        totalProgress: 0,
+        type: 'course',
+        parentFolderId: input.parentFolderId || null
     };
 };

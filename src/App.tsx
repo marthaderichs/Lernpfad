@@ -12,6 +12,8 @@ const App: React.FC = () => {
         selectedCourse,
         selectedLevelIndex,
         isLoading,
+        error,
+        clearError,
         loadInitialData,
         selectLevel,
         updateCourseProgress,
@@ -21,6 +23,14 @@ const App: React.FC = () => {
     useEffect(() => {
         loadInitialData();
     }, [loadInitialData]);
+
+    // Auto-dismiss error after 5 seconds
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => clearError(), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, clearError]);
 
     const getActiveLevel = () => {
         if (!selectedCourse || selectedLevelIndex === null) return null;
@@ -53,7 +63,21 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans text-gray-900">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans text-gray-900 relative">
+            {error && (
+                <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] w-full max-w-md px-4">
+                    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg flex justify-between items-center animate-in slide-in-from-top-2">
+                        <div className="flex items-center gap-2">
+                            <span>⚠️</span>
+                            <p className="font-bold text-sm">{error}</p>
+                        </div>
+                        <button onClick={clearError} className="text-red-500 hover:text-red-700 font-bold px-2">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {(currentView === 'DASHBOARD' || (currentView === 'COURSE_MAP' && !selectedCourse)) && <Dashboard />}
             {currentView === 'COURSE_MAP' && selectedCourse && <CourseMap />}
             {currentView === 'SHOP' && <Shop />}

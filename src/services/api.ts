@@ -44,45 +44,39 @@ export const saveCourses = async (items: DashboardItem[]): Promise<void> => {
 };
 
 export const addCourse = async (newItem: DashboardItem): Promise<DashboardItem[]> => {
-    try {
-        const response = await fetch(`${API_URL}/courses/add`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newItem)
-        });
-        const result = await response.json();
-        if (result.success) {
-            return result.data;
-        }
-    } catch (e) {
-        console.error("Failed to add item:", e);
+    const response = await fetch(`${API_URL}/courses/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newItem)
+    });
+    
+    if (!response.ok) {
+        throw new Error(`Failed to add item: ${response.statusText}`);
     }
 
-    // Fallback: load current and add manually
-    const current = await loadCourses();
-    const updated = [...current, newItem];
-    await saveCourses(updated);
-    return updated;
+    const result = await response.json();
+    if (result.success) {
+        return result.data;
+    } else {
+        throw new Error(result.message || "Failed to add item");
+    }
 };
 
 export const deleteCourse = async (itemId: string): Promise<DashboardItem[]> => {
-    try {
-        const response = await fetch(`${API_URL}/courses/${itemId}`, {
-            method: 'DELETE'
-        });
-        const result = await response.json();
-        if (result.success) {
-            return result.data;
-        }
-    } catch (e) {
-        console.error("Failed to delete item:", e);
+    const response = await fetch(`${API_URL}/courses/${itemId}`, {
+        method: 'DELETE'
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to delete item: ${response.statusText}`);
     }
 
-    // Fallback
-    const current = await loadCourses();
-    const updated = current.filter(c => c.id !== itemId);
-    await saveCourses(updated);
-    return updated;
+    const result = await response.json();
+    if (result.success) {
+        return result.data;
+    } else {
+        throw new Error(result.message || "Failed to delete item");
+    }
 };
 
 // ============ USER STATS ============
