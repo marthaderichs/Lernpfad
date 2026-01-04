@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Course, UserStats } from '../../types';
+import { Course, DashboardItem, Folder, UserStats } from '../../types';
 import { useAppStore } from '../../stores/useAppStore';
 import { Button } from '../common/Button';
 import { AiImportModal } from '../ai-import';
-import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag } from 'lucide-react';
+import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft } from 'lucide-react';
 
 const HeaderStat: React.FC<{ icon: React.ReactNode; value: string; label?: string; color: string; onClick?: () => void }> = ({ icon, value, color, onClick }) => (
     <div
@@ -17,27 +17,63 @@ const HeaderStat: React.FC<{ icon: React.ReactNode; value: string; label?: strin
     </div>
 );
 
+const themeColors: Record<string, string> = {
+    'brand-purple': 'bg-brand-purple border-purple-700',
+    'brand-blue': 'bg-brand-blue border-indigo-700',
+    'brand-orange': 'bg-brand-orange border-orange-600',
+    'brand-green': 'bg-brand-green border-green-700',
+    'brand-sky': 'bg-brand-sky border-sky-600',
+    'brand-teal': 'bg-brand-teal border-teal-600',
+    'brand-red': 'bg-brand-red border-red-600',
+    'brand-pink': 'bg-brand-pink border-[#d87a9e]',
+    'brand-burgundy': 'bg-brand-burgundy border-rose-900',
+    'brand-yellow': 'bg-brand-yellow border-yellow-600',
+    'brand-lime': 'bg-brand-lime border-lime-700',
+    'brand-fuchsia': 'bg-brand-fuchsia border-fuchsia-800',
+};
+
+const FolderCard: React.FC<{
+    folder: Folder;
+    itemCount: number;
+    onClick: () => void;
+    onDelete: () => void;
+}> = ({ folder, itemCount, onClick, onDelete }) => {
+    const cssClass = themeColors[folder.themeColor] || themeColors['brand-blue'];
+
+    return (
+        <div
+            onClick={onClick}
+            className={`
+        relative overflow-hidden cursor-pointer group h-full flex flex-col
+        bg-white rounded-3xl border-b-4 border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-95
+      `}
+        >
+            <div className={`h-32 ${cssClass} flex items-center justify-center relative overflow-hidden`}>
+                <div className="absolute opacity-20 transform rotate-12 -right-6 -top-6 text-8xl transition-transform group-hover:scale-110 group-hover:rotate-6">
+                    {folder.icon}
+                </div>
+                <div className="text-6xl drop-shadow-md z-10 transition-transform group-hover:scale-110 duration-300">{folder.icon}</div>
+            </div>
+
+            <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                    <h3 className="font-extrabold text-gray-800 text-xl leading-tight mb-2">{folder.title}</h3>
+                    <p className="text-gray-400 text-sm font-bold flex items-center gap-2">
+                        <FolderIcon size={14} />
+                        {itemCount} Elemente
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const CourseCard: React.FC<{
     course: Course;
     onClick: () => void;
     onDelete: () => void;
 }> = ({ course, onClick, onDelete }) => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-    const themeColors: Record<string, string> = {
-        'brand-purple': 'bg-brand-purple border-purple-700',
-        'brand-blue': 'bg-brand-blue border-indigo-700',
-        'brand-orange': 'bg-brand-orange border-orange-600',
-        'brand-green': 'bg-brand-green border-green-700',
-        'brand-sky': 'bg-brand-sky border-sky-600',
-        'brand-teal': 'bg-brand-teal border-teal-600',
-        'brand-red': 'bg-brand-red border-red-600',
-        'brand-pink': 'bg-brand-pink border-[#d87a9e]',
-        'brand-burgundy': 'bg-brand-burgundy border-rose-900',
-        'brand-yellow': 'bg-brand-yellow border-yellow-600',
-        'brand-lime': 'bg-brand-lime border-lime-700',
-        'brand-fuchsia': 'bg-brand-fuchsia border-fuchsia-800',
-    };
 
     const cssClass = themeColors[course.themeColor] || themeColors['brand-blue'];
 
@@ -124,9 +160,12 @@ export const Dashboard: React.FC = () => {
     const {
         courses,
         userStats,
+        currentFolderId,
         selectCourse,
         deleteCourse,
-        navigateTo
+        deleteFolder,
+        navigateTo,
+        navigateToFolder
     } = useAppStore();
 
     const [showImportModal, setShowImportModal] = useState(false);
@@ -136,6 +175,17 @@ export const Dashboard: React.FC = () => {
     const handleSelectCourse = (course: Course) => {
         selectCourse(course);
         navigateTo('COURSE_MAP');
+    };
+
+    const currentItems = courses.filter(item => item.parentFolderId === (currentFolderId || null));
+    const parentFolder = currentFolderId ? (courses.find(c => c.id === currentFolderId) as Folder) : null;
+
+    const handleBack = () => {
+        if (parentFolder) {
+            navigateToFolder(parentFolder.parentFolderId || null);
+        } else {
+            navigateToFolder(null);
+        }
     };
 
     return (
@@ -173,40 +223,65 @@ export const Dashboard: React.FC = () => {
             {/* Course List */}
             <div className="flex-1 overflow-y-auto p-8">
                 <div className="max-w-6xl mx-auto w-full">
-                    <div className="flex justify-between items-end mb-6 gap-4 flex-wrap">
-                        <h3 className="text-2xl font-black text-gray-700">Meine Vorlesungen</h3>
-                        <div className="flex gap-3">
+                    <div className="flex flex-col mb-6 gap-2">
+                        {currentFolderId && (
                             <button
-                                onClick={() => setShowImportModal(true)}
-                                className="hidden md:flex items-center gap-2 bg-brand-sky/10 text-brand-sky px-4 py-2 rounded-xl font-bold hover:bg-brand-sky hover:text-white transition-colors"
+                                onClick={handleBack}
+                                className="flex items-center gap-2 text-gray-500 font-bold hover:text-brand-sky transition-colors mb-2 w-fit"
                             >
-                                <Plus size={20} />
-                                Neuer Kurs
+                                <ChevronLeft size={20} />
+                                Zurück
                             </button>
+                        )}
+                        <div className="flex justify-between items-end gap-4 flex-wrap">
+                            <h3 className="text-2xl font-black text-gray-700">
+                                {parentFolder ? parentFolder.title : 'Meine Vorlesungen'}
+                            </h3>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowImportModal(true)}
+                                    className="hidden md:flex items-center gap-2 bg-brand-sky/10 text-brand-sky px-4 py-2 rounded-xl font-bold hover:bg-brand-sky hover:text-white transition-colors"
+                                >
+                                    <Plus size={20} />
+                                    Neuer Kurs
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
-                        {courses.map(course => (
-                            <CourseCard
-                                key={course.id}
-                                course={course}
-                                onClick={() => handleSelectCourse(course)}
-                                onDelete={() => deleteCourse(course.id)}
-                            />
+                        {currentItems.map(item => (
+                            item.type === 'folder' ? (
+                                <FolderCard
+                                    key={item.id}
+                                    folder={item}
+                                    itemCount={courses.filter(c => c.parentFolderId === item.id).length}
+                                    onClick={() => navigateToFolder(item.id)}
+                                    onDelete={() => deleteFolder(item.id)}
+                                />
+                            ) : (
+                                <CourseCard
+                                    key={item.id}
+                                    course={item}
+                                    onClick={() => handleSelectCourse(item)}
+                                    onDelete={() => deleteCourse(item.id)}
+                                />
+                            )
                         ))}
 
                         {/* Add Course Card Placeholder */}
-                        <button
-                            onClick={() => setShowImportModal(true)}
-                            className="border-4 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center p-8 hover:bg-white hover:border-brand-sky hover:shadow-lg transition-all group h-full min-h-[320px] bg-gray-50/50"
-                        >
-                            <div className="w-20 h-20 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mb-6 group-hover:border-brand-sky group-hover:scale-110 transition-all shadow-sm">
-                                <Plus size={32} strokeWidth={4} className="text-gray-300 group-hover:text-brand-sky" />
-                            </div>
-                            <span className="font-extrabold text-gray-400 group-hover:text-brand-sky uppercase text-lg tracking-wide">Kurs Hinzufügen</span>
-                            <span className="text-xs font-bold text-gray-300 mt-2 uppercase">(Import via JSON)</span>
-                        </button>
+                        {!currentFolderId && (
+                            <button
+                                onClick={() => setShowImportModal(true)}
+                                className="border-4 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center p-8 hover:bg-white hover:border-brand-sky hover:shadow-lg transition-all group h-full min-h-[320px] bg-gray-50/50"
+                            >
+                                <div className="w-20 h-20 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mb-6 group-hover:border-brand-sky group-hover:scale-110 transition-all shadow-sm">
+                                    <Plus size={32} strokeWidth={4} className="text-gray-300 group-hover:text-brand-sky" />
+                                </div>
+                                <span className="font-extrabold text-gray-400 group-hover:text-brand-sky uppercase text-lg tracking-wide">Kurs Hinzufügen</span>
+                                <span className="text-xs font-bold text-gray-300 mt-2 uppercase">(Import via JSON)</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
