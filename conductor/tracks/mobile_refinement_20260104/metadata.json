@@ -1,0 +1,8 @@
+{
+  "track_id": "mobile_refinement_20260104",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-04T10:00:00Z",
+  "updated_at": "2026-01-04T10:00:00Z",
+  "description": "Comprehensive refinement of the mobile UI (iOS-style header), functional streaks, interactive coin/shop navigation, and visual path progress (green fill)."
+}
