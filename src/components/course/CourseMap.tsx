@@ -114,7 +114,12 @@ export const CourseMap: React.FC = () => {
                                             unit.colorTheme === 'brand-red' ? 'bg-brand-red' :
                                                 unit.colorTheme === 'brand-pink' ? 'bg-brand-pink' :
                                                     unit.colorTheme === 'brand-teal' ? 'bg-brand-teal' :
-                                                        unit.colorTheme === 'brand-sky' ? 'bg-brand-sky' : 'bg-brand-blue'}
+                                                        unit.colorTheme === 'brand-sky' ? 'bg-brand-sky' :
+                                                            unit.colorTheme === 'brand-burgundy' ? 'bg-brand-burgundy' :
+                                                                unit.colorTheme === 'brand-yellow' ? 'bg-brand-yellow' :
+                                                                    unit.colorTheme === 'brand-lime' ? 'bg-brand-lime' :
+                                                                        unit.colorTheme === 'brand-fuchsia' ? 'bg-brand-fuchsia' :
+                                                                            'bg-brand-blue'}
               `}>
                                 <div className="absolute -bottom-3 left-1/2 -ml-2 w-4 h-4 bg-inherit rotate-45"></div>
                                 {unit.title}
@@ -198,6 +203,10 @@ export const CourseMap: React.FC = () => {
                                         <option value="brand-orange">Orange</option>
                                         <option value="brand-red">Rot</option>
                                         <option value="brand-pink">Pink</option>
+                                        <option value="brand-burgundy">Bordeaux</option>
+                                        <option value="brand-yellow">Gelb</option>
+                                        <option value="brand-lime">Limette</option>
+                                        <option value="brand-fuchsia">Magenta</option>
                                     </select>
                                 </div>
                             </div>

@@ -47,7 +47,11 @@ export const LevelNode: React.FC<LevelNodeProps> = ({ level, color, onClick, ind
                                         themeColor === 'brand-teal' ? 'bg-brand-teal border-teal-700' :
                                             themeColor === 'brand-red' ? 'bg-brand-red border-red-700' :
                                                 themeColor === 'brand-pink' ? 'bg-brand-pink border-[#d87a9e]' :
-                                                    'bg-brand-blue border-blue-600'
+                                                    themeColor === 'brand-burgundy' ? 'bg-brand-burgundy border-rose-900' :
+                                                        themeColor === 'brand-yellow' ? 'bg-brand-yellow border-yellow-600' :
+                                                            themeColor === 'brand-lime' ? 'bg-brand-lime border-lime-700' :
+                                                                themeColor === 'brand-fuchsia' ? 'bg-brand-fuchsia border-fuchsia-800' :
+                                                                    'bg-brand-blue border-blue-600'
                     }`}>
                     {isCompleted ? (
                         <CheckCircle className="text-white w-10 h-10 drop-shadow-md" />

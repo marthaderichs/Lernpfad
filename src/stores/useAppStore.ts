@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Course, UserStats, ViewState } from '../types';
+import { Course, UserStats, ViewState, DashboardItem, Folder } from '../types';
 import * as api from '../services/api';
 
 interface AppState {
     // State
-    courses: Course[];
+    courses: DashboardItem[];
     userStats: UserStats | null;
     currentView: ViewState;
     selectedCourse: Course | null;
@@ -15,7 +15,7 @@ interface AppState {
 
     // Actions
     loadInitialData: () => Promise<void>;
-    setCourses: (courses: Course[]) => void;
+    setCourses: (courses: DashboardItem[]) => void;
     addCourse: (course: Course) => Promise<void>;
     deleteCourse: (courseId: string) => Promise<void>;
     updateCourseProgress: (courseId: string, progress: Partial<Course>) => void;
@@ -82,8 +82,10 @@ export const useAppStore = create<AppState>()(
 
             updateCourseProgress: (courseId, progress) => {
                 const { courses, selectedCourse } = get();
-                const updated = courses.map(c =>
-                    c.id === courseId ? { ...c, ...progress } : c
+                const updated = courses.map(item =>
+                    item.id === courseId && item.type === 'course'
+                        ? { ...item, ...progress } as Course
+                        : item
                 );
                 // Also update selectedCourse if it's the one being modified
                 const updatedSelectedCourse = selectedCourse?.id === courseId

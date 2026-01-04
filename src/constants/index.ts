@@ -115,6 +115,7 @@ Halte dich SKLAVISCH an diese Regeln, sonst stürzt die App ab:
   "icon": "🧬",
   "themeColor": "brand-blue",
   "totalProgress": 0,
+  "type": "course",
   "units": [
     {
       "id": "u1",
@@ -207,6 +208,7 @@ export const INITIAL_COURSES: Course[] = [
     icon: '🧠',
     totalProgress: 0,
     themeColor: 'brand-purple',
+    type: 'course',
     units: [
       {
         id: 'u1',

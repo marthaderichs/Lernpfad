@@ -1,4 +1,4 @@
-import { Course, UserStats, ShopItem } from '../types';
+import { Course, UserStats, ShopItem, DashboardItem, Folder } from '../types';
 import { INITIAL_COURSES, SHOP_ITEMS, SYSTEM_PROMPT } from '../constants';
 
 // Backend API URL
@@ -12,9 +12,9 @@ const API_URL = isDev
     ? `http://${window.location.hostname}:3001/api`
     : '/api';
 
-// ============ COURSES ============
+// ============ COURSES & FOLDERS ============
 
-export const loadCourses = async (): Promise<Course[]> => {
+export const loadCourses = async (): Promise<DashboardItem[]> => {
     try {
         const response = await fetch(`${API_URL}/courses`);
         const result = await response.json();
@@ -23,7 +23,7 @@ export const loadCourses = async (): Promise<Course[]> => {
             return result.data;
         }
     } catch (e) {
-        console.error("Failed to load courses from server:", e);
+        console.error("Failed to load items from server:", e);
     }
 
     // First time or server error: save initial courses
@@ -31,43 +31,43 @@ export const loadCourses = async (): Promise<Course[]> => {
     return INITIAL_COURSES;
 };
 
-export const saveCourses = async (courses: Course[]): Promise<void> => {
+export const saveCourses = async (items: DashboardItem[]): Promise<void> => {
     try {
         await fetch(`${API_URL}/courses`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(courses)
+            body: JSON.stringify(items)
         });
     } catch (e) {
-        console.error("Failed to save courses:", e);
+        console.error("Failed to save items:", e);
     }
 };
 
-export const addCourse = async (newCourse: Course): Promise<Course[]> => {
+export const addCourse = async (newItem: DashboardItem): Promise<DashboardItem[]> => {
     try {
         const response = await fetch(`${API_URL}/courses/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newCourse)
+            body: JSON.stringify(newItem)
         });
         const result = await response.json();
         if (result.success) {
             return result.data;
         }
     } catch (e) {
-        console.error("Failed to add course:", e);
+        console.error("Failed to add item:", e);
     }
 
     // Fallback: load current and add manually
     const current = await loadCourses();
-    const updated = [...current, newCourse];
+    const updated = [...current, newItem];
     await saveCourses(updated);
     return updated;
 };
 
-export const deleteCourse = async (courseId: string): Promise<Course[]> => {
+export const deleteCourse = async (itemId: string): Promise<DashboardItem[]> => {
     try {
-        const response = await fetch(`${API_URL}/courses/${courseId}`, {
+        const response = await fetch(`${API_URL}/courses/${itemId}`, {
             method: 'DELETE'
         });
         const result = await response.json();
@@ -75,12 +75,12 @@ export const deleteCourse = async (courseId: string): Promise<Course[]> => {
             return result.data;
         }
     } catch (e) {
-        console.error("Failed to delete course:", e);
+        console.error("Failed to delete item:", e);
     }
 
     // Fallback
     const current = await loadCourses();
-    const updated = current.filter(c => c.id !== courseId);
+    const updated = current.filter(c => c.id !== itemId);
     await saveCourses(updated);
     return updated;
 };

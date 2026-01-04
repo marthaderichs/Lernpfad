@@ -11,8 +11,10 @@ export const useCourses = () => {
         selectCourse
     } = useAppStore();
 
-    const getCourseById = (id: string): Course | undefined =>
-        courses.find(c => c.id === id);
+    const getCourseById = (id: string): Course | undefined => {
+        const item = courses.find(c => c.id === id);
+        return item?.type === 'course' ? item : undefined;
+    };
 
     const getAllLevels = (course: Course): Level[] =>
         course.units.flatMap(u => u.levels);

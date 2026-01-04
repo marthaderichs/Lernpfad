@@ -8,10 +8,14 @@
     "dev:server": "PORT=3001 node server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
     "build": "vite build",
+    "test": "vitest run",
     "start": "node server.js",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "katex": "^0.16.27",

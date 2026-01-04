@@ -6,6 +6,8 @@
     "icon": "🔬",
     "themeColor": "brand-green",
     "totalProgress": 55,
+    "type": "course",
+    "parentFolderId": null,
     "units": [
       {
         "id": "u1",
@@ -318,8 +320,10 @@
     "title": "Mehrachsige Beanspruchung",
     "professor": "Ing. LernPfad",
     "icon": "⚙️",
-    "themeColor": "brand-pink",
+    "themeColor": "brand-yellow",
     "totalProgress": 33,
+    "type": "course",
+    "parentFolderId": null,
     "units": [
       {
         "id": "u1",

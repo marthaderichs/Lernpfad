@@ -45,13 +45,13 @@ export interface LevelContent {
   // Common
   title: string;
   description: string; // Short preview text
-  
+
   // Type: THEORY & SUMMARY
   markdownContent?: string; // Main text content
-  
+
   // Type: QUIZ
   quizQuestions?: QuizQuestion[];
-  
+
   // Type: FLASHCARDS
   flashcards?: Flashcard[];
 
@@ -83,8 +83,21 @@ export interface Course {
   icon: string;
   totalProgress: number;
   themeColor: string;
-  units: Unit[]; 
+  units: Unit[];
+  type: 'course';
+  parentFolderId?: string | null;
 }
+
+export interface Folder {
+  id: string;
+  title: string;
+  type: 'folder';
+  icon: string;
+  themeColor: string;
+  parentFolderId?: string | null;
+}
+
+export type DashboardItem = Course | Folder;
 
 export interface ShopItem {
   id: string;

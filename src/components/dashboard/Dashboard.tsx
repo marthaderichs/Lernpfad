@@ -33,6 +33,10 @@ const CourseCard: React.FC<{
         'brand-teal': 'bg-brand-teal border-teal-600',
         'brand-red': 'bg-brand-red border-red-600',
         'brand-pink': 'bg-brand-pink border-[#d87a9e]',
+        'brand-burgundy': 'bg-brand-burgundy border-rose-900',
+        'brand-yellow': 'bg-brand-yellow border-yellow-600',
+        'brand-lime': 'bg-brand-lime border-lime-700',
+        'brand-fuchsia': 'bg-brand-fuchsia border-fuchsia-800',
     };
 
     const cssClass = themeColors[course.themeColor] || themeColors['brand-blue'];
@@ -97,7 +101,11 @@ const CourseCard: React.FC<{
                                                 course.themeColor === 'brand-pink' ? 'bg-brand-pink' :
                                                     course.themeColor === 'brand-sky' ? 'bg-brand-sky' :
                                                         course.themeColor === 'brand-teal' ? 'bg-brand-teal' :
-                                                            'bg-brand-blue'
+                                                            course.themeColor === 'brand-burgundy' ? 'bg-brand-burgundy' :
+                                                                course.themeColor === 'brand-yellow' ? 'bg-brand-yellow' :
+                                                                    course.themeColor === 'brand-lime' ? 'bg-brand-lime' :
+                                                                        course.themeColor === 'brand-fuchsia' ? 'bg-brand-fuchsia' :
+                                                                            'bg-brand-blue'
                                 }`}
                             style={{ width: `${course.totalProgress}%` }}
                         />

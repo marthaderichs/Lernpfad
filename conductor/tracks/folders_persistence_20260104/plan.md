@@ -5,7 +5,7 @@ This plan outlines the steps to implement nested folders for course organization
 ## Phase 1: Data Model & Backend Updates
 Goal: Update the data structure and ensure the backend can handle nested folders.
 
-- [ ] Task: Define the new `Folder` type and update `Course` type in `src/types/index.ts`.
+- [~] Task: Define the new `Folder` type and update `Course` type in `src/types/index.ts`.
 - [ ] Task: Create a migration utility or manual update for `data/courses.json` to support the new structure.
 - [ ] Task: Write tests for backend data validation (ensure folders are correctly parsed/saved).
 - [ ] Task: Update `server.js` if necessary to handle deep nesting or specific folder API endpoints.
