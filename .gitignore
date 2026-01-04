@@ -18,7 +18,15 @@ dist-ssr
 !.env.example
 
 # Data directory (use volumes in production)
-data/
+# Data directory
+data/*
+!data/courses.json
+!data/stats.json
+!data/lernpfad.db
+
+# Backup-Dateien
+*.backup.json
+data/*.bak
 
 # Editor directories and files
 .vscode/*
