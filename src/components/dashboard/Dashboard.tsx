@@ -4,7 +4,7 @@ import { useAppStore } from '../../stores/useAppStore';
 import { Button } from '../common/Button';
 import { AiImportModal } from '../ai-import';
 import { AddFolderModal } from './AddFolderModal';
-import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft, Pencil, Check, GripVertical, FileStack } from 'lucide-react';
+import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft, Pencil, Check, GripVertical, FileStack, CheckSquare, Square, FolderInput } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -75,17 +75,44 @@ const FolderCard: React.FC<{
     itemCount: number;
     onClick: () => void;
     onDelete: () => void;
-}> = ({ folder, itemCount, onClick, onDelete }) => {
+    isEditMode?: boolean;
+    isSelected?: boolean;
+    onToggleSelection?: () => void;
+}> = ({ folder, itemCount, onClick, onDelete, isEditMode, isSelected, onToggleSelection }) => {
     const cssClass = themeColors[folder.themeColor] || themeColors['brand-blue'];
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (isEditMode && onToggleSelection) {
+            e.stopPropagation();
+            onToggleSelection();
+        } else {
+            onClick();
+        }
+    };
 
     return (
         <div
-            onClick={onClick}
+            onClick={handleClick}
             className={`
         relative overflow-hidden cursor-pointer group h-full flex flex-col
-        bg-white rounded-3xl border-b-4 border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-95
+        bg-white rounded-3xl border-b-4 ${isSelected ? 'border-brand-sky ring-4 ring-brand-sky/30' : 'border-gray-200'} 
+        shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-95
       `}
         >
+            {isEditMode && (
+                <div className="absolute top-3 left-3 z-20">
+                    {isSelected ? (
+                        <div className="bg-brand-sky text-white rounded-lg p-1 shadow-sm">
+                            <CheckSquare size={24} />
+                        </div>
+                    ) : (
+                        <div className="bg-white/80 text-gray-400 rounded-lg p-1 shadow-sm hover:text-brand-sky">
+                            <Square size={24} />
+                        </div>
+                    )}
+                </div>
+            )}
+            
             <div className={`h-32 ${cssClass} flex items-center justify-center relative overflow-hidden`}>
                 <div className="absolute opacity-20 transform rotate-12 -right-6 -top-6 text-8xl transition-transform group-hover:scale-110 group-hover:rotate-6">
                     {folder.icon}
@@ -110,10 +137,22 @@ const CourseCard: React.FC<{
     course: Course;
     onClick: () => void;
     onDelete: () => void;
-}> = ({ course, onClick, onDelete }) => {
+    isEditMode?: boolean;
+    isSelected?: boolean;
+    onToggleSelection?: () => void;
+}> = ({ course, onClick, onDelete, isEditMode, isSelected, onToggleSelection }) => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const cssClass = themeColors[course.themeColor] || themeColors['brand-blue'];
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (isEditMode && onToggleSelection) {
+            e.stopPropagation();
+            onToggleSelection();
+        } else {
+            onClick();
+        }
+    };
 
     const handleDeleteClick = (e: React.MouseEvent | React.TouchEvent) => {
         e.stopPropagation();
@@ -136,12 +175,27 @@ const CourseCard: React.FC<{
 
     return (
         <div
-            onClick={onClick}
+            onClick={handleClick}
             className={`
         relative overflow-hidden cursor-pointer group h-full flex flex-col
-        bg-white rounded-3xl border-b-4 border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-95
+        bg-white rounded-3xl border-b-4 ${isSelected ? 'border-brand-sky ring-4 ring-brand-sky/30' : 'border-gray-200'} 
+        shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-95
       `}
         >
+            {isEditMode && (
+                <div className="absolute top-3 left-3 z-20">
+                    {isSelected ? (
+                        <div className="bg-brand-sky text-white rounded-lg p-1 shadow-sm">
+                            <CheckSquare size={24} />
+                        </div>
+                    ) : (
+                        <div className="bg-white/80 text-gray-400 rounded-lg p-1 shadow-sm hover:text-brand-sky">
+                            <Square size={24} />
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className={`h-32 ${cssClass} flex items-center justify-center relative overflow-hidden`}>
                 {/* Background Pattern */}
                 <div className="absolute opacity-20 transform rotate-12 -right-6 -top-6 text-8xl transition-transform group-hover:scale-110 group-hover:rotate-6">
@@ -200,13 +254,15 @@ export const Dashboard: React.FC = () => {
         userStats,
         currentFolderId,
         isEditMode,
+        selectedItemIds,
         selectCourse,
         deleteCourse,
         deleteFolder,
         navigateTo,
         navigateToFolder,
         toggleEditMode,
-        moveItem,
+        toggleItemSelection,
+        moveItems,
         reorderItems
     } = useAppStore();
 
@@ -222,15 +278,19 @@ export const Dashboard: React.FC = () => {
     if (!userStats) return null;
 
     const handleSelectCourse = (course: Course) => {
-        if (isEditMode) return; // Disable navigation in edit mode
+        if (isEditMode) return; 
         selectCourse(course);
         navigateTo('COURSE_MAP');
     };
 
     const handleSelectFolder = (folderId: string) => {
-        if (isEditMode) return; // Disable navigation in edit mode? OR allow it?
-        // Let's allow navigation even in edit mode to organize deeply
+        // Allow navigation in edit mode to facilitate moving items deeply
         navigateToFolder(folderId);
+    };
+
+    const handleMoveHere = () => {
+        if (selectedItemIds.length === 0) return;
+        moveItems(selectedItemIds, currentFolderId || null);
     };
 
     const currentItems = courses.filter(item => item.parentFolderId === (currentFolderId || null));
@@ -397,12 +457,18 @@ export const Dashboard: React.FC = () => {
                                                 itemCount={courses.filter(c => c.parentFolderId === item.id).length}
                                                 onClick={() => handleSelectFolder(item.id)}
                                                 onDelete={() => deleteFolder(item.id)}
+                                                isEditMode={isEditMode}
+                                                isSelected={selectedItemIds.includes(item.id)}
+                                                onToggleSelection={() => toggleItemSelection(item.id)}
                                             />
                                         ) : (
                                             <CourseCard
                                                 course={item as Course}
                                                 onClick={() => handleSelectCourse(item as Course)}
                                                 onDelete={() => deleteCourse(item.id)}
+                                                isEditMode={isEditMode}
+                                                isSelected={selectedItemIds.includes(item.id)}
+                                                onToggleSelection={() => toggleItemSelection(item.id)}
                                             />
                                         )}
                                     </SortableItem>
@@ -460,6 +526,24 @@ export const Dashboard: React.FC = () => {
                     </DndContext>
                 </div>
             </div>
+
+            {/* Floating Action Bar for Bulk Move */}
+            {isEditMode && selectedItemIds.length > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-white rounded-2xl shadow-2xl border border-gray-200 p-3 flex items-center gap-4 animate-in slide-in-from-bottom-10 fade-in duration-300">
+                    <div className="bg-brand-sky/10 text-brand-sky font-bold px-3 py-1.5 rounded-lg flex items-center gap-2">
+                        <FileStack size={18} />
+                        {selectedItemIds.length} ausgewählt
+                    </div>
+                    <div className="h-6 w-px bg-gray-200"></div>
+                    <button 
+                        onClick={handleMoveHere}
+                        className="bg-brand-sky text-white px-4 py-2 rounded-xl font-bold hover:bg-sky-500 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-sky-200"
+                    >
+                        <FolderInput size={18} />
+                        Hierhin verschieben
+                    </button>
+                </div>
+            )}
 
             {showImportModal && <AiImportModal onClose={() => setShowImportModal(false)} />}
             {showAddFolderModal && <AddFolderModal onClose={() => setShowAddFolderModal(false)} />}

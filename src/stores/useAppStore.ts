@@ -12,12 +12,15 @@ interface AppState {
     selectedCourse: Course | null;
     selectedLevelIndex: number | null;
     isEditMode: boolean;
+    selectedItemIds: string[];
     isLoading: boolean;
     error: string | null;
 
     // Actions
     loadInitialData: () => Promise<void>;
     toggleEditMode: () => void;
+    toggleItemSelection: (itemId: string) => void;
+    clearSelection: () => void;
     setCourses: (courses: DashboardItem[]) => void;
     addCourse: (course: Course) => Promise<void>;
     addFolder: (folder: Folder) => Promise<void>;
@@ -25,6 +28,7 @@ interface AppState {
     deleteFolder: (folderId: string) => Promise<void>;
     updateCourseProgress: (courseId: string, progress: Partial<Course>) => void;
     moveItem: (itemId: string, targetFolderId: string | null) => Promise<void>;
+    moveItems: (itemIds: string[], targetFolderId: string | null) => Promise<void>;
     reorderItems: (items: DashboardItem[]) => Promise<void>;
 
     setUserStats: (stats: UserStats) => void;
@@ -51,11 +55,26 @@ export const useAppStore = create<AppState>()(
             selectedCourse: null,
             selectedLevelIndex: null,
             isEditMode: false,
+            selectedItemIds: [],
             isLoading: false,
             error: null,
 
             // Actions
-            toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
+            toggleEditMode: () => set((state) => ({ 
+                isEditMode: !state.isEditMode,
+                selectedItemIds: [] // Clear selection when toggling
+            })),
+
+            toggleItemSelection: (itemId) => set((state) => {
+                const isSelected = state.selectedItemIds.includes(itemId);
+                return {
+                    selectedItemIds: isSelected
+                        ? state.selectedItemIds.filter(id => id !== itemId)
+                        : [...state.selectedItemIds, itemId]
+                };
+            }),
+
+            clearSelection: () => set({ selectedItemIds: [] }),
 
             loadInitialData: async () => {
                 set({ isLoading: true, error: null });
@@ -135,6 +154,17 @@ export const useAppStore = create<AppState>()(
                         : item
                 );
                 set({ courses: updated as DashboardItem[] });
+                await api.saveCourses(updated as DashboardItem[]);
+            },
+
+            moveItems: async (itemIds, targetFolderId) => {
+                const { courses } = get();
+                const updated = courses.map(item =>
+                    itemIds.includes(item.id)
+                        ? { ...item, parentFolderId: targetFolderId }
+                        : item
+                );
+                set({ courses: updated as DashboardItem[], selectedItemIds: [] });
                 await api.saveCourses(updated as DashboardItem[]);
             },
 
