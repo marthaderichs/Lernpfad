@@ -25,8 +25,8 @@ Goal: Allow generating bilingual courses.
 ## Phase 4: UI Implementation (Level Player)
 Goal: Show the toggle and render the correct language.
 
-- [~] Task: Create a `LanguageToggle` component (Flag/Text switch).
-- [ ] Task: Update `LevelPlayer.tsx` to conditionally render `content` or `contentPT` based on store state.
-- [ ] Task: Ensure fallback to DE if PT is missing but selected.
-- [ ] Task: Show `LanguageToggle` in the header ONLY if PT content exists.
-- [ ] Task: Conductor - User Manual Verification 'UI Implementation'
+- [x] Task: Create a `LanguageToggle` component (Flag/Text switch). d5c53c0
+- [x] Task: Update `LevelPlayer.tsx` to conditionally render `content` or `contentPT` based on store state. d5c53c0
+- [x] Task: Ensure fallback to DE if PT is missing but selected. d5c53c0
+- [x] Task: Show `LanguageToggle` in the header ONLY if PT content exists. d5c53c0
+- [x] Task: Conductor - User Manual Verification 'UI Implementation' d5c53c0
