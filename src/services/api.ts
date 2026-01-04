@@ -101,7 +101,24 @@ export const loadUserStats = async (): Promise<UserStats> => {
         const result = await response.json();
 
         if (result.success && result.data) {
-            return { ...INITIAL_STATS, ...result.data };
+            const stats = { ...INITIAL_STATS, ...result.data };
+            
+            // Validate Streak on load
+            if (stats.lastStudyDate) {
+                const today = new Date().toISOString().split('T')[0];
+                const lastDate = new Date(stats.lastStudyDate);
+                const currentDate = new Date(today);
+                const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > 1) {
+                    // Missed more than a day, reset streak
+                    stats.currentStreak = 0;
+                    // We don't save yet, just return the corrected object
+                }
+            }
+            
+            return stats;
         }
     } catch (e) {
         console.error("Failed to load stats from server:", e);

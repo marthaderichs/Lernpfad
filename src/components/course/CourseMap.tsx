@@ -76,7 +76,13 @@ export const CourseMap: React.FC = () => {
                 <div className="max-w-md mx-auto flex flex-col items-center relative min-h-[500px]">
 
                     {/* Central Spine */}
-                    <div className="absolute top-0 bottom-0 w-4 bg-white border-x-4 border-gray-100 rounded-full left-1/2 -ml-2 z-0" />
+                    <div className="absolute top-0 bottom-0 w-4 bg-white border-x-4 border-gray-100 rounded-full left-1/2 -ml-2 z-0">
+                        {/* Progress Fill with Glow */}
+                        <div 
+                            className="absolute top-0 left-0 right-0 bg-green-500 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)] transition-all duration-1000 ease-out"
+                            style={{ height: `${course.totalProgress}%` }}
+                        />
+                    </div>
 
                     {course.units.map((unit) => (
                         <div key={unit.id} className="w-full flex flex-col items-center mb-16 relative">

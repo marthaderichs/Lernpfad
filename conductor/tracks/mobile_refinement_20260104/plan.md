@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Core UI & Layout Foundations' (Protocol in workflow.md) 2411b23
 
 ## Phase 2: Gamification Logic & Visual Progress
-- [ ] Task: Create tests for Streak logic and Path progress visualization
+- [~] Task: Create tests for Streak logic and Path progress visualization
 - [ ] Task: Fix/Implement functional Streak tracking
 - [ ] Task: Implement Green Path Fill logic and Glow effects for completed levels
 - [ ] Task: Conductor - User Manual Verification 'Gamification Logic & Visual Progress' (Protocol in workflow.md)
