@@ -207,8 +207,18 @@ export const useAppStore = create<AppState>()(
                         ? { ...item, parentFolderId: targetFolderId }
                         : item
                 );
+                // Optimistic update
                 set({ courses: updated as DashboardItem[], selectedItemIds: [] });
-                await api.saveCourses(updated as DashboardItem[]);
+
+                try {
+                    const serverCourses = await api.moveItems(itemIds, targetFolderId);
+                    set({ courses: serverCourses });
+                } catch (error) {
+                    const msg = (error as Error).message;
+                    console.error("Failed to sync moveItems:", msg);
+                    // Revert or show error (optional, for now just log/notify)
+                    set({ error: "Offline: Verschieben fehlgeschlagen." });
+                }
             },
 
             reorderItems: async (newOrderItems) => {

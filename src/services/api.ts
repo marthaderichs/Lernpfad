@@ -49,7 +49,7 @@ export const addCourse = async (newItem: DashboardItem): Promise<DashboardItem[]
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem)
     });
-    
+
     if (!response.ok) {
         throw new Error(`Failed to add item: ${response.statusText}`);
     }
@@ -76,6 +76,25 @@ export const deleteCourse = async (itemId: string): Promise<DashboardItem[]> => 
         return result.data;
     } else {
         throw new Error(result.message || "Failed to delete item");
+    }
+};
+
+export const moveItems = async (itemIds: string[], targetFolderId: string | null): Promise<DashboardItem[]> => {
+    const response = await fetch(`${API_URL}/courses/move`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds, targetFolderId })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to move items: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    if (result.success) {
+        return result.data;
+    } else {
+        throw new Error(result.message || "Failed to move items");
     }
 };
 

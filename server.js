@@ -47,6 +47,16 @@ const readJSON = async (filePath, defaultValue) => {
 
 const writeJSON = async (filePath, data) => {
     try {
+        // Safety: Create a backup .bak file before overwriting
+        if (fs.existsSync(filePath)) {
+            try {
+                await fs.promises.copyFile(filePath, `${filePath}.bak`);
+            } catch (backupError) {
+                console.warn(`Warning: Failed to create backup for ${filePath}`, backupError);
+                // Proceed anyway, as we still want to save new data
+            }
+        }
+
         await writeFileAtomic(filePath, JSON.stringify(data, null, 2), 'utf-8');
         return true;
     } catch (e) {
@@ -109,6 +119,28 @@ app.post('/api/courses/add', async (req, res) => {
             res.json({ success: true, data: courses, message: 'Course added' });
         } else {
             res.status(500).json({ success: false, message: 'Failed to add course' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// POST move items
+app.post('/api/courses/move', async (req, res) => {
+    try {
+        const { itemIds, targetFolderId } = req.body;
+        const courses = await readJSON(COURSES_FILE, []);
+
+        const updated = courses.map(item =>
+            itemIds.includes(item.id)
+                ? { ...item, parentFolderId: targetFolderId }
+                : item
+        );
+
+        if (await writeJSON(COURSES_FILE, updated)) {
+            res.json({ success: true, data: updated, message: 'Items moved' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to move items' });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
