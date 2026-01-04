@@ -62,49 +62,6 @@ const CourseCard: React.FC<{
         bg-white rounded-3xl border-b-4 border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all active:scale-95
       `}
         >
-            {/* Delete Button - Always visible on mobile, hover on desktop */}
-            <button
-                onClick={handleDeleteClick}
-                onTouchEnd={handleDeleteClick}
-                className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm p-3 rounded-xl 
-          opacity-100 md:opacity-0 md:group-hover:opacity-100 
-          transition-opacity hover:bg-red-50 hover:text-red-500 text-gray-400 shadow-md border border-gray-100"
-            >
-                <Trash2 size={18} />
-            </button>
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteConfirm && (
-                <div
-                    className="absolute inset-0 z-20 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-3xl"
-                    onClick={(e) => e.stopPropagation()}
-                    onTouchEnd={(e) => e.stopPropagation()}
-                >
-                    <div className="text-4xl mb-4">🗑️</div>
-                    <h3 className="font-black text-gray-800 text-center mb-2">Kurs löschen?</h3>
-                    <p className="text-sm text-gray-500 text-center mb-6">
-                        "{course.title}" wird unwiderruflich gelöscht.
-                    </p>
-                    <div className="flex gap-3 w-full">
-                        <button
-                            onClick={handleCancelDelete}
-                            onTouchEnd={handleCancelDelete}
-                            className="flex-1 py-3 px-4 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition-colors"
-                        >
-                            Abbrechen
-                        </button>
-                        <button
-                            onClick={handleConfirmDelete}
-                            onTouchEnd={handleConfirmDelete}
-                            className="flex-1 py-3 px-4 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <Trash2 size={16} />
-                            Löschen
-                        </button>
-                    </div>
-                </div>
-            )}
-
             <div className={`h-32 ${cssClass} flex items-center justify-center relative overflow-hidden`}>
                 {/* Background Pattern */}
                 <div className="absolute opacity-20 transform rotate-12 -right-6 -top-6 text-8xl transition-transform group-hover:scale-110 group-hover:rotate-6">

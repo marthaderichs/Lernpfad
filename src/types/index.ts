@@ -104,6 +104,7 @@ export interface UserStats {
   purchasedItems: string[]; // IDs of purchased shop items
   activeAvatar: string; // Currently selected avatar emoji
   darkMode: boolean;
+  systemPrompt?: string; // Customizable AI generation prompt
 }
 
 export type ViewState = 'DASHBOARD' | 'COURSE_MAP' | 'SHOP';

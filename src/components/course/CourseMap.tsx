@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Level } from '../../types';
-import { ArrowLeft } from 'lucide-react';
+import { Course, Level } from '../../types';
+import { ArrowLeft, Settings, Trash2, X } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { LevelPreviewModal } from './LevelPreviewModal';
 import { LevelNode } from './LevelNode';
@@ -9,15 +9,29 @@ export const CourseMap: React.FC = () => {
     const {
         selectedCourse: course,
         navigateTo,
-        selectLevel
+        selectLevel,
+        updateCourseProgress,
+        deleteCourse
     } = useAppStore();
 
     const [previewLevel, setPreviewLevel] = useState<Level | null>(null);
+    const [showSettings, setShowSettings] = useState(false);
 
     if (!course) return null;
 
     const handleBack = () => {
         navigateTo('DASHBOARD');
+    };
+
+    const handleUpdateCourse = (updates: Partial<Course>) => {
+        updateCourseProgress(course.id, updates);
+    };
+
+    const handleDelete = () => {
+        if (window.confirm(`Möchtest du den Kurs "${course.title}" wirklich löschen?`)) {
+            deleteCourse(course.id);
+            navigateTo('DASHBOARD');
+        }
     };
 
     const handleSelectLevel = (level: Level) => {
@@ -67,7 +81,9 @@ export const CourseMap: React.FC = () => {
                         </h1>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{course.units.length} Kapitel • {course.totalProgress}%</p>
                     </div>
-                    <div className="w-10" /> {/* Spacer */}
+                    <button onClick={() => setShowSettings(true)} aria-label="Edit" className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 transition-colors border-2 border-transparent hover:border-gray-200">
+                        <Settings className="w-6 h-6" />
+                    </button>
                 </div>
             </div>
 
@@ -129,6 +145,75 @@ export const CourseMap: React.FC = () => {
                     onClose={() => setPreviewLevel(null)}
                     onStart={handleStartLevel}
                 />
+            )}
+
+            {showSettings && (
+                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl border-4 border-white animate-in zoom-in duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-black text-gray-800 flex items-center gap-2">
+                                <Settings className="text-gray-400" /> Einstellungen
+                            </h2>
+                            <button onClick={() => setShowSettings(false)} className="p-2 bg-gray-100 rounded-full text-gray-400">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Kurs Titel</label>
+                                <input 
+                                    type="text" 
+                                    value={course.title}
+                                    onChange={(e) => handleUpdateCourse({ title: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-brand-blue outline-none font-bold text-gray-700"
+                                />
+                            </div>
+                            
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Icon</label>
+                                    <input 
+                                        type="text" 
+                                        value={course.icon}
+                                        onChange={(e) => handleUpdateCourse({ icon: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-brand-blue outline-none text-2xl text-center"
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Farbe</label>
+                                    <select 
+                                        value={course.themeColor}
+                                        onChange={(e) => handleUpdateCourse({ themeColor: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-brand-blue outline-none font-bold text-gray-700 appearance-none"
+                                    >
+                                        <option value="brand-blue">Blau</option>
+                                        <option value="brand-purple">Lila</option>
+                                        <option value="brand-green">Grün</option>
+                                        <option value="brand-orange">Orange</option>
+                                        <option value="brand-red">Rot</option>
+                                        <option value="brand-pink">Pink</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-gray-100 flex flex-col gap-3">
+                                <button 
+                                    onClick={() => setShowSettings(false)}
+                                    className="w-full py-3 bg-brand-blue text-white rounded-xl font-bold hover:shadow-lg transition-all"
+                                >
+                                    Fertig
+                                </button>
+                                <button 
+                                    onClick={handleDelete}
+                                    className="w-full py-3 bg-red-50 text-red-500 rounded-xl font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Trash2 size={18} /> Kurs löschen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

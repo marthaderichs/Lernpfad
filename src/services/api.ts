@@ -1,5 +1,5 @@
 import { Course, UserStats, ShopItem } from '../types';
-import { INITIAL_COURSES, SHOP_ITEMS } from '../constants';
+import { INITIAL_COURSES, SHOP_ITEMS, SYSTEM_PROMPT } from '../constants';
 
 // Backend API URL
 // In production: API is on same origin (served by Express)
@@ -92,7 +92,8 @@ const INITIAL_STATS: UserStats = {
     lastStudyDate: null,
     purchasedItems: [],
     activeAvatar: '🦸',
-    darkMode: false
+    darkMode: false,
+    systemPrompt: SYSTEM_PROMPT
 };
 
 export const loadUserStats = async (): Promise<UserStats> => {

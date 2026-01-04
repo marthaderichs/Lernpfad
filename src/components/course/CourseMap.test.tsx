@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { CourseMap } from './CourseMap';
 import { useAppStore } from '../../stores/useAppStore';
 
@@ -24,6 +24,7 @@ describe('CourseMap Progress Visualization', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        window.confirm = vi.fn().mockReturnValue(true);
         (useAppStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
             selectedCourse: mockCourse,
             navigateTo: vi.fn(),
@@ -48,5 +49,30 @@ describe('CourseMap Progress Visualization', () => {
         render(<CourseMap />);
         const progressFill = document.querySelector('.bg-green-500');
         expect(progressFill).toHaveClass('shadow-[0_0_15px_rgba(34,197,94,0.5)]'); // Example glow class
+    });
+
+    it('allows editing the course icon and title', () => {
+        const mockUpdateCourseProgress = vi.fn();
+        (useAppStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+            selectedCourse: mockCourse,
+            navigateTo: vi.fn(),
+            selectLevel: vi.fn(),
+            updateCourseProgress: mockUpdateCourseProgress
+        });
+
+        render(<CourseMap />);
+        
+        // Find an edit button (we need to implement this)
+        const editButton = screen.getByRole('button', { name: /edit/i });
+        fireEvent.click(editButton);
+        
+        // Should show an input for title and icon
+        const titleInput = screen.getByDisplayValue('React Basics');
+        fireEvent.change(titleInput, { target: { value: 'Advanced React' } });
+        
+        // Save changes (assuming a save button or auto-save)
+        // Let's assume a "Save" or just closing the edit mode saves.
+        // For simplicity, let's assume it calls updateCourseProgress.
+        expect(mockUpdateCourseProgress).toHaveBeenCalled();
     });
 });

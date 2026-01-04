@@ -22,6 +22,7 @@ interface AppState {
 
     setUserStats: (stats: UserStats) => void;
     updateUserProgress: (starsEarned: number) => Promise<void>;
+    updateSystemPrompt: (prompt: string) => Promise<void>;
 
     navigateTo: (view: ViewState) => void;
     selectCourse: (course: Course | null) => void;
@@ -97,6 +98,14 @@ export const useAppStore = create<AppState>()(
                 } catch (error) {
                     set({ error: (error as Error).message });
                 }
+            },
+
+            updateSystemPrompt: async (prompt) => {
+                const { userStats } = get();
+                if (!userStats) return;
+                const updated = { ...userStats, systemPrompt: prompt };
+                set({ userStats: updated });
+                await api.saveUserStats(updated);
             },
 
             navigateTo: (view) => set({ currentView: view }),
