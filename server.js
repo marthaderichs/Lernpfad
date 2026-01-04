@@ -3,6 +3,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import writeFileAtomic from 'write-file-atomic';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,11 +31,12 @@ if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
 }
 
-// Helper functions
-const readJSON = (filePath, defaultValue) => {
+// Helper functions (ASYNC)
+const readJSON = async (filePath, defaultValue) => {
     try {
-        if (fs.existsSync(filePath)) {
-            const data = fs.readFileSync(filePath, 'utf-8');
+        const exists = await fs.promises.access(filePath).then(() => true).catch(() => false);
+        if (exists) {
+            const data = await fs.promises.readFile(filePath, 'utf-8');
             return JSON.parse(data);
         }
     } catch (e) {
@@ -43,9 +45,9 @@ const readJSON = (filePath, defaultValue) => {
     return defaultValue;
 };
 
-const writeJSON = (filePath, data) => {
+const writeJSON = async (filePath, data) => {
     try {
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+        await writeFileAtomic(filePath, JSON.stringify(data, null, 2), 'utf-8');
         return true;
     } catch (e) {
         console.error(`Error writing ${filePath}:`, e);
@@ -56,62 +58,86 @@ const writeJSON = (filePath, data) => {
 // ============ COURSES API ============
 
 // GET all courses
-app.get('/api/courses', (req, res) => {
-    const courses = readJSON(COURSES_FILE, null);
-    res.json({ success: true, data: courses });
+app.get('/api/courses', async (req, res) => {
+    try {
+        const courses = await readJSON(COURSES_FILE, null);
+        res.json({ success: true, data: courses });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 // POST save all courses
-app.post('/api/courses', (req, res) => {
-    const courses = req.body;
-    if (writeJSON(COURSES_FILE, courses)) {
-        res.json({ success: true, message: 'Courses saved' });
-    } else {
-        res.status(500).json({ success: false, message: 'Failed to save courses' });
+app.post('/api/courses', async (req, res) => {
+    try {
+        const courses = req.body;
+        if (await writeJSON(COURSES_FILE, courses)) {
+            res.json({ success: true, message: 'Courses saved' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to save courses' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
 // DELETE a specific course
-app.delete('/api/courses/:id', (req, res) => {
-    const courseId = req.params.id;
-    const courses = readJSON(COURSES_FILE, []);
-    const updated = courses.filter(c => c.id !== courseId);
+app.delete('/api/courses/:id', async (req, res) => {
+    try {
+        const courseId = req.params.id;
+        const courses = await readJSON(COURSES_FILE, []);
+        const updated = courses.filter(c => c.id !== courseId);
 
-    if (writeJSON(COURSES_FILE, updated)) {
-        res.json({ success: true, data: updated, message: 'Course deleted' });
-    } else {
-        res.status(500).json({ success: false, message: 'Failed to delete course' });
+        if (await writeJSON(COURSES_FILE, updated)) {
+            res.json({ success: true, data: updated, message: 'Course deleted' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to delete course' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
 // POST add a new course
-app.post('/api/courses/add', (req, res) => {
-    const newCourse = req.body;
-    const courses = readJSON(COURSES_FILE, []);
-    courses.push(newCourse);
+app.post('/api/courses/add', async (req, res) => {
+    try {
+        const newCourse = req.body;
+        const courses = await readJSON(COURSES_FILE, []);
+        courses.push(newCourse);
 
-    if (writeJSON(COURSES_FILE, courses)) {
-        res.json({ success: true, data: courses, message: 'Course added' });
-    } else {
-        res.status(500).json({ success: false, message: 'Failed to add course' });
+        if (await writeJSON(COURSES_FILE, courses)) {
+            res.json({ success: true, data: courses, message: 'Course added' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to add course' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
 // ============ USER STATS API ============
 
 // GET user stats
-app.get('/api/stats', (req, res) => {
-    const stats = readJSON(STATS_FILE, null);
-    res.json({ success: true, data: stats });
+app.get('/api/stats', async (req, res) => {
+    try {
+        const stats = await readJSON(STATS_FILE, null);
+        res.json({ success: true, data: stats });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 // POST save user stats
-app.post('/api/stats', (req, res) => {
-    const stats = req.body;
-    if (writeJSON(STATS_FILE, stats)) {
-        res.json({ success: true, message: 'Stats saved' });
-    } else {
-        res.status(500).json({ success: false, message: 'Failed to save stats' });
+app.post('/api/stats', async (req, res) => {
+    try {
+        const stats = req.body;
+        if (await writeJSON(STATS_FILE, stats)) {
+            res.json({ success: true, message: 'Stats saved' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to save stats' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
@@ -122,7 +148,6 @@ app.get('/api/health', (req, res) => {
 
 // ============ SPA FALLBACK ============
 // For client-side routing - serve index.html for all non-API routes
-// Using middleware instead of wildcard route for Express 5 compatibility
 app.use((req, res) => {
     // Skip API routes (they should already be handled)
     if (req.path.startsWith('/api')) {
@@ -141,6 +166,7 @@ app.use((req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
     console.log('');
     console.log('🚀 LernPfad Server gestartet!');
+    console.log('   (Async I/O enabled - Enterprise Grade)');
     console.log('');
     console.log(`   URL: http://localhost:${PORT}`);
     console.log('');
