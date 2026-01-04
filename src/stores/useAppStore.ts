@@ -8,6 +8,7 @@ interface AppState {
     courses: DashboardItem[];
     userStats: UserStats | null;
     currentView: ViewState;
+    currentFolderId: string | null;
     selectedCourse: Course | null;
     selectedLevelIndex: number | null;
     isLoading: boolean;
@@ -17,14 +18,18 @@ interface AppState {
     loadInitialData: () => Promise<void>;
     setCourses: (courses: DashboardItem[]) => void;
     addCourse: (course: Course) => Promise<void>;
+    addFolder: (folder: Folder) => Promise<void>;
     deleteCourse: (courseId: string) => Promise<void>;
+    deleteFolder: (folderId: string) => Promise<void>;
     updateCourseProgress: (courseId: string, progress: Partial<Course>) => void;
+    moveItem: (itemId: string, targetFolderId: string | null) => Promise<void>;
 
     setUserStats: (stats: UserStats) => void;
     updateUserProgress: (starsEarned: number) => Promise<void>;
     updateSystemPrompt: (prompt: string) => Promise<void>;
 
     navigateTo: (view: ViewState) => void;
+    navigateToFolder: (folderId: string | null) => void;
     selectCourse: (course: Course | null) => void;
     selectLevel: (index: number | null) => void;
 
@@ -39,6 +44,7 @@ export const useAppStore = create<AppState>()(
             courses: [],
             userStats: null,
             currentView: 'DASHBOARD',
+            currentFolderId: null,
             selectedCourse: null,
             selectedLevelIndex: null,
             isLoading: false,
@@ -70,10 +76,30 @@ export const useAppStore = create<AppState>()(
                 }
             },
 
+            addFolder: async (folder) => {
+                set({ isLoading: true });
+                try {
+                    const updatedCourses = await api.addCourse(folder);
+                    set({ courses: updatedCourses, isLoading: false });
+                } catch (error) {
+                    set({ error: (error as Error).message, isLoading: false });
+                }
+            },
+
             deleteCourse: async (courseId) => {
                 set({ isLoading: true });
                 try {
                     const updatedCourses = await api.deleteCourse(courseId);
+                    set({ courses: updatedCourses, isLoading: false });
+                } catch (error) {
+                    set({ error: (error as Error).message, isLoading: false });
+                }
+            },
+
+            deleteFolder: async (folderId) => {
+                set({ isLoading: true });
+                try {
+                    const updatedCourses = await api.deleteCourse(folderId);
                     set({ courses: updatedCourses, isLoading: false });
                 } catch (error) {
                     set({ error: (error as Error).message, isLoading: false });
@@ -93,6 +119,17 @@ export const useAppStore = create<AppState>()(
                     : selectedCourse;
                 set({ courses: updated, selectedCourse: updatedSelectedCourse });
                 api.saveCourses(updated); // Fire and forget
+            },
+
+            moveItem: async (itemId, targetFolderId) => {
+                const { courses } = get();
+                const updated = courses.map(item =>
+                    item.id === itemId
+                        ? { ...item, parentFolderId: targetFolderId }
+                        : item
+                );
+                set({ courses: updated as DashboardItem[] });
+                await api.saveCourses(updated as DashboardItem[]);
             },
 
             setUserStats: (stats) => set({ userStats: stats }),
@@ -115,6 +152,7 @@ export const useAppStore = create<AppState>()(
             },
 
             navigateTo: (view) => set({ currentView: view }),
+            navigateToFolder: (folderId) => set({ currentFolderId: folderId }),
             selectCourse: (course) => set({ selectedCourse: course }),
             selectLevel: (index) => set({ selectedLevelIndex: index }),
 
