@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-import { Sparkles, Copy, Check, Edit3 } from 'lucide-react';
+import { Settings, Copy, Check, Edit3, X, Save } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 
 export const PromptDisplay: React.FC = () => {
     const { userStats, updateSystemPrompt } = useAppStore();
     const [copied, setCopied] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [tempPrompt, setTempPrompt] = useState('');
 
-    const prompt = userStats?.systemPrompt || '';
-
-    const handleCopyPrompt = async () => {
+    const handleCopy = async () => {
+        const text = userStats?.systemPrompt || '';
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                await navigator.clipboard.writeText(prompt);
+                await navigator.clipboard.writeText(text);
             } else {
                 const textArea = document.createElement('textarea');
-                textArea.value = prompt;
+                textArea.value = text;
                 textArea.style.position = 'fixed';
                 textArea.style.left = '-999999px';
                 textArea.style.top = '-999999px';
@@ -27,44 +28,85 @@ export const PromptDisplay: React.FC = () => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
-            console.error('Copy failed:', err);
+            console.error(err);
         }
     };
 
+    const handleOpenEdit = () => {
+        setTempPrompt(userStats?.systemPrompt || '');
+        setShowEditModal(true);
+    };
+
+    const handleSave = () => {
+        updateSystemPrompt(tempPrompt);
+        setShowEditModal(false);
+    };
+
     return (
-        <div className="mb-6 bg-blue-50/50 p-6 rounded-3xl border-2 border-blue-100">
-            <div className="flex justify-between items-start mb-4">
-                <h3 className="font-bold text-gray-800 flex items-center gap-2 text-lg">
-                    <span className="w-8 h-8 rounded-full bg-brand-sky text-white flex items-center justify-center text-sm font-black shadow-md shadow-sky-200">1</span>
-                    Prompt kopieren & anpassen
-                </h3>
-                <button
-                    onClick={handleCopyPrompt}
-                    className={`text-sm font-bold px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-sm ${copied
-                        ? 'bg-green-500 text-white border-green-600'
-                        : 'bg-white border-2 border-gray-200 text-gray-600 hover:border-brand-sky hover:text-brand-sky hover:shadow-md'
-                        }`}
+        <div className="mb-8">
+            {/* Minimalist Buttons Row */}
+            <div className="flex items-stretch gap-4">
+                 <button
+                    onClick={handleCopy}
+                    className={`flex-1 py-5 rounded-2xl font-black text-lg md:text-xl flex items-center justify-center gap-3 transition-all shadow-sm border-b-4 active:scale-95 active:border-b-0 active:translate-y-1 ${
+                        copied 
+                        ? 'bg-green-500 border-green-700 text-white' 
+                        : 'bg-brand-blue border-blue-700 text-white hover:bg-blue-600'
+                    }`}
                 >
-                    {copied ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
-                    {copied ? 'Kopiert!' : 'Kopieren'}
+                    {copied ? <Check size={28} strokeWidth={4} /> : <Copy size={28} strokeWidth={3} />}
+                    {copied ? 'KOPIERT!' : 'PROMPT KOPIEREN'}
+                </button>
+
+                <button
+                    onClick={handleOpenEdit}
+                    className="w-20 rounded-2xl bg-gray-100 border-b-4 border-gray-300 text-gray-400 flex items-center justify-center hover:bg-gray-200 hover:text-gray-600 hover:border-gray-400 transition-all active:scale-95 active:border-b-0 active:translate-y-1"
+                    title="Prompt bearbeiten"
+                >
+                    <Settings size={32} />
                 </button>
             </div>
 
-            <div className="relative group overflow-hidden">
-                <div className="absolute top-3 right-3 z-10 text-brand-sky opacity-50 pointer-events-none">
-                    <Edit3 size={18} />
+            {/* Edit Modal (Overlay) */}
+            {showEditModal && (
+                <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white w-full max-w-4xl h-[85vh] rounded-3xl flex flex-col shadow-2xl overflow-hidden border-4 border-white">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <h3 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+                                <Edit3 size={28} className="text-brand-purple"/>
+                                System Prompt Konfiguration
+                            </h3>
+                            <button onClick={() => setShowEditModal(false)} className="p-3 hover:bg-gray-200 rounded-full text-gray-400 transition-colors">
+                                <X size={28} />
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 p-0 relative">
+                            <textarea 
+                                value={tempPrompt}
+                                onChange={(e) => setTempPrompt(e.target.value)}
+                                className="w-full h-full p-8 font-mono text-sm leading-relaxed bg-[#1e1e1e] text-[#d4d4d4] resize-none outline-none focus:ring-inset focus:ring-0 selection:bg-brand-purple selection:text-white"
+                                spellCheck={false}
+                            />
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 bg-white flex justify-between items-center">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest hidden md:block">
+                                Änderungen werden global gespeichert
+                            </span>
+                            <div className="flex gap-3 w-full md:w-auto">
+                                <button onClick={() => setShowEditModal(false)} className="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors">
+                                    Abbrechen
+                                </button>
+                                <button onClick={handleSave} className="flex-1 md:flex-none px-8 py-3 rounded-xl font-bold text-white bg-brand-purple hover:bg-purple-600 shadow-lg shadow-purple-200 flex items-center justify-center gap-2 transition-transform active:scale-95">
+                                    <Save size={20} />
+                                    Speichern
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <textarea 
-                    value={prompt}
-                    onChange={(e) => updateSystemPrompt(e.target.value)}
-                    className="w-full h-48 p-4 bg-gray-800 text-blue-100 font-mono text-[11px] rounded-2xl border-2 border-gray-700 focus:border-brand-sky outline-none transition-all shadow-inner custom-scrollbar resize-none"
-                    placeholder="System Prompt hier bearbeiten..."
-                />
-            </div>
-            
-            <p className="mt-3 text-[11px] text-blue-400 font-bold flex items-center gap-1 uppercase tracking-wider">
-                <Sparkles size={12} className="text-brand-sky" /> Automatisch gespeichert
-            </p>
+            )}
         </div>
     );
 };

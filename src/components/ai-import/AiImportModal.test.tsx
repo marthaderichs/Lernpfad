@@ -29,14 +29,22 @@ describe('AiImportModal Simplified & Editable Prompt', () => {
         expect(screen.queryByText(/Dieser Prompt enthält das/i)).not.toBeInTheDocument();
     });
 
-    it('allows editing the system prompt and saves it', () => {
+    it('allows editing the system prompt in a separate modal', () => {
         render(<AiImportModal onClose={() => {}} />);
         
-        // We expect a textarea for the prompt now
-        const promptEditor = screen.getByPlaceholderText(/System Prompt hier bearbeiten/i);
+        // Find Edit button by title
+        const editButton = screen.getByTitle('Prompt bearbeiten');
+        fireEvent.click(editButton);
+        
+        // Find textarea in modal (it will have the original value)
+        const promptEditor = screen.getByDisplayValue('Original Prompt');
         fireEvent.change(promptEditor, { target: { value: 'Updated Prompt' } });
         
-        // It should call the store to save
+        // Save
+        const saveButton = screen.getByRole('button', { name: /speichern/i });
+        fireEvent.click(saveButton);
+        
+        // Verify save call
         expect(mockUpdateSystemPrompt).toHaveBeenCalledWith('Updated Prompt');
     });
 });

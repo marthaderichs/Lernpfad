@@ -33,20 +33,20 @@ export const AiImportModal: React.FC<AiImportModalProps> = ({ onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 bg-brand-purple/20 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-3xl rounded-3xl p-8 shadow-2xl border-4 border-white animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-3 text-brand-purple font-black text-2xl uppercase">
-                        <div className="p-3 bg-brand-purple/10 rounded-xl">
-                            <Sparkles size={28} className="text-brand-purple" />
+            <div className="bg-white w-full max-w-3xl rounded-[2.5rem] p-8 md:p-10 shadow-2xl border-4 border-white animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+                <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-center gap-4 text-gray-800 font-black text-3xl tracking-tight">
+                        <div className="p-3 bg-brand-purple rounded-2xl shadow-lg shadow-purple-200 rotate-3">
+                            <Sparkles size={32} className="text-white" />
                         </div>
-                        <span>Kurs mit AI erstellen</span>
+                        <span>Neuer Kurs</span>
                     </div>
-                    <button onClick={onClose} className="bg-gray-100 p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors">
-                        <X size={24} />
+                    <button onClick={onClose} className="bg-gray-100 p-3 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">
+                        <X size={28} strokeWidth={3} />
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto custom-scrollbar -mr-4 pr-4">
                     <PromptDisplay />
                     <JsonEditor
                         value={jsonInput}

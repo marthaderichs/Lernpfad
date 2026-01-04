@@ -5,7 +5,9 @@ import { INITIAL_COURSES, SHOP_ITEMS, SYSTEM_PROMPT } from '../constants';
 // In production: API is on same origin (served by Express)
 // In development: Vite runs on 3000, Express on 3001
 const currentPort = window.location.port;
-const isDev = currentPort === '3000' || currentPort === '5173'; // Vite dev ports
+// Vite dev ports: 5173 (default), 3000, 3002, etc.
+// In production, port is empty or 80/443
+const isDev = currentPort !== '' && currentPort !== '80' && currentPort !== '443' && currentPort !== '3001';
 const API_URL = isDev
     ? `http://${window.location.hostname}:3001/api`
     : '/api';
@@ -103,7 +105,7 @@ export const loadUserStats = async (): Promise<UserStats> => {
 
         if (result.success && result.data) {
             const stats = { ...INITIAL_STATS, ...result.data };
-            
+
             // Validate Streak on load
             if (stats.lastStudyDate) {
                 const today = new Date().toISOString().split('T')[0];
@@ -111,14 +113,14 @@ export const loadUserStats = async (): Promise<UserStats> => {
                 const currentDate = new Date(today);
                 const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
+
                 if (diffDays > 1) {
                     // Missed more than a day, reset streak
                     stats.currentStreak = 0;
                     // We don't save yet, just return the corrected object
                 }
             }
-            
+
             return stats;
         }
     } catch (e) {
