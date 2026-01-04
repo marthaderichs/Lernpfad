@@ -14,10 +14,10 @@ Goal: Update the data structure and ensure the backend can handle nested folders
 ## Phase 2: Frontend State (Zustand)
 Goal: Update the global store to manage folder navigation and structure.
 
-- [ ] Task: Write tests for `useAppStore` folder actions (addFolder, moveItem, etc.).
-- [ ] Task: Implement `addFolder` and `deleteFolder` actions in `useAppStore.ts`.
-- [ ] Task: Implement folder navigation state (current folder context) in `useAppStore.ts`.
-- [ ] Task: Conductor - User Manual Verification 'Frontend State' (Protocol in workflow.md)
+- [x] Task: Write tests for `useAppStore` folder actions (addFolder, moveItem, etc.). 544c02a
+- [x] Task: Implement `addFolder` and `deleteFolder` actions in `useAppStore.ts`. 544c02a
+- [x] Task: Implement folder navigation state (current folder context) in `useAppStore.ts`. 544c02a
+- [x] Task: Conductor - User Manual Verification 'Frontend State' (Protocol in workflow.md) 544c02a
 
 ## Phase 3: Dashboard UI & Folder Navigation
 Goal: Render folders on the dashboard and allow users to enter them.
