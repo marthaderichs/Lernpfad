@@ -66,12 +66,15 @@ export interface Level {
   status: LevelStatus;
   stars: 0 | 1 | 2 | 3;
   content: LevelContent;
+  contentPT?: LevelContent; // Optional Portuguese content
 }
 
 export interface Unit {
   id: string;
   title: string;
+  titlePT?: string;
   description: string;
+  descriptionPT?: string;
   levels: Level[];
   colorTheme: string;
 }
