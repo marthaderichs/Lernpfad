@@ -1,10 +1,10 @@
 # Plan: Mobile UI Refinement and Gamification Core Features
 
-## Phase 1: Core UI & Layout Foundations
+## Phase 1: Core UI & Layout Foundations [checkpoint: 2411b23]
 - [x] Task: Create tests for the new Header layout and Coin-to-Shop navigation logic 8207f4a
 - [x] Task: Implement compact iOS-style Header and remove standalone Shop button 8207f4a
 - [x] Task: Implement interactive Coin balance (navigation to Shop) 8207f4a
-- [ ] Task: Conductor - User Manual Verification 'Core UI & Layout Foundations' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Core UI & Layout Foundations' (Protocol in workflow.md) 2411b23
 
 ## Phase 2: Gamification Logic & Visual Progress
 - [ ] Task: Create tests for Streak logic and Path progress visualization
