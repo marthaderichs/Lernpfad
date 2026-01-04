@@ -82,6 +82,7 @@ export interface Unit {
 export interface Course {
   id: string;
   title: string;
+  titlePT?: string;
   professor?: string;
   icon: string;
   totalProgress: number;

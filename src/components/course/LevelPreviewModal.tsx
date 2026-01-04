@@ -1,6 +1,7 @@
 import React from 'react';
 import { Level } from '../../types';
 import { Button } from '../common/Button';
+import { useAppStore } from '../../stores/useAppStore';
 
 interface LevelPreviewModalProps {
     level: Level;
@@ -9,6 +10,11 @@ interface LevelPreviewModalProps {
 }
 
 export const LevelPreviewModal: React.FC<LevelPreviewModalProps> = ({ level, onClose, onStart }) => {
+    const { contentLanguage } = useAppStore();
+    
+    const isPT = contentLanguage === 'PT' && !!level.contentPT;
+    const activeContent = isPT ? level.contentPT! : level.content;
+
     return (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
             <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 zoom-in-95">
@@ -27,12 +33,12 @@ export const LevelPreviewModal: React.FC<LevelPreviewModalProps> = ({ level, onC
 
                     <h2 className="text-2xl font-black text-gray-800 mb-2">{level.title}</h2>
                     <p className="text-gray-500 font-medium mb-8 leading-relaxed max-w-xs">
-                        {level.content.description}
+                        {activeContent.description}
                     </p>
 
                     <div className="w-full grid grid-cols-2 gap-4">
-                        <Button variant="secondary" fullWidth onClick={onClose}>Später</Button>
-                        <Button variant="primary" fullWidth onClick={onStart}>Starten</Button>
+                        <Button variant="secondary" fullWidth onClick={onClose}>{isPT ? 'Depois' : 'Später'}</Button>
+                        <Button variant="primary" fullWidth onClick={onStart}>{isPT ? 'Começar' : 'Starten'}</Button>
                     </div>
                 </div>
             </div>

@@ -9,6 +9,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: Bilingual Support (German/Portuguese)
+## [~] Track: Bilingual Support (German/Portuguese)
 *Link: [./conductor/tracks/bilingual_support_20260104/](./conductor/tracks/bilingual_support_20260104/)*
 

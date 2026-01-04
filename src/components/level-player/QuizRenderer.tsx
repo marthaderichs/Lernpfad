@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { LevelRendererProps } from './types';
-import { Button, MarkdownWithLatex, LatexRenderer } from '../common';
+import { Button, MarkdownWithLatex, LatexRenderer, LanguageToggle } from '../common';
 import { X } from 'lucide-react';
+import { useAppStore } from '../../stores/useAppStore';
 
 export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onComplete }) => {
-    const questions = level.content.quizQuestions || [];
+    const { contentLanguage } = useAppStore();
+    
+    // Determine which content to use
+    const isPT = contentLanguage === 'PT' && !!level.contentPT;
+    const activeContent = isPT ? level.contentPT! : level.content;
+    const questions = activeContent.quizQuestions || [];
+
     const [step, setStep] = useState(0);
     const [showResult, setShowResult] = useState(false);
     const [quizScore, setQuizScore] = useState(0);
@@ -36,8 +43,8 @@ export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onC
             <div className="fixed inset-0 z-[60] bg-brand-purple flex items-center justify-center p-6 animate-in zoom-in-95">
                 <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-4 border-white/20">
                     <div className="text-6xl mb-4 animate-bounce">{passed ? '🎉' : '😕'}</div>
-                    <h2 className="text-3xl font-black text-gray-800 mb-2">{passed ? 'Gut gemacht!' : 'Versuchs nochmal'}</h2>
-                    <p className="text-gray-500 font-bold mb-6">Ergebnis: {quizScore} / {questions.length} richtig</p>
+                    <h2 className="text-3xl font-black text-gray-800 mb-2">{passed ? (isPT ? 'Bem feito!' : 'Gut gemacht!') : (isPT ? 'Tente novamente' : 'Versuchs nochmal')}</h2>
+                    <p className="text-gray-500 font-bold mb-6">{isPT ? 'Resultado' : 'Ergebnis'}: {quizScore} / {questions.length} {isPT ? 'correto' : 'richtig'}</p>
 
                     <div className="flex justify-center gap-2 mb-8">
                         {[1, 2, 3].map(s => (
@@ -46,11 +53,11 @@ export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onC
                     </div>
 
                     {passed ? (
-                        <Button variant="success" fullWidth onClick={() => onComplete(stars)}>Weiter</Button>
+                        <Button variant="success" fullWidth onClick={() => onComplete(stars)}>{isPT ? 'Continuar' : 'Weiter'}</Button>
                     ) : (
                         <div className="flex gap-2">
-                            <Button variant="secondary" fullWidth onClick={onClose}>Ende</Button>
-                            <Button variant="primary" fullWidth onClick={() => { setStep(0); setQuizScore(0); setShowResult(false); }}>Wiederholen</Button>
+                            <Button variant="secondary" fullWidth onClick={onClose}>{isPT ? 'Fim' : 'Ende'}</Button>
+                            <Button variant="primary" fullWidth onClick={() => { setStep(0); setQuizScore(0); setShowResult(false); }}>{isPT ? 'Repetir' : 'Wiederholen'}</Button>
                         </div>
                     )}
                 </div>
@@ -65,7 +72,10 @@ export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onC
             <div className="px-6 py-8">
                 <div className="flex justify-between items-center mb-4">
                     <button onClick={onClose}><X className="text-gray-400" /></button>
-                    <span className="font-black text-brand-sky uppercase tracking-widest text-xs">Quiz • Frage {step + 1} / {questions.length}</span>
+                    <div className="flex items-center gap-4">
+                        {level.contentPT && <LanguageToggle />}
+                        <span className="font-black text-brand-sky uppercase tracking-widest text-xs">Quiz • {isPT ? 'Pergunta' : 'Frage'} {step + 1} / {questions.length}</span>
+                    </div>
                     <div className="w-6" />
                 </div>
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">

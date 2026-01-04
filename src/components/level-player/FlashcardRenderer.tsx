@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { LevelRendererProps, PlayableCard } from './types';
-import { Button, LatexRenderer } from '../common';
+import { Button, LatexRenderer, LanguageToggle } from '../common';
 import { X, Check, RefreshCw, Zap, RotateCw, Lightbulb, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { LevelType } from '../../types';
+import { useAppStore } from '../../stores/useAppStore';
 
 const shuffleArray = <T,>(array: T[]): T[] => {
     return [...array].sort(() => Math.random() - 0.5);
 };
 
 export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onComplete }) => {
+    const { contentLanguage } = useAppStore();
+    
+    // Determine which content to use
+    const isPT = contentLanguage === 'PT' && !!level.contentPT;
+    const activeContent = isPT ? level.contentPT! : level.content;
+
     const [cardQueue, setCardQueue] = useState<PlayableCard[]>([]);
     const [isFlipped, setIsFlipped] = useState(false);
     const [completedCards, setCompletedCards] = useState(0);
@@ -17,15 +24,17 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
     const [initialTotalCards, setInitialTotalCards] = useState(0);
 
     useEffect(() => {
-        if (level.type === LevelType.FLASHCARDS && level.content.flashcards) {
-            const preparedCards = level.content.flashcards.map((c, i) => ({ ...c, _id: `card_${i}` }));
+        if (level.type === LevelType.FLASHCARDS && activeContent.flashcards) {
+            const preparedCards = activeContent.flashcards.map((c, i) => ({ ...c, _id: `card_${i}` }));
             setCardQueue(shuffleArray(preparedCards));
             setInitialTotalCards(preparedCards.length);
+            setCompletedCards(0);
+            setMistakeIds(new Set());
 
             const colors = ['bg-brand-purple', 'bg-brand-blue', 'bg-brand-teal', 'bg-brand-orange', 'bg-brand-red', 'bg-brand-pink'];
             setCardColors(Array(20).fill(0).map(() => colors[Math.floor(Math.random() * colors.length)]));
         }
-    }, [level]);
+    }, [level, contentLanguage]); // Restart queue on language change
 
     if (cardQueue.length === 0 && completedCards > 0) {
         // STAT BOARD
@@ -37,10 +46,10 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
         const stars = accuracy >= 80 ? 3 : accuracy >= 50 ? 2 : 1;
 
         let emoji = "🤔";
-        let title = "Guter Anfang!";
-        if (accuracy === 100) { emoji = "🔥"; title = "Perfekt!"; }
-        else if (accuracy >= 80) { emoji = "😎"; title = "Starke Leistung!"; }
-        else if (accuracy >= 50) { emoji = "👍"; title = "Gut Gemacht!"; }
+        let title = isPT ? "Bom começo!" : "Guter Anfang!";
+        if (accuracy === 100) { emoji = "🔥"; title = isPT ? "Perfeito!" : "Perfekt!"; }
+        else if (accuracy >= 80) { emoji = "😎"; title = isPT ? "Ótimo desempenho!" : "Starke Leistung!"; }
+        else if (accuracy >= 50) { emoji = "👍"; title = isPT ? "Bom trabalho!" : "Gut Gemacht!"; }
 
         const gradient = `conic-gradient(var(--brand-green) ${accuracy}%, #f3f4f6 0)`;
 
@@ -50,7 +59,7 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                     <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-brand-sky/10 to-transparent pointer-events-none" />
 
                     <div className="relative z-10 text-center">
-                        <div className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Zusammenfassung</div>
+                        <div className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">{isPT ? 'Resumo' : 'Zusammenfassung'}</div>
 
                         <div className="w-40 h-40 mx-auto mb-6 rounded-full flex items-center justify-center relative shadow-lg"
                             style={{ background: gradient, '--brand-green': '#75D06A' } as React.CSSProperties}>
@@ -61,30 +70,30 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                         </div>
 
                         <h2 className="text-3xl font-black text-gray-800 mb-2">{title}</h2>
-                        <p className="text-gray-500 font-medium mb-8">Du hast {total} Karten gelernt.</p>
+                        <p className="text-gray-500 font-medium mb-8">{isPT ? `Você aprendeu ${total} cartas.` : `Du hast ${total} Karten gelernt.`}</p>
 
                         <div className="grid grid-cols-2 gap-4 mb-8">
                             <div className="bg-green-50 border-2 border-green-100 p-4 rounded-2xl flex flex-col items-center">
                                 <span className="text-2xl font-black text-green-600 mb-1">{correctFirstTry}</span>
-                                <span className="text-xs font-bold text-green-800 uppercase flex items-center gap-1">
-                                    <Check size={12} /> Sofort Gewusst
+                                <span className="text-xs font-bold text-green-800 uppercase flex items-center gap-1 text-center leading-tight">
+                                    <Check size={12} /> {isPT ? 'Acertou de primeira' : 'Sofort Gewusst'}
                                 </span>
                             </div>
                             <div className="bg-orange-50 border-2 border-orange-100 p-4 rounded-2xl flex flex-col items-center">
                                 <span className="text-2xl font-black text-orange-500 mb-1">{mistakes}</span>
-                                <span className="text-xs font-bold text-orange-800 uppercase flex items-center gap-1">
-                                    <RefreshCw size={12} /> Wiederholt
+                                <span className="text-xs font-bold text-orange-800 uppercase flex items-center gap-1 text-center leading-tight">
+                                    <RefreshCw size={12} /> {isPT ? 'Repetidas' : 'Wiederholt'}
                                 </span>
                             </div>
                         </div>
 
                         <div className="bg-gray-50 rounded-xl p-3 mb-8 flex items-center justify-center gap-2 text-gray-400 font-bold text-sm">
                             <Zap size={16} className="text-yellow-400 fill-current" />
-                            +{stars === 3 ? 50 : stars === 2 ? 25 : 10} XP verdient
+                            +{stars === 3 ? 50 : stars === 2 ? 25 : 10} XP {isPT ? 'ganho' : 'verdient'}
                         </div>
 
                         <Button variant="primary" fullWidth onClick={() => onComplete(stars)} className="py-4 text-lg shadow-xl">
-                            Weiter
+                            {isPT ? 'Continuar' : 'Weiter'}
                         </Button>
                     </div>
                 </div>
@@ -117,11 +126,17 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
             <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center text-gray-500 font-bold uppercase tracking-widest text-sm z-10">
                 <button onClick={onClose} className="hover:text-gray-800 transition-colors"><X /></button>
                 <div className="flex flex-col items-center">
-                    <span className="text-gray-400">Lernstapel</span>
-                    <div className="flex gap-1 mt-1">
-                        <span className="text-green-500">{completedCards} Fertig</span>
+                    <span className="text-gray-400">{isPT ? 'Pilha de estudo' : 'Lernstapel'}</span>
+                    <div className="flex gap-3 mt-1 items-center">
+                        <span className="text-green-500">{completedCards} {isPT ? 'Pronto' : 'Fertig'}</span>
                         <span className="text-gray-300">|</span>
-                        <span className="text-orange-500">{cardQueue.length} Offen</span>
+                        <span className="text-orange-500">{cardQueue.length} {isPT ? 'Aberto' : 'Offen'}</span>
+                        {level.contentPT && (
+                            <>
+                                <span className="text-gray-300">|</span>
+                                <LanguageToggle />
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className="w-6" />
@@ -139,8 +154,8 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                     <h3 className="text-3xl font-black text-gray-800 text-center leading-tight select-none relative z-10">
                         <LatexRenderer>{currentCard.front}</LatexRenderer>
                     </h3>
-                    <div className="absolute bottom-10 text-gray-400 font-bold text-xs flex items-center gap-2 animate-pulse uppercase tracking-widest">
-                        <RotateCw size={14} /> Tippen zum Umdrehen
+                    <div className="absolute bottom-10 text-gray-400 font-bold text-xs flex items-center gap-2 animate-pulse uppercase tracking-widest text-center">
+                        <RotateCw size={14} /> {isPT ? 'Toque para virar' : 'Tippen zum Umdrehen'}
                     </div>
                 </div>
 
@@ -149,7 +164,7 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                         }`}
                 >
                     <div className="absolute top-8 right-8 text-white/20"><Lightbulb size={40} /></div>
-                    <div className="text-xl font-bold text-center leading-relaxed select-none">
+                    <div className="text-xl font-bold text-center leading-relaxed select-none px-4">
                         <LatexRenderer>{currentCard.back}</LatexRenderer>
                     </div>
                 </div>
@@ -161,7 +176,7 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                     className="flex-1 bg-red-500 hover:bg-red-400 text-white p-4 rounded-2xl font-bold border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center gap-1"
                 >
                     <ThumbsDown size={24} />
-                    <span className="text-xs uppercase">Noch nicht</span>
+                    <span className="text-xs uppercase">{isPT ? 'Ainda não' : 'Noch nicht'}</span>
                 </button>
 
                 <button
@@ -169,7 +184,7 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                     className="flex-1 bg-green-500 hover:bg-green-400 text-white p-4 rounded-2xl font-bold border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center gap-1"
                 >
                     <ThumbsUp size={24} />
-                    <span className="text-xs uppercase">Gewusst</span>
+                    <span className="text-xs uppercase">{isPT ? 'Eu sabia' : 'Gewusst'}</span>
                 </button>
             </div>
         </div>

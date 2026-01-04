@@ -5,18 +5,19 @@ interface JsonEditorProps {
     value: string;
     onChange: (val: string) => void;
     error: string | null;
+    hideButton?: boolean;
     onImport: () => void;
     onCancel: () => void;
 }
 
-export const JsonEditor: React.FC<JsonEditorProps> = ({ value, onChange, error, onImport }) => {
+export const JsonEditor: React.FC<JsonEditorProps> = ({ value, onChange, error, onImport, hideButton }) => {
     return (
         <div className="flex flex-col h-full">
             <textarea
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder='Füge hier das generierte JSON ein...'
-                className="w-full h-64 md:h-96 p-6 bg-gray-50 rounded-3xl font-mono text-xs md:text-sm text-gray-700 border-4 border-transparent focus:border-brand-purple focus:bg-white outline-none resize-none transition-all placeholder:text-gray-400 shadow-inner"
+                className={`w-full h-64 md:h-96 p-6 bg-gray-50 rounded-3xl font-mono text-xs md:text-sm text-gray-700 border-4 border-transparent focus:border-brand-purple focus:bg-white outline-none resize-none transition-all placeholder:text-gray-400 shadow-inner ${error ? 'border-red-200' : ''}`}
             />
             
             {error && (
@@ -25,11 +26,13 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({ value, onChange, error, 
                 </div>
             )}
 
-            <div className="mt-6">
-                <Button variant="primary" fullWidth onClick={onImport} className="!py-4 !text-lg !rounded-2xl !bg-brand-purple !border-purple-700 shadow-xl shadow-purple-200 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">
-                    Kurs erstellen
-                </Button>
-            </div>
+            {!hideButton && (
+                <div className="mt-6">
+                    <Button variant="primary" fullWidth onClick={onImport} className="!py-4 !text-lg !rounded-2xl !bg-brand-purple !border-purple-700 shadow-xl shadow-purple-200 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">
+                        Kurs erstellen
+                    </Button>
+                </div>
+            )}
         </div>
     );
 };

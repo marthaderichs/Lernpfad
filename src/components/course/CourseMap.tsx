@@ -4,10 +4,12 @@ import { ArrowLeft, Settings, Trash2, X } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { LevelPreviewModal } from './LevelPreviewModal';
 import { LevelNode } from './LevelNode';
+import { LanguageToggle } from '../common';
 
 export const CourseMap: React.FC = () => {
     const {
         selectedCourse: course,
+        contentLanguage,
         navigateTo,
         selectLevel,
         updateCourseProgress,
@@ -18,6 +20,13 @@ export const CourseMap: React.FC = () => {
     const [showSettings, setShowSettings] = useState(false);
 
     if (!course) return null;
+
+    const isPT = contentLanguage === 'PT';
+    
+    // Check if course has any Portuguese content to show the toggle
+    const hasPT = !!course.titlePT || course.units.some(u => 
+        !!u.titlePT || u.levels.some(l => !!l.contentPT)
+    );
 
     const handleBack = () => {
         navigateTo('DASHBOARD');
@@ -79,13 +88,16 @@ export const CourseMap: React.FC = () => {
                     </button>
                     <div className="text-center">
                         <h1 className="text-xl font-black text-gray-800 uppercase tracking-wide flex items-center gap-2 justify-center">
-                            <span>{course.icon}</span> {course.title}
+                            <span>{course.icon}</span> {isPT && course.titlePT ? course.titlePT : course.title}
                         </h1>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{course.units.length} Kapitel • {course.totalProgress}%</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{course.units.length} {isPT ? 'Capítulos' : 'Kapitel'} • {course.totalProgress}%</p>
                     </div>
-                    <button onClick={() => setShowSettings(true)} aria-label="Edit" className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 transition-colors border-2 border-transparent hover:border-gray-200">
-                        <Settings className="w-6 h-6" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {hasPT && <LanguageToggle />}
+                        <button onClick={() => setShowSettings(true)} aria-label="Edit" className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 transition-colors border-2 border-transparent hover:border-gray-200">
+                            <Settings className="w-6 h-6" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -122,8 +134,10 @@ export const CourseMap: React.FC = () => {
                                                                             'bg-brand-blue'}
               `}>
                                 <div className="absolute -bottom-3 left-1/2 -ml-2 w-4 h-4 bg-inherit rotate-45"></div>
-                                {unit.title}
-                                <div className="text-[10px] font-normal opacity-80 normal-case mt-1 tracking-normal">{unit.description}</div>
+                                {isPT && unit.titlePT ? unit.titlePT : unit.title}
+                                <div className="text-[10px] font-normal opacity-80 normal-case mt-1 tracking-normal">
+                                    {isPT && unit.descriptionPT ? unit.descriptionPT : unit.description}
+                                </div>
                             </div>
 
                             {unit.levels.map((level, idx) => (

@@ -1,5 +1,13 @@
 [
   {
+    "id": "f_1767532523261",
+    "type": "folder",
+    "title": "Martha",
+    "icon": "📁",
+    "themeColor": "brand-green",
+    "parentFolderId": null
+  },
+  {
     "id": "c_research_methodology_nova",
     "title": "Forschungsfrage & Studiendesigns",
     "professor": "Ana Maria Rodrigues, MD, PhD",
@@ -7,7 +15,7 @@
     "themeColor": "brand-green",
     "totalProgress": 55,
     "type": "course",
-    "parentFolderId": null,
+    "parentFolderId": "f_1767532523261",
     "units": [
       {
         "id": "u1",
@@ -323,7 +331,7 @@
     "themeColor": "brand-yellow",
     "totalProgress": 33,
     "type": "course",
-    "parentFolderId": null,
+    "parentFolderId": "f_1767532523261",
     "units": [
       {
         "id": "u1",
