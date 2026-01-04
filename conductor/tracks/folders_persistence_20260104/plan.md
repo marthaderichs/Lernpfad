@@ -22,11 +22,11 @@ Goal: Update the global store to manage folder navigation and structure.
 ## Phase 3: Dashboard UI & Folder Navigation
 Goal: Render folders on the dashboard and allow users to enter them.
 
-- [ ] Task: Create `FolderCard` component based on existing `CourseCard` styling.
-- [ ] Task: Update `Dashboard.tsx` to render both courses and folders.
-- [ ] Task: Implement "Sub-Dashboard" view logic (filtering display items by `parentFolderId`).
-- [ ] Task: Add breadcrumbs or a "Back" button for navigating out of folders.
-- [ ] Task: Conductor - User Manual Verification 'Dashboard UI & Folder Navigation' (Protocol in workflow.md)
+- [x] Task: Create `FolderCard` component based on existing `CourseCard` styling. 60986be
+- [x] Task: Update `Dashboard.tsx` to render both courses and folders. 60986be
+- [x] Task: Implement "Sub-Dashboard" view logic (filtering display items by `parentFolderId`). 60986be
+- [x] Task: Add breadcrumbs or a "Back" button for navigating out of folders. 60986be
+- [x] Task: Conductor - User Manual Verification 'Dashboard UI & Folder Navigation' (Protocol in workflow.md) 60986be
 
 ## Phase 4: Reordering & Organization (Edit Mode)
 Goal: Allow users to move courses and folders.
