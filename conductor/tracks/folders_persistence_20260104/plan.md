@@ -36,3 +36,13 @@ Goal: Allow users to move courses and folders.
 - [x] Task: Implement "Move to Folder" functionality. b0a770e (Partially via Drag & Drop framework prep, moved to next iter for full DnD into folders if needed, but basic reordering is done)
 - [x] Task: Ensure all changes are persisted back to the backend on update. b0a770e
 - [x] Task: Conductor - User Manual Verification 'Reordering & Organization' (Protocol in workflow.md) b0a770e
+
+## Phase 5: Bulk Move & Organization
+Goal: Allow users to select multiple items and move them into specific folders.
+
+- [ ] Task: Update `useAppStore` to support `selectedItems` state for bulk operations.
+- [ ] Task: Implement `moveItems` action in store (batch update parentFolderId).
+- [ ] Task: Update `Dashboard.tsx` to show selection checkboxes in Edit Mode.
+- [ ] Task: Create a floating "Action Bar" (Move X items) that persists while navigating.
+- [ ] Task: Implement "Move Here" button in the Action Bar to drop items in current folder.
+- [ ] Task: Conductor - User Manual Verification 'Bulk Move & Organization' (Protocol in workflow.md)
