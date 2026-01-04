@@ -4,7 +4,7 @@ import { useAppStore } from '../../stores/useAppStore';
 import { Button } from '../common/Button';
 import { AiImportModal } from '../ai-import';
 import { AddFolderModal } from './AddFolderModal';
-import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft, Pencil, Check, GripVertical, FileStack, CheckSquare, Square, FolderInput } from 'lucide-react';
+import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft, Pencil, Check, GripVertical, FileStack, CheckSquare, Square, FolderInput, ChevronRight } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -100,17 +100,29 @@ const FolderCard: React.FC<{
       `}
         >
             {isEditMode && (
-                <div className="absolute top-3 left-3 z-20">
-                    {isSelected ? (
-                        <div className="bg-brand-sky text-white rounded-lg p-1 shadow-sm">
-                            <CheckSquare size={24} />
-                        </div>
-                    ) : (
-                        <div className="bg-white/80 text-gray-400 rounded-lg p-1 shadow-sm hover:text-brand-sky">
-                            <Square size={24} />
-                        </div>
-                    )}
-                </div>
+                <>
+                    <div className="absolute top-3 left-3 z-20">
+                        {isSelected ? (
+                            <div className="bg-brand-sky text-white rounded-lg p-1 shadow-sm">
+                                <CheckSquare size={24} />
+                            </div>
+                        ) : (
+                            <div className="bg-white/80 text-gray-400 rounded-lg p-1 shadow-sm hover:text-brand-sky">
+                                <Square size={24} />
+                            </div>
+                        )}
+                    </div>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClick();
+                        }}
+                        className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-xl text-brand-sky shadow-sm hover:bg-brand-sky hover:text-white transition-all active:scale-90 flex items-center gap-1 font-bold text-xs pr-3"
+                    >
+                        <ChevronRight size={18} />
+                        ÖFFNEN
+                    </button>
+                </>
             )}
             
             <div className={`h-32 ${cssClass} flex items-center justify-center relative overflow-hidden`}>
