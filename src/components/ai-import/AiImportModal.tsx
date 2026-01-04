@@ -37,8 +37,8 @@ export const AiImportModal: React.FC<AiImportModalProps> = ({ onClose }) => {
             await addCourse(course);
             onClose();
         } catch (e: any) {
-            console.error(e);
-            setError(e.message || "Ungültiges JSON.");
+            console.error("Import failed:", e);
+            setError(e.message || "Fehler beim Importieren oder Speichern.");
         }
     };
 

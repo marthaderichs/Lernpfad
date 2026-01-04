@@ -99,12 +99,14 @@ export const useAppStore = create<AppState>()(
             setCourses: (courses) => set({ courses }),
 
             addCourse: async (course) => {
-                set({ isLoading: true });
+                set({ isLoading: true, error: null });
                 try {
                     const updatedCourses = await api.addCourse(course);
                     set({ courses: updatedCourses, isLoading: false });
                 } catch (error) {
-                    set({ error: (error as Error).message, isLoading: false });
+                    const msg = (error as Error).message;
+                    set({ error: msg, isLoading: false });
+                    throw error;
                 }
             },
 
