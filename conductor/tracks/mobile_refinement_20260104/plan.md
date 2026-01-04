@@ -12,10 +12,10 @@
 - [x] Task: Implement Green Path Fill logic and Glow effects for completed levels 13b908b
 - [x] Task: Conductor - User Manual Verification 'Gamification Logic & Visual Progress' (Protocol in workflow.md) 2211427
 
-## Phase 3: Course Management & Prompt Customization
+## Phase 3: Course Management & Prompt Customization [checkpoint: 61ac59d]
 - [~] Task: Create tests for course import simplification and prompt editing
 - [ ] Task: Simplify Course Import UI (Remove instructions, keep Copy Prompt + Input)
 - [ ] Task: Implement UI and persistent storage for editable Generation Prompts
 - [~] Task: Update Course nodes to support dynamic colors and emojis
 - [ ] Task: Relocate Course Delete button to an unobtrusive location within the course view
-- [ ] Task: Conductor - User Manual Verification 'Course Management & Prompt Customization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Course Management & Prompt Customization' (Protocol in workflow.md) 61ac59d
