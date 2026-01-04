@@ -3,7 +3,11 @@ import { Course, DashboardItem, Folder, UserStats } from '../../types';
 import { useAppStore } from '../../stores/useAppStore';
 import { Button } from '../common/Button';
 import { AiImportModal } from '../ai-import';
-import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft } from 'lucide-react';
+import { AddFolderModal } from './AddFolderModal';
+import { Trophy, Flame, Coins, Plus, BookOpen, Trash2, ShoppingBag, Folder as FolderIcon, ChevronLeft, Pencil, Check, GripVertical, FileStack } from 'lucide-react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const HeaderStat: React.FC<{ icon: React.ReactNode; value: string; label?: string; color: string; onClick?: () => void }> = ({ icon, value, color, onClick }) => (
     <div
@@ -30,6 +34,40 @@ const themeColors: Record<string, string> = {
     'brand-yellow': 'bg-brand-yellow border-yellow-600',
     'brand-lime': 'bg-brand-lime border-lime-700',
     'brand-fuchsia': 'bg-brand-fuchsia border-fuchsia-800',
+};
+
+// --- Sortable Wrapper ---
+const SortableItem: React.FC<{ id: string; children: React.ReactNode; disabled?: boolean }> = ({ id, children, disabled }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id, disabled });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
+        zIndex: isDragging ? 999 : 'auto',
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className="relative group/sortable h-full">
+            {children}
+            {!disabled && (
+                <div
+                    {...attributes}
+                    {...listeners}
+                    className="absolute top-2 right-2 p-2 bg-white/80 rounded-full shadow-sm cursor-grab active:cursor-grabbing opacity-0 group-hover/sortable:opacity-100 transition-opacity z-20"
+                >
+                    <GripVertical size={20} className="text-gray-500" />
+                </div>
+            )}
+        </div>
+    );
 };
 
 const FolderCard: React.FC<{
@@ -161,20 +199,38 @@ export const Dashboard: React.FC = () => {
         courses,
         userStats,
         currentFolderId,
+        isEditMode,
         selectCourse,
         deleteCourse,
         deleteFolder,
         navigateTo,
-        navigateToFolder
+        navigateToFolder,
+        toggleEditMode,
+        moveItem,
+        reorderItems
     } = useAppStore();
 
     const [showImportModal, setShowImportModal] = useState(false);
+    const [showAddFolderModal, setShowAddFolderModal] = useState(false);
+    const [activeId, setActiveId] = useState<string | null>(null);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
 
     if (!userStats) return null;
 
     const handleSelectCourse = (course: Course) => {
+        if (isEditMode) return; // Disable navigation in edit mode
         selectCourse(course);
         navigateTo('COURSE_MAP');
+    };
+
+    const handleSelectFolder = (folderId: string) => {
+        if (isEditMode) return; // Disable navigation in edit mode? OR allow it?
+        // Let's allow navigation even in edit mode to organize deeply
+        navigateToFolder(folderId);
     };
 
     const currentItems = courses.filter(item => item.parentFolderId === (currentFolderId || null));
@@ -188,8 +244,71 @@ export const Dashboard: React.FC = () => {
         }
     };
 
+    // --- Drag & Drop Handlers ---
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveId(event.active.id as string);
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        setActiveId(null);
+
+        if (!over) return;
+
+        const activeId = active.id as string;
+        const overId = over.id as string;
+
+        if (activeId === overId) return;
+
+        // 1. Reordering within the same list
+        const oldIndex = currentItems.findIndex(item => item.id === activeId);
+        const newIndex = currentItems.findIndex(item => item.id === overId);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+            // It's a reorder
+            const newOrder = arrayMove(currentItems, oldIndex, newIndex);
+            
+            // We need to construct the full new courses array
+            // Filter out current items from global list, then splice in new order
+            const otherItems = courses.filter(item => item.parentFolderId !== (currentFolderId || null));
+            // Merging is tricky if we don't know exact positions.
+            // EASIER: Just swap indices in the global array if they are contiguous?
+            // Actually, we just need to persist the order. 
+            // For simplicity, let's just update the local order and save.
+            // But wait, arrayMove only works on the filtered list.
+            
+            // Correct approach: Reconstruct the global list based on the new local order + others
+            // BUT, others might be scattered.
+            // Let's assume the global list order matters for display.
+            // We'll map the reordered local items back to their original "slots" or just append them?
+            // A simple approach: remove currentItems from global, then push newOrder? No, that breaks mixed order if flattened.
+            // Let's just use reorderItems logic in store to handle the full list update? 
+            // Actually, arrayMove works on indices. 
+            
+            const globalOldIndex = courses.findIndex(i => i.id === activeId);
+            const globalNewIndex = courses.findIndex(i => i.id === overId);
+            
+            const newGlobalOrder = arrayMove(courses, globalOldIndex, globalNewIndex);
+            reorderItems(newGlobalOrder);
+            return;
+        }
+
+        // 2. Dragging INTO a folder (if overId is a folder)
+        const overItem = courses.find(c => c.id === overId);
+        if (overItem && overItem.type === 'folder' && overItem.id !== activeId) {
+            // Check if we are dropping ONTO the folder (not just reordering near it)
+            // dnd-kit sortable is tricky for "dropping into".
+            // usually requires a separate droppable or collision detection strategy.
+            // For now, let's stick to reordering.
+            // TODO: Implement "Move to Folder" via Drag & Drop later or strict "Droppable" zones.
+            // For MVP Edit Mode: Just Reorder.
+        }
+    };
+
+    const activeItem = activeId ? courses.find(c => c.id === activeId) : null;
+
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-gray-50/50">
             {/* Top Bar - Compact iOS Style (Responsive) */}
             <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200 px-4 py-2 md:py-4 md:px-8 transition-all">
                 <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
@@ -239,6 +358,16 @@ export const Dashboard: React.FC = () => {
                             </h3>
                             <div className="flex gap-3">
                                 <button
+                                    onClick={toggleEditMode}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all ${isEditMode
+                                            ? 'bg-brand-orange text-white shadow-lg shadow-orange-200 scale-105'
+                                            : 'bg-white text-gray-500 border-2 border-transparent hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {isEditMode ? <Check size={20} /> : <Pencil size={20} />}
+                                    {isEditMode ? 'Fertig' : 'Bearbeiten'}
+                                </button>
+                                <button
                                     onClick={() => setShowImportModal(true)}
                                     className="hidden md:flex items-center gap-2 bg-brand-sky/10 text-brand-sky px-4 py-2 rounded-xl font-bold hover:bg-brand-sky hover:text-white transition-colors"
                                 >
@@ -249,44 +378,91 @@ export const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
-                        {currentItems.map(item => (
-                            item.type === 'folder' ? (
-                                <FolderCard
-                                    key={item.id}
-                                    folder={item}
-                                    itemCount={courses.filter(c => c.parentFolderId === item.id).length}
-                                    onClick={() => navigateToFolder(item.id)}
-                                    onDelete={() => deleteFolder(item.id)}
-                                />
-                            ) : (
-                                <CourseCard
-                                    key={item.id}
-                                    course={item}
-                                    onClick={() => handleSelectCourse(item)}
-                                    onDelete={() => deleteCourse(item.id)}
-                                />
-                            )
-                        ))}
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={currentItems.map(i => i.id)}
+                            strategy={rectSortingStrategy}
+                        >
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
+                                {currentItems.map(item => (
+                                    <SortableItem key={item.id} id={item.id} disabled={!isEditMode}>
+                                        {item.type === 'folder' ? (
+                                            <FolderCard
+                                                folder={item as Folder}
+                                                itemCount={courses.filter(c => c.parentFolderId === item.id).length}
+                                                onClick={() => handleSelectFolder(item.id)}
+                                                onDelete={() => deleteFolder(item.id)}
+                                            />
+                                        ) : (
+                                            <CourseCard
+                                                course={item as Course}
+                                                onClick={() => handleSelectCourse(item as Course)}
+                                                onDelete={() => deleteCourse(item.id)}
+                                            />
+                                        )}
+                                    </SortableItem>
+                                ))}
 
-                        {/* Add Course Card Placeholder */}
-                        {!currentFolderId && (
-                            <button
-                                onClick={() => setShowImportModal(true)}
-                                className="border-4 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center p-8 hover:bg-white hover:border-brand-sky hover:shadow-lg transition-all group h-full min-h-[320px] bg-gray-50/50"
-                            >
-                                <div className="w-20 h-20 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mb-6 group-hover:border-brand-sky group-hover:scale-110 transition-all shadow-sm">
-                                    <Plus size={32} strokeWidth={4} className="text-gray-300 group-hover:text-brand-sky" />
+                                {/* Add Actions in Edit Mode */}
+                                {isEditMode ? (
+                                    <button
+                                        onClick={() => setShowAddFolderModal(true)}
+                                        className="border-4 border-dashed border-brand-purple/30 rounded-3xl flex flex-col items-center justify-center p-8 hover:bg-brand-purple/5 hover:border-brand-purple hover:shadow-lg transition-all group h-full min-h-[320px] animate-in fade-in zoom-in duration-300"
+                                    >
+                                        <div className="w-20 h-20 bg-white border-2 border-brand-purple/30 rounded-full flex items-center justify-center mb-6 group-hover:border-brand-purple group-hover:scale-110 transition-all shadow-sm">
+                                            <Plus size={32} strokeWidth={4} className="text-brand-purple/50 group-hover:text-brand-purple" />
+                                        </div>
+                                        <span className="font-extrabold text-brand-purple/50 group-hover:text-brand-purple uppercase text-lg tracking-wide">Neuer Ordner</span>
+                                    </button>
+                                ) : (
+                                    /* Normal Add Course Placeholder */
+                                    !currentFolderId && (
+                                        <button
+                                            onClick={() => setShowImportModal(true)}
+                                            className="border-4 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center p-8 hover:bg-white hover:border-brand-sky hover:shadow-lg transition-all group h-full min-h-[320px] bg-white/50"
+                                        >
+                                            <div className="w-20 h-20 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mb-6 group-hover:border-brand-sky group-hover:scale-110 transition-all shadow-sm">
+                                                <Plus size={32} strokeWidth={4} className="text-gray-300 group-hover:text-brand-sky" />
+                                            </div>
+                                            <span className="font-extrabold text-gray-400 group-hover:text-brand-sky uppercase text-lg tracking-wide">Kurs Hinzufügen</span>
+                                            <span className="text-xs font-bold text-gray-300 mt-2 uppercase">(Import via JSON)</span>
+                                        </button>
+                                    )
+                                )}
+                            </div>
+                        </SortableContext>
+                        
+                        <DragOverlay>
+                            {activeItem ? (
+                                <div className="opacity-80 scale-105 rotate-3 cursor-grabbing">
+                                    {activeItem.type === 'folder' ? (
+                                         <FolderCard
+                                            folder={activeItem as Folder}
+                                            itemCount={0}
+                                            onClick={() => {}}
+                                            onDelete={() => {}}
+                                        />
+                                    ) : (
+                                        <CourseCard
+                                            course={activeItem as Course}
+                                            onClick={() => {}}
+                                            onDelete={() => {}}
+                                        />
+                                    )}
                                 </div>
-                                <span className="font-extrabold text-gray-400 group-hover:text-brand-sky uppercase text-lg tracking-wide">Kurs Hinzufügen</span>
-                                <span className="text-xs font-bold text-gray-300 mt-2 uppercase">(Import via JSON)</span>
-                            </button>
-                        )}
-                    </div>
+                            ) : null}
+                        </DragOverlay>
+                    </DndContext>
                 </div>
             </div>
 
             {showImportModal && <AiImportModal onClose={() => setShowImportModal(false)} />}
+            {showAddFolderModal && <AddFolderModal onClose={() => setShowAddFolderModal(false)} />}
         </div>
     );
 };

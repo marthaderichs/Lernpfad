@@ -11,11 +11,13 @@ interface AppState {
     currentFolderId: string | null;
     selectedCourse: Course | null;
     selectedLevelIndex: number | null;
+    isEditMode: boolean;
     isLoading: boolean;
     error: string | null;
 
     // Actions
     loadInitialData: () => Promise<void>;
+    toggleEditMode: () => void;
     setCourses: (courses: DashboardItem[]) => void;
     addCourse: (course: Course) => Promise<void>;
     addFolder: (folder: Folder) => Promise<void>;
@@ -23,6 +25,7 @@ interface AppState {
     deleteFolder: (folderId: string) => Promise<void>;
     updateCourseProgress: (courseId: string, progress: Partial<Course>) => void;
     moveItem: (itemId: string, targetFolderId: string | null) => Promise<void>;
+    reorderItems: (items: DashboardItem[]) => Promise<void>;
 
     setUserStats: (stats: UserStats) => void;
     updateUserProgress: (starsEarned: number) => Promise<void>;
@@ -47,10 +50,13 @@ export const useAppStore = create<AppState>()(
             currentFolderId: null,
             selectedCourse: null,
             selectedLevelIndex: null,
+            isEditMode: false,
             isLoading: false,
             error: null,
 
             // Actions
+            toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
+
             loadInitialData: async () => {
                 set({ isLoading: true, error: null });
                 try {
@@ -130,6 +136,11 @@ export const useAppStore = create<AppState>()(
                 );
                 set({ courses: updated as DashboardItem[] });
                 await api.saveCourses(updated as DashboardItem[]);
+            },
+
+            reorderItems: async (newOrderItems) => {
+                 set({ courses: newOrderItems });
+                 await api.saveCourses(newOrderItems);
             },
 
             setUserStats: (stats) => set({ userStats: stats }),
