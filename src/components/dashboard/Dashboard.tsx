@@ -320,7 +320,7 @@ export const Dashboard: React.FC = () => {
         moveItems(selectedItemIds, currentFolderId || null);
     };
 
-    const currentItems = courses.filter(item => item.parentFolderId === (currentFolderId || null));
+    const currentItems = courses.filter(item => (item.parentFolderId || null) === (currentFolderId || null));
     const parentFolder = currentFolderId ? (courses.find(c => c.id === currentFolderId) as Folder) : null;
 
     const handleBack = () => {
