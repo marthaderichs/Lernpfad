@@ -40,9 +40,9 @@ Goal: Allow users to move courses and folders.
 ## Phase 5: Bulk Move & Organization
 Goal: Allow users to select multiple items and move them into specific folders.
 
-- [ ] Task: Update `useAppStore` to support `selectedItems` state for bulk operations.
-- [ ] Task: Implement `moveItems` action in store (batch update parentFolderId).
-- [ ] Task: Update `Dashboard.tsx` to show selection checkboxes in Edit Mode.
-- [ ] Task: Create a floating "Action Bar" (Move X items) that persists while navigating.
-- [ ] Task: Implement "Move Here" button in the Action Bar to drop items in current folder.
-- [ ] Task: Conductor - User Manual Verification 'Bulk Move & Organization' (Protocol in workflow.md)
+- [x] Task: Update `useAppStore` to support `selectedItems` state for bulk operations. 5a46190
+- [x] Task: Implement `moveItems` action in store (batch update parentFolderId). 5a46190
+- [x] Task: Update `Dashboard.tsx` to show selection checkboxes in Edit Mode. 5a46190
+- [x] Task: Create a floating "Action Bar" (Move X items) that persists while navigating. 5a46190
+- [x] Task: Implement "Move Here" button in the Action Bar to drop items in current folder. 5a46190
+- [x] Task: Conductor - User Manual Verification 'Bulk Move & Organization' (Protocol in workflow.md) 5a46190
