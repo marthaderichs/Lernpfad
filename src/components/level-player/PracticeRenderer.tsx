@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { LevelRendererProps } from './types';
-import { Button } from '../common/Button';
+import { Button, MarkdownWithLatex, LatexRenderer } from '../common';
 import { X, GraduationCap, HelpCircle, Check, ChevronRight } from 'lucide-react';
 
 export const PracticeRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onComplete }) => {
@@ -38,7 +36,7 @@ export const PracticeRenderer: React.FC<LevelRendererProps> = ({ level, onClose,
                 <div className="bg-white rounded-3xl p-8 shadow-sm border-b-4 border-gray-200 mb-8">
                     <h3 className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-4">Aufgabe</h3>
                     <div className="markdown-content text-xl md:text-2xl font-bold text-gray-800">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentTask.question}</ReactMarkdown>
+                        <MarkdownWithLatex>{currentTask.question}</MarkdownWithLatex>
                     </div>
 
                     {currentTask.hint && !solutionVisible && (
@@ -46,7 +44,7 @@ export const PracticeRenderer: React.FC<LevelRendererProps> = ({ level, onClose,
                             <HelpCircle size={18} className="shrink-0 mt-0.5" />
                             <div>
                                 <span className="block font-black uppercase text-[10px] opacity-70 mb-1">Hinweis</span>
-                                {currentTask.hint}
+                                <LatexRenderer>{currentTask.hint}</LatexRenderer>
                             </div>
                         </div>
                     )}
@@ -59,7 +57,7 @@ export const PracticeRenderer: React.FC<LevelRendererProps> = ({ level, onClose,
                             <div className="absolute top-0 right-0 p-4 opacity-10 text-green-800"><Check size={100} /></div>
                             <h3 className="text-green-700 font-bold text-xs uppercase tracking-widest mb-4 relative z-10">Lösungsweg</h3>
                             <div className="markdown-content text-gray-700 relative z-10">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentTask.solution}</ReactMarkdown>
+                                <MarkdownWithLatex>{currentTask.solution}</MarkdownWithLatex>
                             </div>
                         </div>
 

@@ -9,9 +9,6 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'avatar_scientist', name: 'Wissenschaftler', description: 'Wissen ist Macht', price: 200, icon: '🧑‍🔬', category: 'avatar' },
   { id: 'avatar_dragon', name: 'Drache', description: 'Feurige Motivation', price: 500, icon: '🐉', category: 'avatar' },
 
-  // Themes
-  { id: 'dark_mode', name: 'Dunkelmodus', description: 'Augenschonend bei Nacht', price: 300, icon: '🌙', category: 'theme' },
-
   // Badges
   { id: 'badge_fire', name: 'Feuer-Badge', description: 'Zeige deine Leidenschaft', price: 150, icon: '🔥', category: 'badge' },
   { id: 'badge_star', name: 'Stern-Badge', description: 'Du bist ein Star!', price: 200, icon: '⭐', category: 'badge' },
@@ -19,7 +16,6 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'badge_diamond', name: 'Diamant', description: 'Unzerbrechlicher Wille', price: 600, icon: '💎', category: 'badge' },
 
   // Power-ups
-  { id: 'powerup_hint', name: 'Hinweis-Paket', description: '3 extra Hinweise für Quizze', price: 75, icon: '💡', category: 'powerup' },
   { id: 'powerup_xp_boost', name: 'XP-Boost', description: '2x XP für 24 Stunden', price: 250, icon: '🚀', category: 'powerup' },
 ];
 export const SYSTEM_PROMPT = `

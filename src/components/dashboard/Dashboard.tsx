@@ -31,6 +31,7 @@ const CourseCard: React.FC<{
         'brand-green': 'bg-green-500 border-green-700',
         'brand-sky': 'bg-sky-400 border-sky-600',
         'brand-red': 'bg-red-400 border-red-600',
+        'brand-pink': 'bg-[#FB96BB] border-[#d87a9e]',
     };
 
     const cssClass = themeColors[course.themeColor] || themeColors['brand-blue'];
@@ -122,11 +123,11 @@ export const Dashboard: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full">
-            {/* Top Bar - Compact iOS Style */}
-            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200 px-4 py-2">
+            {/* Top Bar - Compact iOS Style (Responsive) */}
+            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200 px-4 py-2 md:py-4 md:px-8 transition-all">
                 <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-brand-green rounded-xl flex items-center justify-center text-xl shadow-sm border border-green-200">
+                    <div className="flex items-center gap-3 md:gap-4">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-brand-green rounded-xl flex items-center justify-center text-xl md:text-2xl shadow-sm border border-green-200 transition-all">
                             {userStats.activeAvatar}
                         </div>
                     </div>

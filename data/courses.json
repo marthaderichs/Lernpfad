@@ -4,7 +4,7 @@
     "title": "Forschungsfrage & Studiendesigns",
     "professor": "Ana Maria Rodrigues, MD, PhD",
     "icon": "🔬",
-    "themeColor": "brand-blue",
+    "themeColor": "brand-green",
     "totalProgress": 55,
     "units": [
       {
@@ -143,7 +143,7 @@
           {
             "id": "l2_4",
             "type": "QUIZ",
-            "status": "UNLOCKED",
+            "status": "LOCKED",
             "stars": 0,
             "title": "FINER Quiz",
             "content": {
@@ -305,6 +305,322 @@
                     }
                   ],
                   "answerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c_mech_stress_01",
+    "title": "Mehrachsige Beanspruchung",
+    "professor": "Ing. LernPfad",
+    "icon": "⚙️",
+    "themeColor": "brand-pink",
+    "totalProgress": 33,
+    "units": [
+      {
+        "id": "u1",
+        "title": "Grundlagen & Spannungszustand",
+        "description": "Einführung in mehrachsige Belastungen und den Spannungstensor.",
+        "colorTheme": "brand-blue",
+        "levels": [
+          {
+            "id": "l1_1",
+            "type": "THEORY",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "Einführung",
+            "content": {
+              "title": "Vom Zugversuch zur Realität",
+              "description": "Warum einachsige Kennwerte oft nicht reichen.",
+              "markdownContent": "## Realität vs. Labor\nIn der Werkstoffprüfung liegen Proben oft in einfacher Form vor (z. B. Zugstab), um Kennwerte wie die Streckgrenze $R_e$ unter einachsiger Belastung zu ermitteln.\n\n**Reale Bauteile** (wie eine Getriebewelle) sind jedoch oft komplexeren Belastungen ausgesetzt, bei denen sich Zug-, Druck-, Biege- und Torsionsbelastungen überlagern. Dies nennt man **mehrachsige Beanspruchung**.\n\n### Der Spannungszustand\nUm das Versagen vorherzusagen, betrachtet man ein infinitesimal kleines Würfelelement im Inneren des Bauteils. Der Spannungszustand wird durch den **Spannungstensor** definiert:\n\n$$ \\sigma = \\begin{pmatrix} \\sigma_{xx} & \\tau_{xy} & \\tau_{xz} \\\\ \\tau_{yx} & \\sigma_{yy} & \\tau_{yz} \\\\ \\tau_{zx} & \\tau_{zy} & \\sigma_{zz} \\end{pmatrix} $$\n\nDabei sind $\\sigma$ die Normalspannungen und $\\tau$ die Schubspannungen. Durch Koordinatentransformation lassen sich drei **Hauptspannungen** ($\\sigma_1, \\sigma_2, \\sigma_3$) finden, bei denen alle Schubspannungen verschwinden."
+            }
+          },
+          {
+            "id": "l1_2",
+            "type": "FLASHCARDS",
+            "status": "COMPLETED",
+            "stars": 3,
+            "title": "Begriffe lernen",
+            "content": {
+              "title": "Wichtige Definitionen",
+              "description": "Wiederhole die Grundbegriffe der Mechanik.",
+              "flashcards": [
+                {
+                  "front": "Einachsiger Spannungszustand",
+                  "back": "Ein Zustand, bei dem zwei der drei Hauptspannungen null sind (z. B. einfacher Zugversuch)."
+                },
+                {
+                  "front": "Hauptspannungen ($\\sigma_1, \\sigma_2, \\sigma_3$)",
+                  "back": "Normalspannungen in einem gedrehten Koordinatensystem, in dem alle Schubspannungen verschwinden. Es gilt $\\sigma_1 \\ge \\sigma_2 \\ge \\sigma_3$."
+                },
+                {
+                  "front": "Dreiachsiger Spannungszustand",
+                  "back": "Ein räumlicher Zustand, bei dem alle drei Hauptspannungen ungleich Null sind."
+                },
+                {
+                  "front": "Satz der zugeordneten Schubspannungen",
+                  "back": "Schubspannungen in benachbarten, senkrechten Schnittflächen sind paarweise gleich groß, z.B. $|\\tau_{xy}| = |\\tau_{yx}|$."
+                }
+              ]
+            }
+          },
+          {
+            "id": "l1_3",
+            "type": "QUIZ",
+            "status": "COMPLETED",
+            "stars": 2,
+            "title": "Wissenscheck",
+            "content": {
+              "title": "Grundlagen-Quiz",
+              "description": "Hast du das Prinzip der Spannungen verstanden?",
+              "quizQuestions": [
+                {
+                  "question": "Wie viele unabhängige Spannungskomponenten definieren den vollständigen Spannungszustand an einem Volumenelement?",
+                  "options": [
+                    {
+                      "text": "3 (Nur Normalspannungen)",
+                      "explanation": "Falsch. Schubspannungen fehlen."
+                    },
+                    {
+                      "text": "6 (3 Normal-, 3 Schubspannungen)",
+                      "explanation": "Richtig. Aufgrund der Symmetrie ($\\tau_{xy}=\\tau_{yx}$) sind es 6 unabhängige Größen."
+                    },
+                    {
+                      "text": "9 (Alle Tensorkomponenten)",
+                      "explanation": "Falsch. Der Tensor hat 9 Plätze, aber durch Symmetrie sind nur 6 unabhängig."
+                    },
+                    {
+                      "text": "1 (Die Vergleichsspannung)",
+                      "explanation": "Falsch. Das ist das Ergebnis der Hypothese, nicht der Zustand selbst."
+                    }
+                  ],
+                  "answerIndex": 1
+                },
+                {
+                  "question": "Was charakterisiert die Hauptspannungsrichtungen?",
+                  "options": [
+                    {
+                      "text": "Die Normalspannungen sind null.",
+                      "explanation": "Falsch. Die Normalspannungen sind hier maximal/minimal."
+                    },
+                    {
+                      "text": "Die Schubspannungen verschwinden.",
+                      "explanation": "Richtig. In den Hauptebenen wirken keine Schubspannungen."
+                    },
+                    {
+                      "text": "Sie liegen immer im 45°-Winkel.",
+                      "explanation": "Falsch. Das hängt vom Belastungsfall ab."
+                    },
+                    {
+                      "text": "Sie treten nur bei Torsion auf.",
+                      "explanation": "Falsch. Sie existieren für jeden Spannungszustand."
+                    }
+                  ],
+                  "answerIndex": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Anstrengungshypothesen",
+        "description": "Vergleichsspannungen für spröde und zähe Werkstoffe.",
+        "colorTheme": "brand-purple",
+        "levels": [
+          {
+            "id": "l2_1",
+            "type": "THEORY",
+            "status": "UNLOCKED",
+            "stars": 0,
+            "title": "Die 3 Hypothesen",
+            "content": {
+              "title": "Wie versagt Material?",
+              "description": "Berechnung der Vergleichsspannung $\\sigma_v$.",
+              "markdownContent": "Da wir meist nur einachsige Kennwerte ($R_e, R_m$) haben, müssen wir den mehrachsigen Zustand in eine fiktive, einachsige **Vergleichsspannung $\\sigma_v$** umrechnen.\n\n### 1. Normalspannungshypothese (NH)\n* **Prinzip:** Versagen durch Trennbruch senkrecht zur größten Hauptspannung.\n* **Anwendung:** Spröde Werkstoffe (z. B. Grauguss).\n* **Formel:** $\\sigma_v = |\\sigma|_{max}$.\n\n### 2. Schubspannungshypothese (SH)\n* **Prinzip:** Versagen durch plastisches Fließen (Abgleiten) aufgrund maximaler Schubspannung.\n* **Anwendung:** Zähe Werkstoffe (z. B. Stahl).\n* **Formel:** $\\sigma_{vSH} = \\sigma_1 - \\sigma_3$.\n\n### 3. Gestaltänderungsenergiehypothese (GEH)\n* **Prinzip:** Versagen, wenn die gespeicherte Verzerrungsenergie einen Grenzwert überschreitet.\n* **Anwendung:** Zähe Werkstoffe (Standard im Maschinenbau, FEM).\n* **Formel (Hauptspannungen):** $\\sigma_v = \\sqrt{\\frac{1}{2}[(\\sigma_1-\\sigma_2)^2 + (\\sigma_2-\\sigma_3)^2 + (\\sigma_3-\\sigma_1)^2]}$.\n\n**Vergleich:** Die SH liefert konservativere Werte als die GEH (bis zu 15% höher)."
+            }
+          },
+          {
+            "id": "l2_2",
+            "type": "PRACTICE",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Rechnen mit Hypothesen",
+            "content": {
+              "title": "Hypothesen anwenden",
+              "description": "Berechne die Vergleichsspannung für gegebene Hauptspannungen.",
+              "practiceTasks": [
+                {
+                  "question": "Ein Bauteil hat die Hauptspannungen $\\sigma_1 = 200 \\text{ MPa}$, $\\sigma_2 = 50 \\text{ MPa}$, $\\sigma_3 = -20 \\text{ MPa}$. Berechne $\\sigma_v$ nach der **Normalspannungshypothese (NH)**.",
+                  "hint": "Bei der NH zählt nur die betragsmäßig größte Spannung.",
+                  "solution": "Nach der Normalspannungshypothese gilt $\\sigma_v = |\\sigma|_{max}$.\n\nVergleich der Beträge:\n$|200| = 200$\n$|50| = 50$\n$|-20| = 20$\n\n$\\sigma_v = 200 \\text{ MPa}$"
+                },
+                {
+                  "question": "Das gleiche Bauteil ($\\sigma_1 = 200, \\sigma_3 = -20$). Berechne $\\sigma_v$ nach der **Schubspannungshypothese (SH)**.",
+                  "hint": "Die SH betrachtet die Differenz aus größter und kleinster Spannung.",
+                  "solution": "Formel: $\\sigma_{vSH} = \\sigma_1 - \\sigma_3$\n\nEinsetzen:\n$\\sigma_{vSH} = 200 - (-20) = 220 \\text{ MPa}$"
+                }
+              ]
+            }
+          },
+          {
+            "id": "l2_3",
+            "type": "QUIZ",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Hypothesen-Check",
+            "content": {
+              "title": "Welche Hypothese?",
+              "description": "Wähle das richtige Verfahren.",
+              "quizQuestions": [
+                {
+                  "question": "Welche Hypothese ist für Grauguss (spröder Werkstoff) am besten geeignet?",
+                  "options": [
+                    {
+                      "text": "Gestaltänderungsenergiehypothese (GEH)",
+                      "explanation": "Falsch. GEH ist für zähe Materialien."
+                    },
+                    {
+                      "text": "Schubspannungshypothese (SH)",
+                      "explanation": "Falsch. SH basiert auf Fließen, was spröde Stoffe kaum tun."
+                    },
+                    {
+                      "text": "Normalspannungshypothese (NH)",
+                      "explanation": "Richtig. Spröde Stoffe versagen durch Trennbruch bei max. Normalspannung."
+                    },
+                    {
+                      "text": "Keine der genannten",
+                      "explanation": "Falsch."
+                    }
+                  ],
+                  "answerIndex": 2
+                },
+                {
+                  "question": "Wie verhalten sich SH und GEH zueinander?",
+                  "options": [
+                    {
+                      "text": "SH liefert immer kleinere Werte als GEH.",
+                      "explanation": "Falsch. SH ist konservativer (größer)."
+                    },
+                    {
+                      "text": "Sie liefern identische Werte.",
+                      "explanation": "Falsch. Nur bei einachsigem Zug sind sie gleich."
+                    },
+                    {
+                      "text": "SH liefert größere oder gleiche Werte wie GEH (max. 15% Differenz).",
+                      "explanation": "Richtig.."
+                    },
+                    {
+                      "text": "GEH wird nur für Keramik verwendet.",
+                      "explanation": "Falsch."
+                    }
+                  ],
+                  "answerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Anwendung: Getriebewelle",
+        "description": "Biegung und Torsion am konkreten Bauteil.",
+        "colorTheme": "brand-orange",
+        "levels": [
+          {
+            "id": "l3_1",
+            "type": "THEORY",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Welle & Formeln",
+            "content": {
+              "title": "Berechnung einer Welle",
+              "description": "Überlagerung von Biegung und Torsion.",
+              "markdownContent": "Ein klassischer Fall ist eine Welle mit Biegemoment $M_b$ und Torsionsmoment $M_t$.\n\n**Spannungen an der Oberfläche:**\n* Biegespannung: $\\sigma_b = M_b / W_{ax}$\n* Torsionsspannung: $\\tau_t = M_t / W_p$\n\n**Daraus resultierende Vergleichsspannungen:**\n\n1.  **Nach Schubspannungshypothese (SH):**\n    $$ \\sigma_{vSH} = \\sqrt{\\sigma_b^2 + 4\\tau_t^2} $$\n\n2.  **Nach Gestaltänderungsenergiehypothese (GEH):**\n    $$ \\sigma_{vGEH} = \\sqrt{\\sigma_b^2 + 3\\tau_t^2} $$\n\nMan sieht: Die SH bewertet die Torsion stärker (Faktor 4 unter der Wurzel) als die GEH (Faktor 3)."
+            }
+          },
+          {
+            "id": "l3_2",
+            "type": "PRACTICE",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Wellen-Rechner",
+            "content": {
+              "title": "Praxisbeispiel",
+              "description": "Berechne die Sicherheit einer Welle.",
+              "practiceTasks": [
+                {
+                  "question": "An einer Welle wirken an der kritischen Stelle eine Biegespannung $\\sigma_b = 100 \\text{ N/mm}^2$ und eine Torsionsspannung $\\tau_t = 60 \\text{ N/mm}^2$. Berechne $\\sigma_v$ nach der **GEH**.",
+                  "hint": "Formel für GEH bei Wellen: $\\sigma_v = \\sqrt{\\sigma_b^2 + 3\\tau_t^2}$",
+                  "solution": "$$\\sigma_v = \\sqrt{100^2 + 3 \\cdot 60^2}$$\n\n$$= \\sqrt{10000 + 3 \\cdot 3600}$$\n$$= \\sqrt{10000 + 10800}$$\n$$= \\sqrt{20800}$$\n\n$$\\approx 144,2 \\text{ N/mm}^2$$"
+                },
+                {
+                  "question": "Dieselbe Welle ($\\sigma_b=100, \\tau_t=60$). Berechne $\\sigma_v$ nach der **SH**.",
+                  "hint": "Formel für SH bei Wellen: $\\sigma_v = \\sqrt{\\sigma_b^2 + 4\\tau_t^2}$",
+                  "solution": "$$\\sigma_v = \\sqrt{100^2 + 4 \\cdot 60^2}$$\n\n$$= \\sqrt{10000 + 14400}$$\n$$= \\sqrt{24400}$$\n\n$$\\approx 156,2 \\text{ N/mm}^2$$"
+                }
+              ]
+            }
+          },
+          {
+            "id": "l3_3",
+            "type": "QUIZ",
+            "status": "LOCKED",
+            "stars": 0,
+            "title": "Abschlussprüfung",
+            "content": {
+              "title": "Experten-Quiz",
+              "description": "Alles verstanden?",
+              "quizQuestions": [
+                {
+                  "question": "Was sagt das Duktilitätsverhältnis $f_{W,\\tau} = \\tau_W / \\sigma_W \\approx 0,577$ aus?",
+                  "options": [
+                    {
+                      "text": "Dass der Werkstoff spröde ist.",
+                      "explanation": "Falsch. Das Verhältnis deutet auf die GEH hin."
+                    },
+                    {
+                      "text": "Dass die Gestaltänderungsenergiehypothese gut passt.",
+                      "explanation": "Richtig. Bei reiner Torsion liefert GEH $\\tau_{zul} \\approx 0,577 \\cdot \\sigma_{zul}$."
+                    },
+                    {
+                      "text": "Dass die Normalspannungshypothese anzuwenden ist.",
+                      "explanation": "Falsch. Das wäre bei einem Verhältnis von ca. 1,0 der Fall."
+                    },
+                    {
+                      "text": "Dass Biegung vernachlässigbar ist.",
+                      "explanation": "Falsch."
+                    }
+                  ],
+                  "answerIndex": 1
+                },
+                {
+                  "question": "Wie wirkt sich eine zusätzliche Axialkraft $F_a$ (z.B. aus Schrägverzahnung) auf die Berechnung aus?",
+                  "options": [
+                    {
+                      "text": "Sie wird ignoriert.",
+                      "explanation": "Falsch."
+                    },
+                    {
+                      "text": "Sie wird zur Biegespannung addiert: $\\sigma_{xx} = \\sigma_{b,max} + \\sigma_a$.",
+                      "explanation": "Richtig. Die Normalspannungen überlagern sich."
+                    },
+                    {
+                      "text": "Sie wird zur Torsionsspannung addiert.",
+                      "explanation": "Falsch. Axialkraft erzeugt Normalspannung, keine Schubspannung."
+                    },
+                    {
+                      "text": "Sie halbiert die Vergleichsspannung.",
+                      "explanation": "Falsch."
+                    }
+                  ],
+                  "answerIndex": 1
                 }
               ]
             }

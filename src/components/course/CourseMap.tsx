@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Course, Level } from '../../types';
+import { Course, Level, LevelStatus } from '../../types';
 import { ArrowLeft, Settings, Trash2, X } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { LevelPreviewModal } from './LevelPreviewModal';
@@ -35,6 +35,8 @@ export const CourseMap: React.FC = () => {
     };
 
     const handleSelectLevel = (level: Level) => {
+        // Don't allow previewing locked levels
+        if (level.status === LevelStatus.LOCKED) return;
         setPreviewLevel(level);
     };
 
@@ -94,7 +96,7 @@ export const CourseMap: React.FC = () => {
                     {/* Central Spine */}
                     <div className="absolute top-0 bottom-0 w-4 bg-white border-x-4 border-gray-100 rounded-full left-1/2 -ml-2 z-0">
                         {/* Progress Fill with Glow */}
-                        <div 
+                        <div
                             className="absolute top-0 left-0 right-0 bg-green-500 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)] transition-all duration-1000 ease-out"
                             style={{ height: `${course.totalProgress}%` }}
                         />
@@ -109,7 +111,8 @@ export const CourseMap: React.FC = () => {
                 ${unit.colorTheme === 'brand-purple' ? 'bg-purple-500' :
                                     unit.colorTheme === 'brand-orange' ? 'bg-orange-400' :
                                         unit.colorTheme === 'brand-green' ? 'bg-green-500' :
-                                            unit.colorTheme === 'brand-red' ? 'bg-red-400' : 'bg-blue-400'}
+                                            unit.colorTheme === 'brand-red' ? 'bg-red-400' :
+                                                unit.colorTheme === 'brand-pink' ? 'bg-[#FB96BB]' : 'bg-blue-400'}
               `}>
                                 <div className="absolute -bottom-3 left-1/2 -ml-2 w-4 h-4 bg-inherit rotate-45"></div>
                                 {unit.title}
@@ -158,23 +161,23 @@ export const CourseMap: React.FC = () => {
                                 <X size={20} />
                             </button>
                         </div>
-                        
+
                         <div className="space-y-6">
                             <div>
                                 <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Kurs Titel</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={course.title}
                                     onChange={(e) => handleUpdateCourse({ title: e.target.value })}
                                     className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-brand-blue outline-none font-bold text-gray-700"
                                 />
                             </div>
-                            
+
                             <div className="flex gap-4">
                                 <div className="flex-1">
                                     <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Icon</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={course.icon}
                                         onChange={(e) => handleUpdateCourse({ icon: e.target.value })}
                                         className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-brand-blue outline-none text-2xl text-center"
@@ -182,7 +185,7 @@ export const CourseMap: React.FC = () => {
                                 </div>
                                 <div className="flex-1">
                                     <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Farbe</label>
-                                    <select 
+                                    <select
                                         value={course.themeColor}
                                         onChange={(e) => handleUpdateCourse({ themeColor: e.target.value })}
                                         className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-brand-blue outline-none font-bold text-gray-700 appearance-none"
@@ -198,13 +201,13 @@ export const CourseMap: React.FC = () => {
                             </div>
 
                             <div className="pt-6 border-t border-gray-100 flex flex-col gap-3">
-                                <button 
+                                <button
                                     onClick={() => setShowSettings(false)}
                                     className="w-full py-3 bg-brand-blue text-white rounded-xl font-bold hover:shadow-lg transition-all"
                                 >
                                     Fertig
                                 </button>
-                                <button 
+                                <button
                                     onClick={handleDelete}
                                     className="w-full py-3 bg-red-50 text-red-500 rounded-xl font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
                                 >

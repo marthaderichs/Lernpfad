@@ -81,11 +81,15 @@ export const useAppStore = create<AppState>()(
             },
 
             updateCourseProgress: (courseId, progress) => {
-                const { courses } = get();
+                const { courses, selectedCourse } = get();
                 const updated = courses.map(c =>
                     c.id === courseId ? { ...c, ...progress } : c
                 );
-                set({ courses: updated });
+                // Also update selectedCourse if it's the one being modified
+                const updatedSelectedCourse = selectedCourse?.id === courseId
+                    ? { ...selectedCourse, ...progress }
+                    : selectedCourse;
+                set({ courses: updated, selectedCourse: updatedSelectedCourse });
                 api.saveCourses(updated); // Fire and forget
             },
 

@@ -1,8 +1,6 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { LevelRendererProps } from './types';
-import { Button } from '../common/Button';
+import { Button, MarkdownWithLatex } from '../common';
 import { X, Check } from 'lucide-react';
 
 export const TheoryRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onComplete }) => {
@@ -29,9 +27,9 @@ export const TheoryRenderer: React.FC<LevelRendererProps> = ({ level, onClose, o
             {/* Markdown Content */}
             <div className="flex-1 overflow-y-auto p-6 md:p-10 max-w-3xl mx-auto w-full">
                 <div className="markdown-content text-gray-700 text-lg leading-relaxed">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <MarkdownWithLatex>
                         {content}
-                    </ReactMarkdown>
+                    </MarkdownWithLatex>
                 </div>
             </div>
 

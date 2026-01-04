@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { LevelRendererProps } from './types';
-import { Button } from '../common/Button';
+import { Button, MarkdownWithLatex, LatexRenderer } from '../common';
 import { X } from 'lucide-react';
 
 export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onComplete }) => {
@@ -77,7 +75,9 @@ export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onC
 
             <div className="flex-1 overflow-y-auto px-6 pb-20">
                 <div className="max-w-2xl mx-auto w-full">
-                    <h3 className="text-2xl md:text-3xl font-black text-gray-800 mb-8 leading-tight">{currentQ.question}</h3>
+                    <h3 className="text-2xl md:text-3xl font-black text-gray-800 mb-8 leading-tight">
+                        <LatexRenderer>{currentQ.question}</LatexRenderer>
+                    </h3>
 
                     <div className="grid gap-4">
                         {currentQ.options.map((opt, idx) => {
@@ -103,15 +103,17 @@ export const QuizRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onC
                                         <div className={`w-8 h-8 shrink-0 rounded-full border-2 flex items-center justify-center text-sm font-black ${showStatus && isCorrect ? 'border-green-600 bg-green-200 text-green-700' : 'border-current opacity-50'}`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
-                                        <span className="leading-snug">{opt.text}</span>
+                                        <span className="leading-snug">
+                                            <LatexRenderer>{opt.text}</LatexRenderer>
+                                        </span>
                                     </button>
 
                                     {showStatus && (isSelected || (isCorrect && selectedOption !== null)) && (
                                         <div className={`mt-2 ml-4 p-3 rounded-lg text-sm border-l-4 animate-in slide-in-from-top-2 ${isCorrect ? 'border-green-500 bg-green-50 text-green-800' : 'border-red-400 bg-red-50 text-red-800'}`}>
                                             <div className="markdown-content [&_p]:mb-0 [&_p]:inline">
-                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                <MarkdownWithLatex>
                                                     {opt.explanation}
-                                                </ReactMarkdown>
+                                                </MarkdownWithLatex>
                                             </div>
                                         </div>
                                     )}

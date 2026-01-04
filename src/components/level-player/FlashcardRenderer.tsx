@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LevelRendererProps, PlayableCard } from './types';
-import { Button } from '../common/Button';
+import { Button, LatexRenderer } from '../common';
 import { X, Check, RefreshCw, Zap, RotateCw, Lightbulb, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { LevelType } from '../../types';
 
@@ -136,7 +136,9 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                         }`}
                 >
                     <div className="absolute top-8 text-gray-200 font-black text-8xl select-none">?</div>
-                    <h3 className="text-3xl font-black text-gray-800 text-center leading-tight select-none relative z-10">{currentCard.front}</h3>
+                    <h3 className="text-3xl font-black text-gray-800 text-center leading-tight select-none relative z-10">
+                        <LatexRenderer>{currentCard.front}</LatexRenderer>
+                    </h3>
                     <div className="absolute bottom-10 text-gray-400 font-bold text-xs flex items-center gap-2 animate-pulse uppercase tracking-widest">
                         <RotateCw size={14} /> Tippen zum Umdrehen
                     </div>
@@ -147,7 +149,9 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                         }`}
                 >
                     <div className="absolute top-8 right-8 text-white/20"><Lightbulb size={40} /></div>
-                    <p className="text-xl font-bold text-center leading-relaxed select-none">{currentCard.back}</p>
+                    <div className="text-xl font-bold text-center leading-relaxed select-none">
+                        <LatexRenderer>{currentCard.back}</LatexRenderer>
+                    </div>
                 </div>
             </div>
 

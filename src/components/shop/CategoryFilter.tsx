@@ -29,7 +29,6 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({ activeCategory, 
     const categories: { key: ShopItem['category'] | 'all'; icon: React.ReactNode; label: string }[] = [
         { key: 'all', icon: <ShoppingBag size={18} />, label: 'Alle' },
         { key: 'avatar', icon: <User size={18} />, label: 'Avatare' },
-        { key: 'theme', icon: <Palette size={18} />, label: 'Themes' },
         { key: 'badge', icon: <Award size={18} />, label: 'Badges' },
         { key: 'powerup', icon: <Zap size={18} />, label: 'Power-ups' },
     ];
