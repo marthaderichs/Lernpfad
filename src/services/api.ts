@@ -1,5 +1,5 @@
-import { Course, UserStats, ShopItem } from '../../types';
-import { INITIAL_COURSES, SHOP_ITEMS } from '../../constants';
+import { Course, UserStats, ShopItem } from '../types';
+import { INITIAL_COURSES, SHOP_ITEMS } from '../constants';
 
 // Backend API URL
 // In production: API is on same origin (served by Express)

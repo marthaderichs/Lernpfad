@@ -5,7 +5,7 @@
     "professor": "Ana Maria Rodrigues, MD, PhD",
     "icon": "🔬",
     "themeColor": "brand-blue",
-    "totalProgress": 55,
+    "totalProgress": 45,
     "units": [
       {
         "id": "u1",
@@ -120,8 +120,8 @@
           {
             "id": "l2_3",
             "type": "PRACTICE",
-            "status": "COMPLETED",
-            "stars": 3,
+            "status": "UNLOCKED",
+            "stars": 0,
             "title": "PICO Training",
             "content": {
               "title": "PICO anwenden",
@@ -143,7 +143,7 @@
           {
             "id": "l2_4",
             "type": "QUIZ",
-            "status": "UNLOCKED",
+            "status": "LOCKED",
             "stars": 0,
             "title": "FINER Quiz",
             "content": {

@@ -1,4 +1,4 @@
-import { Course, LevelStatus, LevelType, ShopItem } from './types';
+import { Course, LevelStatus, LevelType, ShopItem } from '../types';
 
 export const SHOP_ITEMS: ShopItem[] = [
   // Avatars

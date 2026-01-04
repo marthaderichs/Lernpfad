@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Course, UserStats, ViewState } from '../../types';
+import { Course, UserStats, ViewState } from '../types';
 import * as api from '../services/api';
 
 interface AppState {

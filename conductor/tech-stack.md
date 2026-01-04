@@ -13,6 +13,11 @@
 *   **Framework:** Express
 *   **Language:** JavaScript/TypeScript (inferred from mixed file types)
 
+## Testing
+*   **Runner:** Vitest
+*   **Library:** React Testing Library, User Event
+*   **Environment:** JSDOM
+
 ## Deployment & Infrastructure
 *   **Containerization:** Docker
 *   **Orchestration:** Docker Compose

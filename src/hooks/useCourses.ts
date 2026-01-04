@@ -1,5 +1,5 @@
 import { useAppStore } from '../stores/useAppStore';
-import { Course, Level } from '../../types';
+import { Course, Level } from '../types';
 
 export const useCourses = () => {
     const {
