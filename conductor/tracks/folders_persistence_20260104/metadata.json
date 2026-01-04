@@ -1,0 +1,8 @@
+{
+  "track_id": "folders_persistence_20260104",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-04T10:00:00Z",
+  "updated_at": "2026-01-04T10:00:00Z",
+  "description": "Implement a nested folder system for course organization with backend persistence, reordering capabilities, and a 'dashboard-in-dashboard' UI."
+}
