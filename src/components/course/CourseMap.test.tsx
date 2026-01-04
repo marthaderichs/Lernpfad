@@ -75,4 +75,20 @@ describe('CourseMap Progress Visualization', () => {
         // For simplicity, let's assume it calls updateCourseProgress.
         expect(mockUpdateCourseProgress).toHaveBeenCalled();
     });
+
+    it('shows the translation mode when "Add/Edit Portuguese" is clicked', () => {
+        render(<CourseMap />);
+        
+        // Open settings
+        const editButton = screen.getByRole('button', { name: /edit/i });
+        fireEvent.click(editButton);
+        
+        // Find translation button (to be implemented)
+        const transButton = screen.getByRole('button', { name: /Portugiesisch hinzufügen/i });
+        fireEvent.click(transButton);
+        
+        // Should show split view with two textareas (to be implemented)
+        const textareas = screen.getAllByRole('textbox');
+        expect(textareas.length).toBeGreaterThanOrEqual(2);
+    });
 });

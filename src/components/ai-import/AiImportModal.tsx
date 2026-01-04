@@ -4,6 +4,7 @@ import { PromptDisplay } from './PromptDisplay';
 import { JsonEditor } from './JsonEditor';
 import { useAppStore } from '../../stores/useAppStore';
 import { sanitizeCourse } from '../../utils/sanitizeCourse';
+import { mergeTranslations } from '../../utils/courseUtils';
 
 interface AiImportModalProps {
     onClose: () => void;
@@ -40,35 +41,6 @@ export const AiImportModal: React.FC<AiImportModalProps> = ({ onClose }) => {
             console.error("Import failed:", e);
             setError(e.message || "Fehler beim Importieren oder Speichern.");
         }
-    };
-
-    const mergeTranslations = (course: any, translation: any): any => {
-        // Deep merge logic
-        const result = { ...course };
-        result.titlePT = translation.title;
-
-        if (course.units && translation.units) {
-            result.units = course.units.map((unit: any, uIdx: number) => {
-                const transUnit = translation.units[uIdx];
-                if (!transUnit) return unit;
-
-                return {
-                    ...unit,
-                    titlePT: transUnit.title,
-                    descriptionPT: transUnit.description,
-                    levels: unit.levels.map((lvl: any, lIdx: number) => {
-                        const transLvl = transUnit.levels?.[lIdx];
-                        if (!transLvl) return lvl;
-
-                        return {
-                            ...lvl,
-                            contentPT: transLvl.content || transLvl // Use transLvl if content is missing (fallback for flat structures)
-                        };
-                    })
-                };
-            });
-        }
-        return result;
     };
 
     return (

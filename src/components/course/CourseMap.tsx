@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Course, Level, LevelStatus } from '../../types';
-import { ArrowLeft, Settings, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Settings, Trash2, X, Languages, Save } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { LevelPreviewModal } from './LevelPreviewModal';
 import { LevelNode } from './LevelNode';
 import { LanguageToggle } from '../common';
+import { JsonEditor } from '../ai-import/JsonEditor';
+import { getCourseTranslationTemplate, mergeTranslations } from '../../utils/courseUtils';
 
 export const CourseMap: React.FC = () => {
     const {
@@ -18,8 +20,30 @@ export const CourseMap: React.FC = () => {
 
     const [previewLevel, setPreviewLevel] = useState<Level | null>(null);
     const [showSettings, setShowSettings] = useState(false);
+    const [isTranslationMode, setIsTranslationMode] = useState(false);
+    const [transJson, setTransJson] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
     if (!course) return null;
+
+    const baseJson = getCourseTranslationTemplate(course);
+
+    const handleSaveTranslation = async () => {
+        try {
+            setError(null);
+            if (!transJson) throw new Error("Portugiesisches JSON fehlt.");
+            const parsedPT = JSON.parse(transJson);
+            
+            const updatedCourse = mergeTranslations(course, parsedPT);
+            updateCourseProgress(course.id, updatedCourse);
+            
+            setIsTranslationMode(false);
+            setTransJson('');
+        } catch (e: any) {
+            console.error(e);
+            setError(e.message || "Ungültiges JSON.");
+        }
+    };
 
     const isPT = contentLanguage === 'PT';
     
@@ -227,6 +251,12 @@ export const CourseMap: React.FC = () => {
 
                             <div className="pt-6 border-t border-gray-100 flex flex-col gap-3">
                                 <button
+                                    onClick={() => setIsTranslationMode(true)}
+                                    className="w-full py-3 bg-brand-sky/10 text-brand-sky rounded-xl font-bold hover:bg-brand-sky hover:text-white transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Languages size={18} /> Portugiesisch hinzufügen
+                                </button>
+                                <button
                                     onClick={() => setShowSettings(false)}
                                     className="w-full py-3 bg-brand-blue text-white rounded-xl font-bold hover:shadow-lg transition-all"
                                 >
@@ -238,6 +268,47 @@ export const CourseMap: React.FC = () => {
                                 >
                                     <Trash2 size={18} /> Kurs löschen
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isTranslationMode && (
+                <div className="fixed inset-0 z-[110] bg-brand-purple/20 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-5xl rounded-[2.5rem] p-8 md:p-10 shadow-2xl border-4 border-white animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+                        <div className="flex justify-between items-center mb-8">
+                            <div className="flex items-center gap-4 text-gray-800 font-black text-3xl tracking-tight">
+                                <div className="p-3 bg-brand-purple rounded-2xl shadow-lg shadow-purple-200 rotate-3">
+                                    <Languages size={32} className="text-white" />
+                                </div>
+                                <span>Portugiesisch hinzufügen</span>
+                            </div>
+                            <button onClick={() => setIsTranslationMode(false)} className="bg-gray-100 p-3 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">
+                                <X size={28} strokeWidth={3} />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar -mr-4 pr-4">
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2 ml-2">Deutsch (Basis)</label>
+                                    <textarea
+                                        value={baseJson}
+                                        readOnly
+                                        className="w-full h-64 md:h-96 p-6 bg-gray-50 rounded-3xl font-mono text-xs md:text-sm text-gray-400 border-4 border-transparent outline-none resize-none shadow-inner"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2 ml-2">Portugiesisch (PT)</label>
+                                    <JsonEditor
+                                        value={transJson}
+                                        onChange={setTransJson}
+                                        error={error}
+                                        onImport={handleSaveTranslation}
+                                        onCancel={() => setIsTranslationMode(false)}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
