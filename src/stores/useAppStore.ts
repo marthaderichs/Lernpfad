@@ -13,6 +13,7 @@ interface AppState {
     selectedLevelIndex: number | null;
     isEditMode: boolean;
     selectedItemIds: string[];
+    contentLanguage: 'DE' | 'PT';
     isLoading: boolean;
     error: string | null;
 
@@ -21,6 +22,7 @@ interface AppState {
     toggleEditMode: () => void;
     toggleItemSelection: (itemId: string) => void;
     clearSelection: () => void;
+    toggleContentLanguage: () => void;
     setCourses: (courses: DashboardItem[]) => void;
     addCourse: (course: Course) => Promise<void>;
     addFolder: (folder: Folder) => Promise<void>;
@@ -56,6 +58,7 @@ export const useAppStore = create<AppState>()(
             selectedLevelIndex: null,
             isEditMode: false,
             selectedItemIds: [],
+            contentLanguage: 'DE',
             isLoading: false,
             error: null,
 
@@ -75,6 +78,10 @@ export const useAppStore = create<AppState>()(
             }),
 
             clearSelection: () => set({ selectedItemIds: [] }),
+
+            toggleContentLanguage: () => set((state) => ({ 
+                contentLanguage: state.contentLanguage === 'DE' ? 'PT' : 'DE' 
+            })),
 
             loadInitialData: async () => {
                 set({ isLoading: true, error: null });
@@ -208,6 +215,7 @@ export const useAppStore = create<AppState>()(
                 // Persisting userStats/courses might be good for offline fallback/speed, 
                 // but we fetch on load.
                 currentView: state.currentView,
+                contentLanguage: state.contentLanguage,
             }),
         }
     )
