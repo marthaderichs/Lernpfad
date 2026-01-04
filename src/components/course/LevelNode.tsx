@@ -39,13 +39,15 @@ export const LevelNode: React.FC<LevelNodeProps> = ({ level, color, onClick, ind
                 style={{ backgroundColor: !isLocked ? `var(--${themeColor})` : undefined }}
             >
                 <div className={`w-24 h-24 rounded-full flex items-center justify-center border-b-8 ${isLocked ? 'bg-gray-200 border-gray-300' :
-                    themeColor === 'brand-purple' ? 'bg-purple-500 border-purple-700' :
-                        themeColor === 'brand-green' ? 'bg-green-500 border-green-700' :
-                            themeColor === 'brand-orange' ? 'bg-orange-400 border-orange-600' :
-                                themeColor === 'brand-blue' ? 'bg-indigo-500 border-indigo-700' :
-                                    themeColor === 'brand-red' ? 'bg-red-500 border-red-700' :
-                                        themeColor === 'brand-pink' ? 'bg-[#FB96BB] border-[#d87a9e]' :
-                                            'bg-blue-400 border-blue-600'
+                    themeColor === 'brand-purple' ? 'bg-brand-purple border-purple-700' :
+                        themeColor === 'brand-green' ? 'bg-brand-green border-green-700' :
+                            themeColor === 'brand-orange' ? 'bg-brand-orange border-orange-600' :
+                                themeColor === 'brand-blue' ? 'bg-brand-blue border-indigo-700' :
+                                    themeColor === 'brand-sky' ? 'bg-brand-sky border-sky-700' :
+                                        themeColor === 'brand-teal' ? 'bg-brand-teal border-teal-700' :
+                                            themeColor === 'brand-red' ? 'bg-brand-red border-red-700' :
+                                                themeColor === 'brand-pink' ? 'bg-brand-pink border-[#d87a9e]' :
+                                                    'bg-brand-blue border-blue-600'
                     }`}>
                     {isCompleted ? (
                         <CheckCircle className="text-white w-10 h-10 drop-shadow-md" />

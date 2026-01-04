@@ -25,13 +25,14 @@ const CourseCard: React.FC<{
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const themeColors: Record<string, string> = {
-        'brand-purple': 'bg-purple-500 border-purple-700',
-        'brand-blue': 'bg-indigo-500 border-indigo-700',
-        'brand-orange': 'bg-orange-400 border-orange-600',
-        'brand-green': 'bg-green-500 border-green-700',
-        'brand-sky': 'bg-sky-400 border-sky-600',
-        'brand-red': 'bg-red-400 border-red-600',
-        'brand-pink': 'bg-[#FB96BB] border-[#d87a9e]',
+        'brand-purple': 'bg-brand-purple border-purple-700',
+        'brand-blue': 'bg-brand-blue border-indigo-700',
+        'brand-orange': 'bg-brand-orange border-orange-600',
+        'brand-green': 'bg-brand-green border-green-700',
+        'brand-sky': 'bg-brand-sky border-sky-600',
+        'brand-teal': 'bg-brand-teal border-teal-600',
+        'brand-red': 'bg-brand-red border-red-600',
+        'brand-pink': 'bg-brand-pink border-[#d87a9e]',
     };
 
     const cssClass = themeColors[course.themeColor] || themeColors['brand-blue'];
@@ -89,7 +90,15 @@ const CourseCard: React.FC<{
                 <div>
                     <div className="w-full bg-gray-100 rounded-full h-4 mb-2 overflow-hidden border border-gray-100">
                         <div
-                            className={`h-full rounded-full transition-all duration-1000 ease-out ${course.themeColor === 'brand-purple' ? 'bg-purple-400' : course.themeColor === 'brand-green' ? 'bg-green-400' : 'bg-brand-blue'}`}
+                            className={`h-full rounded-full transition-all duration-1000 ease-out ${course.themeColor === 'brand-purple' ? 'bg-brand-purple' :
+                                    course.themeColor === 'brand-green' ? 'bg-brand-green' :
+                                        course.themeColor === 'brand-orange' ? 'bg-brand-orange' :
+                                            course.themeColor === 'brand-red' ? 'bg-brand-red' :
+                                                course.themeColor === 'brand-pink' ? 'bg-brand-pink' :
+                                                    course.themeColor === 'brand-sky' ? 'bg-brand-sky' :
+                                                        course.themeColor === 'brand-teal' ? 'bg-brand-teal' :
+                                                            'bg-brand-blue'
+                                }`}
                             style={{ width: `${course.totalProgress}%` }}
                         />
                     </div>

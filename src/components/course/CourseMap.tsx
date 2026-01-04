@@ -108,11 +108,13 @@ export const CourseMap: React.FC = () => {
                             {/* Unit Header Badge */}
                             <div className={`
                 z-10 mb-16 px-8 py-4 rounded-3xl shadow-xl text-white font-extrabold text-center uppercase tracking-wider text-lg transform hover:scale-105 transition-transform cursor-default select-none border-b-8 border-black/10 relative
-                ${unit.colorTheme === 'brand-purple' ? 'bg-purple-500' :
-                                    unit.colorTheme === 'brand-orange' ? 'bg-orange-400' :
-                                        unit.colorTheme === 'brand-green' ? 'bg-green-500' :
-                                            unit.colorTheme === 'brand-red' ? 'bg-red-400' :
-                                                unit.colorTheme === 'brand-pink' ? 'bg-[#FB96BB]' : 'bg-blue-400'}
+                ${unit.colorTheme === 'brand-purple' ? 'bg-brand-purple' :
+                                    unit.colorTheme === 'brand-orange' ? 'bg-brand-orange' :
+                                        unit.colorTheme === 'brand-green' ? 'bg-brand-green' :
+                                            unit.colorTheme === 'brand-red' ? 'bg-brand-red' :
+                                                unit.colorTheme === 'brand-pink' ? 'bg-brand-pink' :
+                                                    unit.colorTheme === 'brand-teal' ? 'bg-brand-teal' :
+                                                        unit.colorTheme === 'brand-sky' ? 'bg-brand-sky' : 'bg-brand-blue'}
               `}>
                                 <div className="absolute -bottom-3 left-1/2 -ml-2 w-4 h-4 bg-inherit rotate-45"></div>
                                 {unit.title}
