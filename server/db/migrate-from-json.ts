@@ -45,10 +45,11 @@ function readJsonData() {
   return { courses, stats };
 }
 
-// Schritt 3: Erstelle Datenbank-Tabellen
+// Schritt 3: Erstelle Datenbank-Tabellen (oder füge fehlende Spalten hinzu)
 function createTables(db: Database.Database) {
-  console.log('\n🏗️  Erstelle Tabellen...');
+  console.log('\n🏗️  Erstelle/Aktualisiere Tabellen...');
 
+  // Erstelle Tabellen falls sie nicht existieren
   db.exec(`
     CREATE TABLE IF NOT EXISTS dashboard_items (
       id TEXT PRIMARY KEY,
@@ -82,7 +83,7 @@ function createTables(db: Database.Database) {
       last_study_date TEXT,
       purchased_items TEXT DEFAULT '[]',
       active_avatar TEXT DEFAULT '🦸',
-      dark_mode INTEGER DEFAULT 0, -- Boolean 0/1
+      dark_mode INTEGER DEFAULT 0,
       
       system_prompt TEXT,
       
@@ -90,11 +91,41 @@ function createTables(db: Database.Database) {
       updated_at INTEGER DEFAULT (strftime('%s', 'now'))
     );
     
-    -- Erstelle Index für parent_folder_id für schnelle Folder-Abfragen
     CREATE INDEX IF NOT EXISTS idx_parent_folder ON dashboard_items(parent_folder_id);
   `);
 
-  console.log('   ✅ Tabellen erstellt (oder existieren bereits)');
+  // WICHTIG: Füge fehlende Spalten hinzu (für bestehende Datenbanken!)
+  console.log('   🔧 Prüfe auf fehlende Spalten...');
+
+  const alterStatements = [
+    // dashboard_items Spalten
+    "ALTER TABLE dashboard_items ADD COLUMN icon TEXT",
+    "ALTER TABLE dashboard_items ADD COLUMN professor TEXT",
+    "ALTER TABLE dashboard_items ADD COLUMN total_progress INTEGER DEFAULT 0",
+    "ALTER TABLE dashboard_items ADD COLUMN title_pt TEXT",
+    // user_stats Spalten (falls sie fehlen)
+    "ALTER TABLE user_stats ADD COLUMN total_xp INTEGER DEFAULT 0",
+    "ALTER TABLE user_stats ADD COLUMN coins INTEGER DEFAULT 0",
+    "ALTER TABLE user_stats ADD COLUMN current_streak INTEGER DEFAULT 0",
+    "ALTER TABLE user_stats ADD COLUMN last_study_date TEXT",
+    "ALTER TABLE user_stats ADD COLUMN purchased_items TEXT DEFAULT '[]'",
+    "ALTER TABLE user_stats ADD COLUMN active_avatar TEXT DEFAULT '🦸'",
+    "ALTER TABLE user_stats ADD COLUMN dark_mode INTEGER DEFAULT 0",
+  ];
+
+  for (const stmt of alterStatements) {
+    try {
+      db.exec(stmt);
+      console.log(`   ✅ Spalte hinzugefügt: ${stmt.split('ADD COLUMN ')[1]?.split(' ')[0]}`);
+    } catch (e: any) {
+      // "duplicate column name" ist OK - Spalte existiert bereits
+      if (!e.message.includes('duplicate column')) {
+        console.log(`   ⚠️ ${e.message}`);
+      }
+    }
+  }
+
+  console.log('   ✅ Tabellen sind aktuell');
 }
 
 // Schritt 4: Migriere Daten
@@ -186,15 +217,82 @@ async function main() {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 
-  // Idempotenz-Check: Wenn DB existiert und Daten hat, abbrechen
+  // Prüfe ob DB existiert und Daten hat
+  let dataAlreadyExists = false;
   if (fs.existsSync(DB_PATH)) {
     const db = new Database(DB_PATH);
+    db.pragma('journal_mode = WAL');
+
     try {
-      const hasData = db.prepare("SELECT count(*) as c FROM sqlite_master WHERE type='table' AND name='dashboard_items'").get() as any;
-      if (hasData.c > 0) {
+      const hasTable = db.prepare("SELECT count(*) as c FROM sqlite_master WHERE type='table' AND name='dashboard_items'").get() as any;
+      if (hasTable.c > 0) {
         const count = db.prepare('SELECT count(*) as c FROM dashboard_items').get() as any;
         if (count.c > 0) {
-          console.log('⚠️  Datenbank existiert bereits und enthält Daten. Migration übersprungen.');
+          dataAlreadyExists = true;
+          console.log('ℹ️  Datenbank existiert bereits und enthält Daten.');
+          console.log('   → Schema-Updates werden durchgeführt...');
+
+          // WICHTIG: Führe Schema-Updates durch (fehlende Spalten hinzufügen)
+          createTables(db);
+
+          // Versuche fehlende Daten aus Backup zu aktualisieren
+          const backupFile = `${COURSES_FILE}.backup-before-sqlite`;
+          if (fs.existsSync(backupFile) || fs.existsSync(COURSES_FILE)) {
+            const jsonFile = fs.existsSync(backupFile) ? backupFile : COURSES_FILE;
+            console.log(`\n🔄 Aktualisiere fehlende Felder aus ${jsonFile}...`);
+
+            try {
+              const jsonData = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'));
+
+              const updateStmt = db.prepare(`
+                UPDATE dashboard_items 
+                SET icon = ?, professor = ?, total_progress = ?, title_pt = ?
+                WHERE id = ?
+              `);
+
+              let updatedCount = 0;
+              for (const item of jsonData) {
+                try {
+                  const result = updateStmt.run(
+                    item.icon || '📚',
+                    item.professor || null,
+                    item.totalProgress || 0,
+                    item.titlePT || item.titlePt || null,
+                    item.id
+                  );
+                  if (result.changes > 0) updatedCount++;
+                } catch (e) {
+                  // Ignore individual errors
+                }
+              }
+              console.log(`   ✅ ${updatedCount} Einträge aktualisiert (icon, professor, etc.)`);
+
+              // Auch Stats aktualisieren
+              const statsBackup = `${STATS_FILE}.backup-before-sqlite`;
+              if (fs.existsSync(statsBackup) || fs.existsSync(STATS_FILE)) {
+                const statsFile = fs.existsSync(statsBackup) ? statsBackup : STATS_FILE;
+                const stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8'));
+
+                db.prepare(`
+                  UPDATE user_stats 
+                  SET total_xp = ?, coins = ?, current_streak = ?, purchased_items = ?, active_avatar = ?
+                  WHERE id = 1
+                `).run(
+                  stats.totalXp ?? stats.stars ?? 0,
+                  stats.coins ?? 0,
+                  stats.currentStreak ?? stats.streak ?? 0,
+                  JSON.stringify(stats.purchasedItems ?? []),
+                  stats.activeAvatar ?? '🦸'
+                );
+                console.log('   ✅ User Stats aktualisiert');
+              }
+
+            } catch (e: any) {
+              console.log(`   ⚠️ Konnte Backup nicht lesen: ${e.message}`);
+            }
+          }
+
+          console.log('\n✅ Schema-Updates und Daten-Aktualisierung abgeschlossen.');
           db.close();
           process.exit(0);
         }
