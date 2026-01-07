@@ -15,7 +15,7 @@
 - [x] Task: Define Database Schema (`server/db/schema.ts`) [5a24abc]
     - Define `dashboard_items` table (id, type, name, themeColor, parentFolderId, units, courseProgress, sortOrder, timestamps).
     - Define `user_stats` table (id, stars, streak, lastActivity, systemPrompt, timestamps).
-- [ ] Task: Database Connection (`server/db/index.ts`)
+- [x] Task: Database Connection (`server/db/index.ts`) [e33c4cf]
     - Implement SQLite connection using `better-sqlite3`.
     - Enable WAL mode.
     - Initialize Drizzle ORM instance.
