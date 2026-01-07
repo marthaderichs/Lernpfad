@@ -69,10 +69,17 @@ function createTables(db: Database.Database) {
     
     CREATE TABLE IF NOT EXISTS user_stats (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      stars INTEGER DEFAULT 0,
-      streak INTEGER DEFAULT 0,
-      last_activity TEXT,
+      
+      total_xp INTEGER DEFAULT 0,
+      coins INTEGER DEFAULT 0,
+      current_streak INTEGER DEFAULT 0,
+      last_study_date TEXT,
+      purchased_items TEXT DEFAULT '[]',
+      active_avatar TEXT DEFAULT '🦸',
+      dark_mode INTEGER DEFAULT 0, -- Boolean 0/1
+      
       system_prompt TEXT,
+      
       created_at INTEGER DEFAULT (strftime('%s', 'now')),
       updated_at INTEGER DEFAULT (strftime('%s', 'now'))
     );
@@ -81,7 +88,7 @@ function createTables(db: Database.Database) {
     CREATE INDEX IF NOT EXISTS idx_parent_folder ON dashboard_items(parent_folder_id);
   `);
   
-  console.log('   ✅ Tabellen erstellt');
+  console.log('   ✅ Tabellen erstellt (oder existieren bereits)');
 }
 
 // Schritt 4: Migriere Daten
@@ -97,8 +104,8 @@ function migrateData(db: Database.Database, courses: any[], stats: any) {
   
   const insertStats = db.prepare(`
     INSERT OR REPLACE INTO user_stats 
-    (id, stars, streak, last_activity, system_prompt)
-    VALUES (1, ?, ?, ?, ?)
+    (id, total_xp, coins, current_streak, last_study_date, purchased_items, active_avatar, dark_mode, system_prompt)
+    VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   
   // Alle Inserts in einer Transaction
@@ -121,12 +128,16 @@ function migrateData(db: Database.Database, courses: any[], stats: any) {
       console.log(`   ✅ ${item.type || 'course'}: "${item.name || item.title}"`);
     }
     
-    // Stats migrieren
+    // Stats migrieren mit Mapping
     if (stats) {
       insertStats.run(
-        stats.stars || 0,
-        stats.streak || 0,
-        stats.lastActivity || null,
+        stats.stars || 0, // MAP: stars -> total_xp
+        stats.coins || 0, // New field, default 0
+        stats.streak || 0, // MAP: streak -> current_streak
+        stats.lastActivity || null, // MAP: lastActivity -> last_study_date
+        JSON.stringify(stats.purchasedItems || []), // New field, default []
+        stats.activeAvatar || '🦸', // New field, default emoji
+        stats.darkMode ? 1 : 0, // New field, map boolean to int
         stats.systemPrompt || null
       );
       console.log('   ✅ User Stats migriert');
@@ -163,6 +174,25 @@ async function main() {
   if (!fs.existsSync(DATA_DIR)) {
       console.log(`Verzeichnis ${DATA_DIR} existiert nicht. Erstelle es...`);
       fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+
+  // Idempotenz-Check: Wenn DB existiert und Daten hat, abbrechen
+  if (fs.existsSync(DB_PATH)) {
+      const db = new Database(DB_PATH);
+      try {
+          const hasData = db.prepare("SELECT count(*) as c FROM sqlite_master WHERE type='table' AND name='dashboard_items'").get() as any;
+          if (hasData.c > 0) {
+               const count = db.prepare('SELECT count(*) as c FROM dashboard_items').get() as any;
+               if (count.c > 0) {
+                   console.log('⚠️  Datenbank existiert bereits und enthält Daten. Migration übersprungen.');
+                   db.close();
+                   process.exit(0);
+               }
+          }
+      } catch (e) {
+          // Tabelle existiert vermutlich noch nicht, weitermachen
+      }
+      db.close();
   }
 
   // Prüfe Voraussetzungen
