@@ -21,7 +21,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema & Migration Update' (Protocol in workflow.md)
 
 ## Phase 2: API & Logic Refactoring
-- [ ] Task: Implement `formatItem` Helper (`server.js`)
+- [x] Task: Implement `formatItem` Helper (`server.js`) [6e62769]
     - Create `const formatItem = (item) => ...` to handle JSON parsing.
     - Replace duplicated parsing logic in all endpoints.
 - [ ] Task: Update Stats Endpoints (`server.js`)
