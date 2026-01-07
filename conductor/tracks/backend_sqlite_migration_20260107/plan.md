@@ -28,7 +28,7 @@
     - Implement `migrateData` function with transaction support.
     - Implement verification step (count comparison).
     - Add backup logic (copy `.json` to `.json.backup-before-sqlite`).
-- [ ] Task: Test Migration Script
+- [x] Task: Test Migration Script [96cc313]
     - Create a test utility to generate dummy `courses.json` and `stats.json`.
     - Run migration script locally.
     - Verify data in `lernpfad.db` using Drizzle or raw SQL queries.
