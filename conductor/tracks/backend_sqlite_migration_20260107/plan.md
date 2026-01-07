@@ -52,7 +52,7 @@
     - Alternative: Import and run migration at top of `server.js` (synchronous).
 - [~] Task: Conductor - User Manual Verification 'Phase 4: API Refactoring' (Protocol in workflow.md)
 
-## Phase 5: Verification & Cleanup
+## Phase 5: Verification & Cleanup [checkpoint: dfec236]
 - [x] Task: Full System Test [6b564c4]
     - Start application locally.
     - Verify frontend loads data correctly.
@@ -65,4 +65,4 @@
 - [x] Task: Documentation [ca59697]
     - Update `README.md` or `PROJEKT_ANALYSE.md` with new DB info.
     - Document how to access the SQLite DB for debugging.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Verification & Cleanup' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 5: Verification & Cleanup' (Protocol in workflow.md)
