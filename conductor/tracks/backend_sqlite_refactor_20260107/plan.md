@@ -34,11 +34,11 @@
     - Use manual `JSON.stringify` for DB inserts (since `mode: 'json'` is removed).
 - [~] Task: Conductor - User Manual Verification 'Phase 2: API & Logic Refactoring' (Protocol in workflow.md)
 
-## Phase 3: Verification & Cleanup
+## Phase 3: Verification & Cleanup [checkpoint: 31e1533]
 - [x] Task: Full API Verification [84bdd1b]
     - Verify all endpoints (`/api/stats`, `/api/courses` etc.) with `curl`.
     - Check that `UserStats` returned matches the frontend interface exactly.
 - [x] Task: Clean up [1c834b0]
     - Remove temporary test files.
     - Delete the old `data/lernpfad.db` (locally) to force a fresh migration test.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification & Cleanup' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Verification & Cleanup' (Protocol in workflow.md)
