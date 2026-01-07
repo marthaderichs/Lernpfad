@@ -311,6 +311,51 @@ app.get('/api/debug/db', async (req, res) => {
     }
 });
 
+// ============ RESTORE: Fix icons and professors from backup ============
+app.post('/api/restore/icons', async (req, res) => {
+    try {
+        const backupData = req.body;
+        // Handle both formats: direct array or { success, data } wrapper
+        const items = Array.isArray(backupData) ? backupData : (backupData.data || []);
+
+        if (!items.length) {
+            return res.status(400).json({ success: false, message: 'No items in backup data' });
+        }
+
+        let updated = 0;
+        let notFound = 0;
+
+        for (const item of items) {
+            // Update icon, professor, and totalProgress for existing items
+            const result = await db.update(dashboardItems)
+                .set({
+                    icon: item.icon || null,
+                    professor: item.professor || null,
+                    // Don't override totalProgress as it's calculated from levels now
+                })
+                .where(eq(dashboardItems.id, item.id));
+
+            // Check if update affected rows (better-sqlite3 returns changes count)
+            if (result.changes > 0) {
+                updated++;
+            } else {
+                notFound++;
+            }
+        }
+
+        res.json({
+            success: true,
+            message: `Restored ${updated} items, ${notFound} not found`,
+            updated,
+            notFound,
+            totalInBackup: items.length
+        });
+    } catch (error) {
+        console.error('POST /api/restore/icons error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // ============ SPA FALLBACK ============
 app.use((req, res) => {
     if (req.path.startsWith('/api')) {
