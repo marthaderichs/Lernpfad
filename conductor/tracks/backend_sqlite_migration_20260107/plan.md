@@ -44,7 +44,7 @@
     - `DELETE /api/courses/:id`: Delete by ID.
     - `POST /api/courses/add`: Insert single item.
     - `POST /api/courses/move`: Update `parentFolderId`.
-- [ ] Task: Refactor Stats Endpoints
+- [x] Task: Refactor Stats Endpoints [3b37086]
     - `GET /api/stats`: Select from `user_stats`.
     - `POST /api/stats`: Upsert logic for `user_stats`.
 - [ ] Task: Integrate Migration on Startup
