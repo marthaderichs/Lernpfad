@@ -22,6 +22,18 @@ const RENDERER_MAP: Record<LevelType, React.FC<LevelRendererProps>> = {
 };
 
 export const LevelPlayer: React.FC<LevelPlayerProps> = ({ level, onClose, onComplete }) => {
+    React.useEffect(() => {
+        // Prevent background scrolling when the player is open
+        document.body.style.overflow = 'hidden';
+        console.log('🔒 Scroll locked');
+
+        return () => {
+            // Restore scrolling when player closes
+            document.body.style.overflow = '';
+            console.log('🔓 Scroll unlocked');
+        };
+    }, []);
+
     const Renderer = RENDERER_MAP[level.type];
 
     if (!Renderer) {
