@@ -4,7 +4,7 @@
 - [x] Task: Install Dependencies [452d9bb]
     - Install `better-sqlite3`, `drizzle-orm` as dependencies.
     - Install `drizzle-kit`, `@types/better-sqlite3` as dev dependencies.
-- [ ] Task: Update `.gitignore`
+- [x] Task: Update `.gitignore` [c23d5d2]
     - Add `data/*.db`, `data/*.db-wal`, `data/*.db-shm` to prevent SQLite files from being committed.
 - [ ] Task: Docker Configuration
     - Update `Dockerfile` to include build tools (python3, make, g++) for `better-sqlite3`.
