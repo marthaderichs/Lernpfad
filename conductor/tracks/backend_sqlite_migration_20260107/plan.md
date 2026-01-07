@@ -60,7 +60,7 @@
     - **Test JSON Import**: Open AiImportModal, paste valid course JSON, verify it saves to SQLite.
     - Update stats (verify persistence).
     - Restart server (verify data retention).
-- [ ] Task: Document Rollback Procedure
+- [x] Task: Document Rollback Procedure [1391b0a]
     - Note: If issues arise, revert server.js to use JSON files, delete `lernpfad.db`.
 - [ ] Task: Documentation
     - Update `README.md` or `PROJEKT_ANALYSE.md` with new DB info.
