@@ -38,7 +38,7 @@
 - [x] Task: Refactor Server Entry Point (`server.js`) [3b37086]
     - Import DB connection and schema.
     - Remove old file-based I/O functions.
-- [ ] Task: Refactor Course Endpoints
+- [x] Task: Refactor Course Endpoints [3b37086]
     - `GET /api/courses`: Select from `dashboard_items` and parse JSON fields.
     - `POST /api/courses`: Transactional delete + insert (bulk update).
     - `DELETE /api/courses/:id`: Delete by ID.
