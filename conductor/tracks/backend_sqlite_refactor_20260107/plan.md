@@ -1,6 +1,6 @@
 # Implementation Plan - SQLite Backend Refactoring & Fixes
 
-## Phase 1: Database Schema & Migration Update
+## Phase 1: Database Schema & Migration Update [checkpoint: 90cdde9]
 - [x] Task: Update Database Schema (`server/db/schema.ts`) [cbe29f1]
     - Update `dashboard_items`: Remove `mode: 'json'` from `units` and `courseProgress`.
     - Update `user_stats`:
@@ -15,7 +15,7 @@
         - `streak` -> `currentStreak`
         - `lastActivity` -> `lastStudyDate`
     - Add default values for new fields (`coins`, `purchasedItems`, `activeAvatar`, `darkMode`).
-- [ ] Task: Test Migration Logic
+- [~] Task: Test Migration Logic
     - Create/update `test-migration.ts` to include checks for new fields and default values.
     - Verify data mapping is correct.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema & Migration Update' (Protocol in workflow.md)
