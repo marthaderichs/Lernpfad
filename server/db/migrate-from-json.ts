@@ -228,9 +228,21 @@ async function main() {
       if (hasTable.c > 0) {
         const count = db.prepare('SELECT count(*) as c FROM dashboard_items').get() as any;
         if (count.c > 0) {
+          // Check if we already migrated the new schema (check for 'icon' column)
+          try {
+            const columnCheck = db.prepare("SELECT icon FROM dashboard_items LIMIT 1").get();
+            // If this query succeeds, the column exists!
+            console.log('ℹ️  Datenbank existiert und Schema ist aktuell (Spalte "icon" gefunden).');
+            console.log('   Migration übersprungen.');
+            db.close();
+            process.exit(0);
+          } catch (e) {
+            // Column missing - proceed with updates
+            console.log('ℹ️  Datenbank existiert, aber Schema ist veraltet (Spalte "icon" fehlt).');
+            console.log('   → Schema-Updates werden durchgeführt...');
+          }
+
           dataAlreadyExists = true;
-          console.log('ℹ️  Datenbank existiert bereits und enthält Daten.');
-          console.log('   → Schema-Updates werden durchgeführt...');
 
           // WICHTIG: Führe Schema-Updates durch (fehlende Spalten hinzufügen)
           createTables(db);
