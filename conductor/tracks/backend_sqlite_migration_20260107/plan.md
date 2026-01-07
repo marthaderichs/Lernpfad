@@ -21,7 +21,7 @@
     - Initialize Drizzle ORM instance.
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md)
 
-## Phase 3: Migration Logic
+## Phase 3: Migration Logic [checkpoint: c685f6b]
 - [x] Task: Create Migration Script (`server/db/migrate-from-json.ts`) [38fe36e]
     - Implement logic to check for existing JSON files.
     - Implement `createTables` function (using raw SQL or Drizzle).
@@ -32,7 +32,7 @@
     - Create a test utility to generate dummy `courses.json` and `stats.json`.
     - Run migration script locally.
     - Verify data in `lernpfad.db` using Drizzle or raw SQL queries.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Migration Logic' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Migration Logic' (Protocol in workflow.md)
 
 ## Phase 4: API Refactoring
 - [ ] Task: Refactor Server Entry Point (`server.js`)
