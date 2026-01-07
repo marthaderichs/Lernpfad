@@ -12,7 +12,7 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 1: Setup & Dependencies' (Protocol in workflow.md)
 
 ## Phase 2: Database Layer Implementation
-- [ ] Task: Define Database Schema (`server/db/schema.ts`)
+- [x] Task: Define Database Schema (`server/db/schema.ts`) [5a24abc]
     - Define `dashboard_items` table (id, type, name, themeColor, parentFolderId, units, courseProgress, sortOrder, timestamps).
     - Define `user_stats` table (id, stars, streak, lastActivity, systemPrompt, timestamps).
 - [ ] Task: Database Connection (`server/db/index.ts`)
