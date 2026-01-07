@@ -7,7 +7,7 @@
         - Rename `streak` -> `currentStreak`.
         - Rename `lastActivity` -> `lastStudyDate`.
         - Add `totalXp`, `coins`, `purchasedItems` (text), `activeAvatar`, `darkMode` (integer).
-- [ ] Task: Update Migration Script (`server/db/migrate-from-json.ts`)
+- [x] Task: Update Migration Script (`server/db/migrate-from-json.ts`) [e7550bf]
     - Add idempotency check (exit if DB has data).
     - Update `createTables` SQL to match new schema.
     - Update `migrateData` to map legacy fields:
