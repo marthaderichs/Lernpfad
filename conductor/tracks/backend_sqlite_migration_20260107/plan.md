@@ -34,7 +34,7 @@
     - Verify data in `lernpfad.db` using Drizzle or raw SQL queries.
 - [~] Task: Conductor - User Manual Verification 'Phase 3: Migration Logic' (Protocol in workflow.md)
 
-## Phase 4: API Refactoring
+## Phase 4: API Refactoring [checkpoint: eb77ac0]
 - [x] Task: Refactor Server Entry Point (`server.js`) [3b37086]
     - Import DB connection and schema.
     - Remove old file-based I/O functions.
@@ -50,7 +50,7 @@
 - [x] Task: Integrate Migration on Startup [9b8b5de]
     - Update `Dockerfile` CMD to run migration before server: `CMD ["sh", "-c", "node server/db/migrate-from-json.js && node server.js"]`
     - Alternative: Import and run migration at top of `server.js` (synchronous).
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: API Refactoring' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 4: API Refactoring' (Protocol in workflow.md)
 
 ## Phase 5: Verification & Cleanup
 - [ ] Task: Full System Test
