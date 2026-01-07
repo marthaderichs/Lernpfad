@@ -29,7 +29,7 @@ RUN apk add --no-cache wget python3 make g++
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
+# Install production dependencies (now includes tsx!)
 RUN npm ci --omit=dev
 
 # Copy built frontend from builder stage
@@ -37,8 +37,12 @@ COPY --from=builder /app/dist ./dist
 
 # Copy server file
 COPY server.js ./
-# Copy server directory (needed for DB logic)
+
+# Copy server directory with TypeScript files
 COPY server/ ./server/
+
+# Copy tsconfig for tsx
+COPY tsconfig.json ./
 
 # Create data directory with correct permissions
 RUN mkdir -p /app/data && chown -R node:node /app/data
@@ -58,5 +62,6 @@ ENV DATA_DIR=/app/data
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Start the server (with migration)
-CMD ["sh", "-c", "node server/db/migrate-from-json.js && node server.js"]
+# Start the server (with migration using tsx for TypeScript)
+# tsx is needed because server.js imports from ./server/db/*.ts
+CMD ["sh", "-c", "npx tsx server/db/migrate-from-json.ts && npx tsx server.js"]
