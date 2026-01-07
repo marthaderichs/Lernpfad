@@ -26,20 +26,21 @@ if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
 }
 
+// HELPER: Format DB Items for Frontend
+// Konvertiert JSON-Strings (units, courseProgress) zurück in Objekte
+const formatItem = (item) => ({
+    ...item,
+    units: item.units ? JSON.parse(item.units) : undefined,
+    courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+});
+
 // ============ COURSES API ============
 
 // GET all courses/folders
 app.get('/api/courses', async (req, res) => {
     try {
         const items = await db.select().from(dashboardItems);
-        
-        // Konvertiere JSON-Strings zurück zu Objekten
-        const formatted = items.map(item => ({
-            ...item,
-            units: item.units ? JSON.parse(item.units) : undefined,
-            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
-        }));
-        
+        const formatted = items.map(formatItem);
         res.json({ success: true, data: formatted });
     } catch (error) {
         console.error('GET /api/courses error:', error);
@@ -53,7 +54,6 @@ app.post('/api/courses', async (req, res) => {
         const items = req.body;
         
         // Transaction: Lösche alle und füge neu ein
-        // ACHTUNG: Das ist ein Kompromiss für Kompatibilität mit dem alten Frontend
         await db.transaction(async (tx) => {
             await tx.delete(dashboardItems);
             
@@ -67,6 +67,7 @@ app.post('/api/courses', async (req, res) => {
                     units: item.units ? JSON.stringify(item.units) : null,
                     courseProgress: item.courseProgress ? JSON.stringify(item.courseProgress) : null,
                     sortOrder: item.sortOrder,
+                    updatedAt: new Date(), // Update timestamp
                 });
             }
         });
@@ -85,14 +86,7 @@ app.delete('/api/courses/:id', async (req, res) => {
         await db.delete(dashboardItems).where(eq(dashboardItems.id, courseId));
         
         const remaining = await db.select().from(dashboardItems);
-        // Formatieren für Rückgabe
-        const formatted = remaining.map(item => ({
-            ...item,
-            units: item.units ? JSON.parse(item.units) : undefined,
-            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
-        }));
-
-        res.json({ success: true, data: formatted, message: 'Course deleted' });
+        res.json({ success: true, data: remaining.map(formatItem), message: 'Course deleted' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -112,17 +106,11 @@ app.post('/api/courses/add', async (req, res) => {
             units: newItem.units ? JSON.stringify(newItem.units) : null,
             courseProgress: newItem.courseProgress ? JSON.stringify(newItem.courseProgress) : null,
             sortOrder: newItem.sortOrder,
+            updatedAt: new Date(),
         });
         
         const all = await db.select().from(dashboardItems);
-        // Formatieren
-        const formatted = all.map(item => ({
-            ...item,
-            units: item.units ? JSON.parse(item.units) : undefined,
-            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
-        }));
-
-        res.json({ success: true, data: formatted, message: 'Course added' });
+        res.json({ success: true, data: all.map(formatItem), message: 'Course added' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -135,19 +123,15 @@ app.post('/api/courses/move', async (req, res) => {
         
         for (const id of itemIds) {
             await db.update(dashboardItems)
-                .set({ parentFolderId: targetFolderId })
+                .set({ 
+                    parentFolderId: targetFolderId,
+                    updatedAt: new Date(),
+                })
                 .where(eq(dashboardItems.id, id));
         }
         
         const all = await db.select().from(dashboardItems);
-        // Formatieren
-        const formatted = all.map(item => ({
-             ...item,
-            units: item.units ? JSON.parse(item.units) : undefined,
-            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
-        }));
-
-        res.json({ success: true, data: formatted, message: 'Items moved' });
+        res.json({ success: true, data: all.map(formatItem), message: 'Items moved' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -158,7 +142,32 @@ app.post('/api/courses/move', async (req, res) => {
 app.get('/api/stats', async (req, res) => {
     try {
         const stats = await db.select().from(userStats).limit(1);
-        res.json({ success: true, data: stats[0] || null });
+        const stat = stats[0] || null;
+
+        if (stat) {
+             // Map DB fields back to Frontend Interface (UserStats)
+             const frontendStats = {
+                 ...stat,
+                 // DB has 'totalXp', 'currentStreak' etc via Drizzle camelCase mapping if defined, 
+                 // BUT better-sqlite3 returns raw rows if not careful? 
+                 // Drizzle handles the mapping from snake_case (DB) to camelCase (Schema).
+                 // We just need to parse JSON fields.
+                 purchasedItems: stat.purchasedItems ? JSON.parse(stat.purchasedItems) : [],
+                 // Map Renamed Fields just in case frontend expects old names?
+                 // No, frontend expects: totalXp, coins, currentStreak...
+                 // But wait, frontend MIGHT expect 'streak' if we didn't update frontend types?
+                 // Spec says: "Update user_stats table to match src/types/index.ts exactly."
+                 // So we return exactly what the schema defines (which matches types).
+                 
+                 // Legacy compatibility (optional, if frontend still uses 'streak')
+                 streak: stat.currentStreak, 
+                 lastActivity: stat.lastStudyDate,
+                 stars: stat.totalXp, // Backwards compat
+             };
+             res.json({ success: true, data: frontendStats });
+        } else {
+            res.json({ success: true, data: null });
+        }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -168,29 +177,34 @@ app.post('/api/stats', async (req, res) => {
     try {
         const newStats = req.body;
         
-        // Upsert: Update wenn existiert, sonst Insert
+        // Map Frontend fields -> DB fields
+        const values = {
+            totalXp: newStats.totalXp ?? newStats.stars ?? 0,
+            coins: newStats.coins ?? 0,
+            currentStreak: newStats.currentStreak ?? newStats.streak ?? 0,
+            lastStudyDate: newStats.lastStudyDate ?? newStats.lastActivity,
+            purchasedItems: JSON.stringify(newStats.purchasedItems ?? []),
+            activeAvatar: newStats.activeAvatar ?? '🦸',
+            darkMode: newStats.darkMode ?? false,
+            systemPrompt: newStats.systemPrompt,
+            updatedAt: new Date(),
+        };
+
+        // Upsert Logic (SQLite does not support ON CONFLICT in Drizzle's `insert()` well for all drivers, 
+        // sticking to robust check-then-update)
         const existing = await db.select().from(userStats).limit(1);
         
         if (existing.length > 0) {
             await db.update(userStats)
-                .set({
-                    stars: newStats.stars,
-                    streak: newStats.streak,
-                    lastActivity: newStats.lastActivity,
-                    systemPrompt: newStats.systemPrompt,
-                })
-                .where(eq(userStats.id, 1));
+                .set(values)
+                .where(eq(userStats.id, existing[0].id));
         } else {
-            await db.insert(userStats).values({
-                stars: newStats.stars || 0,
-                streak: newStats.streak || 0,
-                lastActivity: newStats.lastActivity,
-                systemPrompt: newStats.systemPrompt,
-            });
+            await db.insert(userStats).values(values);
         }
         
         res.json({ success: true, message: 'Stats saved' });
     } catch (error) {
+        console.error('POST /api/stats error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -212,17 +226,6 @@ app.use((req, res) => {
         res.status(404).send('App not built. Run npm run build first.');
     }
 });
-
-// ============ START SERVER ============
-
-// Migration beim Start ausführen (optional, aber sicher)
-// import { execSync } from 'child_process';
-// try {
-//   console.log('Führe Datenbank-Migration aus...');
-//   execSync('node server/db/migrate-from-json.js', { stdio: 'inherit' });
-// } catch (e) {
-//   console.error('Migration fehlgeschlagen, aber starte Server trotzdem:', e.message);
-// }
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log('🚀 LernPfad Server gestartet! (SQLite Backend)');
