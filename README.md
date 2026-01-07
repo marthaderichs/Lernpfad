@@ -16,7 +16,7 @@ Eine interaktive Lernplattform mit AI-Unterstützung.
 # Dependencies installieren
 npm install
 
-# Backend-Server starten (Port 3000)
+# Backend-Server starten (Port 3000) - Startet auch Migrationen!
 npm run dev:server
 
 # Frontend-Dev-Server starten (in separatem Terminal)
@@ -32,7 +32,7 @@ npm run dev:all
 # Container bauen und starten
 docker-compose up -d
 
-# Logs anschauen
+# Logs anschauen (WICHTIG: Prüfe hier auf erfolgreiche Migration!)
 docker-compose logs -f
 
 # Stoppen
@@ -47,7 +47,7 @@ docker-compose down
 2. **Dockerfile auswählen** - Coolify erkennt das Dockerfile automatisch
 3. **Port konfigurieren** - Stelle sicher, dass Port `3000` exposed ist
 4. **Volume für Daten** - Füge ein persistentes Volume für `/app/data` hinzu
-5. **Deploy!**
+5. **Deploy!** - Beim ersten Start werden existierende JSON-Dateien automatisch migriert.
 
 ### Wichtige Einstellungen für Coolify
 
@@ -70,13 +70,23 @@ GEMINI_API_KEY=dein-api-key  # Optional, für AI-Features
 
 ```
 ├── App.tsx           # Haupt-React-Komponente
-├── server.js         # Express Backend Server
-├── Dockerfile        # Multi-stage Docker Build
+├── server.js         # Express Backend Server (nutzt server/db/*)
+├── Dockerfile        # Multi-stage Docker Build mit SQLite Support
 ├── docker-compose.yaml
 ├── components/       # React Komponenten
 ├── services/         # API Services
-└── data/            # Persistente Daten (lokal)
+├── server/
+│   └── db/           # Datenbank-Logik (Schema, Migration, Connection)
+└── data/             # Persistente Daten (SQLite DB: lernpfad.db)
 ```
+
+## 💾 Datenbank & Migration
+
+Seit Januar 2026 nutzt das Projekt **SQLite** statt JSON-Dateien.
+
+*   **Migration:** Erfolgt automatisch beim Server-Start (`server/db/migrate-from-json.ts`).
+*   **Backups:** JSON-Dateien werden vor der Migration als `.backup-before-sqlite` gesichert.
+*   **Details:** Siehe [docs/BACKEND_INFRASTRUCTURE.md](docs/BACKEND_INFRASTRUCTURE.md).
 
 ## 🔧 API Endpoints
 
@@ -84,8 +94,9 @@ GEMINI_API_KEY=dein-api-key  # Optional, für AI-Features
 |----------|---------|--------------|
 | `/api/health` | GET | Health Check |
 | `/api/courses` | GET | Alle Kurse laden |
-| `/api/courses` | POST | Alle Kurse speichern |
+| `/api/courses` | POST | Alle Kurse speichern (Bulk) |
 | `/api/courses/add` | POST | Neuen Kurs hinzufügen |
+| `/api/courses/move` | POST | Items verschieben |
 | `/api/courses/:id` | DELETE | Kurs löschen |
 | `/api/stats` | GET | User-Statistiken laden |
 | `/api/stats` | POST | User-Statistiken speichern |
