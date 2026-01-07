@@ -43,6 +43,11 @@ describe('Folder Data Structure', () => {
             { id: 'f1', type: 'folder', title: 'Test' }
         ];
 
+        (fetch as any).mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ success: true })
+        });
+
         await api.saveCourses(mockFolders);
 
         expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/courses'), expect.objectContaining({

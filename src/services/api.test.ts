@@ -26,11 +26,13 @@ describe('Streak Logic', () => {
         
         // Mock loadUserStats to return initial stats
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true, data: INITIAL_STATS })
         });
         
         // Mock saveUserStats
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true })
         });
 
@@ -53,9 +55,11 @@ describe('Streak Logic', () => {
         vi.setSystemTime(new Date(today));
         
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true, data: statsWithYesterday })
         });
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true })
         });
 
@@ -78,9 +82,11 @@ describe('Streak Logic', () => {
         vi.setSystemTime(new Date(today));
         
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true, data: statsWithOldDate })
         });
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true })
         });
 
@@ -103,6 +109,7 @@ describe('Streak Logic', () => {
         vi.setSystemTime(new Date(today));
         
         (fetch as any).mockResolvedValueOnce({
+            ok: true,
             json: async () => ({ success: true, data: statsWithOldDate })
         });
 

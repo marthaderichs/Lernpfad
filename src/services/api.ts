@@ -32,14 +32,19 @@ export const loadCourses = async (): Promise<DashboardItem[]> => {
 };
 
 export const saveCourses = async (items: DashboardItem[]): Promise<void> => {
-    try {
-        await fetch(`${API_URL}/courses`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(items)
-        });
-    } catch (e) {
-        console.error("Failed to save items:", e);
+    const response = await fetch(`${API_URL}/courses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(items)
+    });
+    
+    if (!response.ok) {
+        throw new Error(`Speichern fehlgeschlagen: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    if (!result.success) {
+        throw new Error(result.message || 'Speichern fehlgeschlagen');
     }
 };
 
@@ -146,14 +151,19 @@ export const loadUserStats = async (): Promise<UserStats> => {
 };
 
 export const saveUserStats = async (stats: UserStats): Promise<void> => {
-    try {
-        await fetch(`${API_URL}/stats`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(stats)
-        });
-    } catch (e) {
-        console.error("Failed to save stats:", e);
+    const response = await fetch(`${API_URL}/stats`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(stats)
+    });
+    
+    if (!response.ok) {
+        throw new Error(`Stats speichern fehlgeschlagen: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    if (!result.success) {
+        throw new Error(result.message || 'Stats speichern fehlgeschlagen');
     }
 };
 
