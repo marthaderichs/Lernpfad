@@ -22,7 +22,7 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Migration Logic
-- [ ] Task: Create Migration Script (`server/db/migrate-from-json.ts`)
+- [x] Task: Create Migration Script (`server/db/migrate-from-json.ts`) [38fe36e]
     - Implement logic to check for existing JSON files.
     - Implement `createTables` function (using raw SQL or Drizzle).
     - Implement `migrateData` function with transaction support.
