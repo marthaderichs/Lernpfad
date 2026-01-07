@@ -40,6 +40,27 @@ app.use((req, res, next) => {
     next();
 });
 
+// HELPER: Calculate progress from units/levels
+const calculateProgressFromUnits = (units) => {
+    if (!units || !Array.isArray(units) || units.length === 0) return 0;
+
+    let totalLevels = 0;
+    let completed = 0;
+
+    units.forEach(unit => {
+        if (unit.levels && Array.isArray(unit.levels)) {
+            unit.levels.forEach(level => {
+                totalLevels++;
+                if (level.status === 'COMPLETED') {
+                    completed++;
+                }
+            });
+        }
+    });
+
+    return totalLevels > 0 ? Math.round((completed / totalLevels) * 100) : 0;
+};
+
 // HELPER: Format DB Items for Frontend
 // Konvertiert DB-Felder zu Frontend-Interface (Course/Folder)
 const formatItem = (item) => {
@@ -53,12 +74,16 @@ const formatItem = (item) => {
     };
 
     if (item.type === 'course') {
+        const units = item.units ? JSON.parse(item.units) : [];
+        // Calculate progress dynamically from level status instead of using stale DB value
+        const calculatedProgress = calculateProgressFromUnits(units);
+
         return {
             ...base,
             titlePT: item.titlePt,
             professor: item.professor,
-            totalProgress: item.totalProgress || 0,
-            units: item.units ? JSON.parse(item.units) : [],
+            totalProgress: calculatedProgress,
+            units: units,
             courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
         };
     }
@@ -258,6 +283,32 @@ app.post('/api/stats', async (req, res) => {
 // ============ HEALTH CHECK ============
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'Server is running', timestamp: new Date().toISOString() });
+});
+
+// ============ DEBUG: Raw DB Check ============
+app.get('/api/debug/db', async (req, res) => {
+    try {
+        const items = await db.select().from(dashboardItems);
+        // Return raw data with only key fields
+        const debug = items.map(item => ({
+            id: item.id,
+            type: item.type,
+            name: item.name,
+            icon: item.icon,
+            professor: item.professor,
+            totalProgress: item.totalProgress,
+            hasUnits: !!item.units,
+        }));
+        res.json({
+            success: true,
+            totalItems: items.length,
+            itemsWithIcon: items.filter(i => i.icon).length,
+            itemsWithoutIcon: items.filter(i => !i.icon).length,
+            data: debug
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 // ============ SPA FALLBACK ============
