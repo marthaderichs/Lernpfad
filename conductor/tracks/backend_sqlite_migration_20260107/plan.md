@@ -6,7 +6,7 @@
     - Install `drizzle-kit`, `@types/better-sqlite3` as dev dependencies.
 - [x] Task: Update `.gitignore` [c23d5d2]
     - Add `data/*.db`, `data/*.db-wal`, `data/*.db-shm` to prevent SQLite files from being committed.
-- [ ] Task: Docker Configuration
+- [x] Task: Docker Configuration [717a79f]
     - Update `Dockerfile` to include build tools (python3, make, g++) for `better-sqlite3`.
     - Ensure `Dockerfile` exposes `DATA_DIR` environment variable.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Dependencies' (Protocol in workflow.md)
