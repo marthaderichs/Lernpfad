@@ -35,7 +35,7 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 2: API & Logic Refactoring' (Protocol in workflow.md)
 
 ## Phase 3: Verification & Cleanup
-- [ ] Task: Full API Verification
+- [x] Task: Full API Verification [84bdd1b]
     - Verify all endpoints (`/api/stats`, `/api/courses` etc.) with `curl`.
     - Check that `UserStats` returned matches the frontend interface exactly.
 - [ ] Task: Clean up
