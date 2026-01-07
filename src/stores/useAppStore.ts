@@ -29,7 +29,7 @@ interface AppState {
     deleteCourse: (courseId: string) => Promise<void>;
     deleteFolder: (folderId: string) => Promise<void>;
     updateFolder: (folderId: string, updates: Partial<Folder>) => Promise<void>;
-    updateCourseProgress: (courseId: string, progress: Partial<Course>) => void;
+    updateCourseProgress: (courseId: string, progress: Partial<Course>) => Promise<void>;
     moveItem: (itemId: string, targetFolderId: string | null) => Promise<void>;
     moveItems: (itemIds: string[], targetFolderId: string | null) => Promise<void>;
     reorderItems: (items: DashboardItem[]) => Promise<void>;
@@ -166,18 +166,23 @@ export const useAppStore = create<AppState>()(
             updateFolder: async (folderId, updates) => {
                 const { courses } = get();
                 const updated = courses.map(item =>
-                    item.id === folderId && item.type === 'folder'
+                    item.id === folderId
                         ? { ...item, ...updates } as Folder
                         : item
                 );
                 set({ courses: updated as DashboardItem[] });
-                await api.saveCourses(updated as DashboardItem[]);
+                try {
+                    await api.saveCourses(updated as DashboardItem[]);
+                } catch (error) {
+                    console.error("Failed to save folder updates:", error);
+                    set({ error: "Fehler beim Speichern der Ordner-Änderungen." });
+                }
             },
 
-            updateCourseProgress: (courseId, progress) => {
+            updateCourseProgress: async (courseId, progress) => {
                 const { courses, selectedCourse } = get();
                 const updated = courses.map(item =>
-                    item.id === courseId && item.type === 'course'
+                    item.id === courseId
                         ? { ...item, ...progress } as Course
                         : item
                 );
@@ -185,8 +190,15 @@ export const useAppStore = create<AppState>()(
                 const updatedSelectedCourse = selectedCourse?.id === courseId
                     ? { ...selectedCourse, ...progress }
                     : selectedCourse;
+
                 set({ courses: updated, selectedCourse: updatedSelectedCourse });
-                api.saveCourses(updated); // Fire and forget
+
+                try {
+                    await api.saveCourses(updated);
+                } catch (error) {
+                    console.error("Failed to save course progress:", error);
+                    set({ error: "Fehler beim Speichern des Kurs-Fortschritts." });
+                }
             },
 
             moveItem: async (itemId, targetFolderId) => {
@@ -197,7 +209,11 @@ export const useAppStore = create<AppState>()(
                         : item
                 );
                 set({ courses: updated as DashboardItem[] });
-                await api.saveCourses(updated as DashboardItem[]);
+                try {
+                    await api.saveCourses(updated as DashboardItem[]);
+                } catch (error) {
+                    set({ error: "Fehler beim Verschieben." });
+                }
             },
 
             moveItems: async (itemIds, targetFolderId) => {

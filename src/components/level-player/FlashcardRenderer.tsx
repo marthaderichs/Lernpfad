@@ -11,7 +11,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 
 export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose, onComplete }) => {
     const { contentLanguage } = useAppStore();
-    
+
     // Determine which content to use
     const isPT = contentLanguage === 'PT' && !!level.contentPT;
     const activeContent = isPT ? level.contentPT! : level.content;
@@ -165,7 +165,7 @@ export const FlashcardRenderer: React.FC<LevelRendererProps> = ({ level, onClose
                 >
                     <div className="absolute top-8 right-8 text-white/20"><Lightbulb size={40} /></div>
                     <div className="text-xl font-bold text-center leading-relaxed select-none px-4">
-                        <LatexRenderer>{currentCard.back}</LatexRenderer>
+                        <LatexRenderer forceBlackDisplayMath>{currentCard.back}</LatexRenderer>
                     </div>
                 </div>
             </div>

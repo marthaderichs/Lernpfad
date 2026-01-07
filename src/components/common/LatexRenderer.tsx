@@ -12,6 +12,8 @@ interface LatexRendererProps {
     className?: string;
     /** Error handling mode: 'warn' logs errors, 'ignore' silently fails, 'error' throws */
     errorMode?: 'warn' | 'ignore' | 'error';
+    /** Force black text color for display math ($$...$$) - useful for colored backgrounds */
+    forceBlackDisplayMath?: boolean;
 }
 
 /**
@@ -30,7 +32,8 @@ interface LatexRendererProps {
 export const LatexRenderer: React.FC<LatexRendererProps> = ({
     children,
     className = '',
-    errorMode = 'warn'
+    errorMode = 'warn',
+    forceBlackDisplayMath = false
 }) => {
     const renderedContent = useMemo(() => {
         if (!children || typeof children !== 'string') {
@@ -67,7 +70,7 @@ export const LatexRenderer: React.FC<LatexRendererProps> = ({
                     return (
                         <div
                             key={index}
-                            className="latex-display my-4 overflow-x-auto py-2"
+                            className={`latex-display my-4 overflow-x-auto py-2 ${forceBlackDisplayMath ? 'text-black' : ''}`}
                             dangerouslySetInnerHTML={{ __html: html }}
                         />
                     );
@@ -97,7 +100,7 @@ export const LatexRenderer: React.FC<LatexRendererProps> = ({
                 );
             }
         });
-    }, [children, errorMode]);
+    }, [children, errorMode, forceBlackDisplayMath]);
 
     return (
         <span className={`latex-container ${className}`}>
