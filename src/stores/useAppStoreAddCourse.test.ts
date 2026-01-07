@@ -49,9 +49,15 @@ describe('useAppStore addCourse', () => {
         (api.addCourse as any).mockRejectedValueOnce(new Error(errorMessage));
 
         const { addCourse } = useAppStore.getState();
-        await expect(addCourse(mockCourse)).rejects.toThrow(errorMessage);
+        
+        // It should not throw anymore, but handle it internally
+        await addCourse(mockCourse);
 
-        expect(useAppStore.getState().error).toBe(errorMessage);
+        // Verify Error State
+        expect(useAppStore.getState().error).toBe("Fehler beim Speichern. Bitte erneut versuchen.");
         expect(useAppStore.getState().isLoading).toBe(false);
+        
+        // Verify Rollback (courses should be empty again)
+        expect(useAppStore.getState().courses).toEqual([]);
     });
 });

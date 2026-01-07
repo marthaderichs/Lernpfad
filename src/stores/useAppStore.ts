@@ -111,7 +111,12 @@ export const useAppStore = create<AppState>()(
                 } catch (error) {
                     const msg = (error as Error).message;
                     console.error("Failed to sync addCourse:", msg);
-                    set({ error: "Offline: Kurs nur lokal gespeichert.", isLoading: false });
+                    // ROLLBACK: Stelle den vorherigen State wieder her
+                    set({ 
+                        courses: previousCourses, 
+                        error: "Fehler beim Speichern. Bitte erneut versuchen.", 
+                        isLoading: false 
+                    });
                 }
             },
 
@@ -127,7 +132,11 @@ export const useAppStore = create<AppState>()(
                 } catch (error) {
                     const msg = (error as Error).message;
                     console.error("Failed to sync addFolder:", msg);
-                    set({ error: "Offline: Ordner nur lokal gespeichert.", isLoading: false });
+                    set({ 
+                        courses: previousCourses, 
+                        error: "Fehler beim Speichern. Bitte erneut versuchen.", 
+                        isLoading: false 
+                    });
                 }
             },
 
@@ -143,7 +152,11 @@ export const useAppStore = create<AppState>()(
                 } catch (error) {
                     const msg = (error as Error).message;
                     console.error("Failed to sync deleteCourse:", msg);
-                    set({ error: "Offline: Löschen nur lokal ausgeführt.", isLoading: false });
+                    set({ 
+                        courses: previousCourses, 
+                        error: "Fehler beim Speichern. Bitte erneut versuchen.", 
+                        isLoading: false 
+                    });
                 }
             },
 
@@ -159,7 +172,11 @@ export const useAppStore = create<AppState>()(
                 } catch (error) {
                     const msg = (error as Error).message;
                     console.error("Failed to sync deleteFolder:", msg);
-                    set({ error: "Offline: Löschen nur lokal ausgeführt.", isLoading: false });
+                    set({ 
+                        courses: previousCourses, 
+                        error: "Fehler beim Speichern. Bitte erneut versuchen.", 
+                        isLoading: false 
+                    });
                 }
             },
 

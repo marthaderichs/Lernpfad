@@ -10,11 +10,21 @@ vi.mock('../services/api', () => ({
     saveUserStats: vi.fn(),
     addCourse: vi.fn(),
     deleteCourse: vi.fn(),
+    moveItems: vi.fn(),
 }));
 
 describe('useAppStore Bulk Actions', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        // Setup default return for moveItems
+        (api.moveItems as any).mockImplementation(async (ids: string[], target: string) => {
+            // Return the updated courses as if server processed it
+            const currentCourses = useAppStore.getState().courses;
+            return currentCourses.map(c => 
+                ids.includes(c.id) ? { ...c, parentFolderId: target } : c
+            );
+        });
+
         useAppStore.setState({
             courses: [
                 { id: 'c1', type: 'course', title: 'C1', parentFolderId: null } as any,
@@ -60,6 +70,6 @@ describe('useAppStore Bulk Actions', () => {
         expect(c1?.parentFolderId).toBe('f1');
         expect(c2?.parentFolderId).toBe('f1');
         expect(useAppStore.getState().selectedItemIds).toEqual([]);
-        expect(api.saveCourses).toHaveBeenCalled();
+        expect(api.moveItems).toHaveBeenCalledWith(['c1', 'c2'], 'f1');
     });
 });
