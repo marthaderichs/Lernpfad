@@ -24,7 +24,7 @@
 - [x] Task: Implement `formatItem` Helper (`server.js`) [6e62769]
     - Create `const formatItem = (item) => ...` to handle JSON parsing.
     - Replace duplicated parsing logic in all endpoints.
-- [ ] Task: Update Stats Endpoints (`server.js`)
+- [x] Task: Update Stats Endpoints (`server.js`) [6e62769]
     - Update GET/POST `/api/stats` to use new field names.
     - Ensure `updatedAt` is updated on changes.
     - Implement defaults for missing fields in POST requests.
