@@ -1,6 +1,6 @@
 # Implementation Plan - Backend Migration to SQLite
 
-## Phase 1: Setup & Dependencies
+## Phase 1: Setup & Dependencies [checkpoint: 659ea2a]
 - [x] Task: Install Dependencies [452d9bb]
     - Install `better-sqlite3`, `drizzle-orm` as dependencies.
     - Install `drizzle-kit`, `@types/better-sqlite3` as dev dependencies.
@@ -9,7 +9,7 @@
 - [x] Task: Docker Configuration [717a79f]
     - Update `Dockerfile` to include build tools (python3, make, g++) for `better-sqlite3`.
     - Ensure `Dockerfile` exposes `DATA_DIR` environment variable.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Dependencies' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Setup & Dependencies' (Protocol in workflow.md)
 
 ## Phase 2: Database Layer Implementation
 - [ ] Task: Define Database Schema (`server/db/schema.ts`)
