@@ -8,10 +8,18 @@ import fs from 'fs';
 // Datenbank-Import
 import { db } from './server/db/index.js';
 import { dashboardItems, userStats } from './server/db/schema.js';
+import { initDb } from './server/db/init.js'; // Import Init
 import { eq } from 'drizzle-orm';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Initialize DB Tables on Startup
+try {
+    initDb();
+} catch (e) {
+    console.error("Failed to initialize database:", e);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -77,49 +85,31 @@ app.get('/api/courses', async (req, res) => {
 app.post('/api/courses', async (req, res) => {
     try {
         const items = req.body;
-        console.log(`📥 Saving ${items.length} courses...`);
 
         // Transaction: Lösche alle und füge neu ein
-        await db.transaction(async (tx) => {
-            // 1. Filter duplicates (client might send duplicate IDs)
-            const uniqueItems = [];
-            const seenIds = new Set();
+        // ACHTUNG: better-sqlite3 Transaktionen müssen SYNCHRON sein!
+        // Drizzle mit better-sqlite3 führt Queries synchron aus.
+        db.transaction((tx) => {
+            tx.delete(dashboardItems).run();
+
             for (const item of items) {
-                if (!seenIds.has(item.id)) {
-                    seenIds.add(item.id);
-                    uniqueItems.push(item);
-                } else {
-                    console.warn(`⚠️ Warning: Duplicate ID found in save payload: ${item.id}. Skipping duplicate.`);
-                }
-            }
-
-            // 2. Clear table
-            await tx.delete(dashboardItems);
-
-            // 3. Insert unique items
-            for (const item of uniqueItems) {
-                await tx.insert(dashboardItems).values({
+                tx.insert(dashboardItems).values({
                     id: item.id,
                     type: item.type || 'course',
-                    name: item.name || item.title || 'Unbenannt',
-                    themeColor: item.themeColor || null,
-                    parentFolderId: item.parentFolderId || null,
-                    icon: item.icon || '📚',
-                    professor: item.professor || null,
-                    totalProgress: item.totalProgress || 0,
-                    titlePt: item.titlePT || item.titlePt || null,
+                    name: item.name || item.title,
+                    themeColor: item.themeColor,
+                    parentFolderId: item.parentFolderId,
                     units: item.units ? JSON.stringify(item.units) : null,
                     courseProgress: item.courseProgress ? JSON.stringify(item.courseProgress) : null,
-                    sortOrder: item.sortOrder || 0, // Integer cannot be null if not nullable, here it is nullable but safer to have int
-                    updatedAt: new Date(),
-                });
+                    sortOrder: item.sortOrder,
+                    updatedAt: new Date(), // Update timestamp
+                }).run();
             }
         });
 
-        console.log('✅ Courses saved successfully. Sending response.');
         res.json({ success: true, message: 'Courses saved' });
     } catch (error) {
-        console.error('❌ POST /api/courses error:', error);
+        console.error('POST /api/courses error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });

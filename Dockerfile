@@ -62,6 +62,6 @@ ENV DATA_DIR=/app/data
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Start the server (with migration using tsx for TypeScript)
-# tsx is needed because server.js imports from ./server/db/*.ts
-CMD ["sh", "-c", "npx tsx server/db/migrate-from-json.ts && npx tsx server.js"]
+# Start the server (using tsx)
+# Migration must be run manually if needed: npx tsx server/db/migrate-from-json.ts
+CMD ["npx", "tsx", "server.js"]
