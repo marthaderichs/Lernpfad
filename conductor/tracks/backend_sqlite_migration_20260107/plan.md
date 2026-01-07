@@ -35,7 +35,7 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 3: Migration Logic' (Protocol in workflow.md)
 
 ## Phase 4: API Refactoring
-- [ ] Task: Refactor Server Entry Point (`server.js`)
+- [x] Task: Refactor Server Entry Point (`server.js`) [3b37086]
     - Import DB connection and schema.
     - Remove old file-based I/O functions.
 - [ ] Task: Refactor Course Endpoints
