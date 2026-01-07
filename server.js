@@ -81,22 +81,36 @@ app.post('/api/courses', async (req, res) => {
 
         // Transaction: Lösche alle und füge neu ein
         await db.transaction(async (tx) => {
+            // 1. Filter duplicates (client might send duplicate IDs)
+            const uniqueItems = [];
+            const seenIds = new Set();
+            for (const item of items) {
+                if (!seenIds.has(item.id)) {
+                    seenIds.add(item.id);
+                    uniqueItems.push(item);
+                } else {
+                    console.warn(`⚠️ Warning: Duplicate ID found in save payload: ${item.id}. Skipping duplicate.`);
+                }
+            }
+
+            // 2. Clear table
             await tx.delete(dashboardItems);
 
-            for (const item of items) {
+            // 3. Insert unique items
+            for (const item of uniqueItems) {
                 await tx.insert(dashboardItems).values({
                     id: item.id,
                     type: item.type || 'course',
-                    name: item.name || item.title,
-                    themeColor: item.themeColor,
-                    parentFolderId: item.parentFolderId,
+                    name: item.name || item.title || 'Unbenannt',
+                    themeColor: item.themeColor || null,
+                    parentFolderId: item.parentFolderId || null,
                     icon: item.icon || '📚',
-                    professor: item.professor,
+                    professor: item.professor || null,
                     totalProgress: item.totalProgress || 0,
-                    titlePt: item.titlePT,
+                    titlePt: item.titlePT || item.titlePt || null,
                     units: item.units ? JSON.stringify(item.units) : null,
                     courseProgress: item.courseProgress ? JSON.stringify(item.courseProgress) : null,
-                    sortOrder: item.sortOrder,
+                    sortOrder: item.sortOrder || 0, // Integer cannot be null if not nullable, here it is nullable but safer to have int
                     updatedAt: new Date(),
                 });
             }
