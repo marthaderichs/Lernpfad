@@ -20,6 +20,11 @@ dist-ssr
 # Data directory - NICHT tracken, wird über Docker Volumes persistiert
 data/
 
+# SQLite
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
 # Backup-Dateien
 *.backup.json
 data/*.bak
