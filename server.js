@@ -27,11 +27,23 @@ if (fs.existsSync(distPath)) {
 }
 
 // HELPER: Format DB Items for Frontend
-// Konvertiert JSON-Strings (units, courseProgress) zurück in Objekte
+// Konvertiert DB-Felder zu Frontend-Interface (Course/Folder)
 const formatItem = (item) => ({
-    ...item,
-    units: item.units ? JSON.parse(item.units) : undefined,
+    id: item.id,
+    type: item.type,
+    title: item.name,  // DB hat 'name', Frontend erwartet 'title'
+    titlePT: item.titlePt,  // Portugiesischer Titel
+    icon: item.icon || '📚',  // Default Emoji falls nicht gesetzt
+    themeColor: item.themeColor,
+    parentFolderId: item.parentFolderId,
+    // Nur für Kurse
+    professor: item.professor,
+    totalProgress: item.totalProgress || 0,
+    units: item.units ? JSON.parse(item.units) : [],
     courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+    // Meta
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
 });
 
 // ============ COURSES API ============
@@ -52,11 +64,11 @@ app.get('/api/courses', async (req, res) => {
 app.post('/api/courses', async (req, res) => {
     try {
         const items = req.body;
-        
+
         // Transaction: Lösche alle und füge neu ein
         await db.transaction(async (tx) => {
             await tx.delete(dashboardItems);
-            
+
             for (const item of items) {
                 await tx.insert(dashboardItems).values({
                     id: item.id,
@@ -64,14 +76,18 @@ app.post('/api/courses', async (req, res) => {
                     name: item.name || item.title,
                     themeColor: item.themeColor,
                     parentFolderId: item.parentFolderId,
+                    icon: item.icon || '📚',
+                    professor: item.professor,
+                    totalProgress: item.totalProgress || 0,
+                    titlePt: item.titlePT,
                     units: item.units ? JSON.stringify(item.units) : null,
                     courseProgress: item.courseProgress ? JSON.stringify(item.courseProgress) : null,
                     sortOrder: item.sortOrder,
-                    updatedAt: new Date(), // Update timestamp
+                    updatedAt: new Date(),
                 });
             }
         });
-        
+
         res.json({ success: true, message: 'Courses saved' });
     } catch (error) {
         console.error('POST /api/courses error:', error);
@@ -84,7 +100,7 @@ app.delete('/api/courses/:id', async (req, res) => {
     try {
         const courseId = req.params.id;
         await db.delete(dashboardItems).where(eq(dashboardItems.id, courseId));
-        
+
         const remaining = await db.select().from(dashboardItems);
         res.json({ success: true, data: remaining.map(formatItem), message: 'Course deleted' });
     } catch (error) {
@@ -96,19 +112,23 @@ app.delete('/api/courses/:id', async (req, res) => {
 app.post('/api/courses/add', async (req, res) => {
     try {
         const newItem = req.body;
-        
+
         await db.insert(dashboardItems).values({
             id: newItem.id,
             type: newItem.type || 'course',
             name: newItem.name || newItem.title,
             themeColor: newItem.themeColor,
             parentFolderId: newItem.parentFolderId,
+            icon: newItem.icon || '📚',
+            professor: newItem.professor,
+            totalProgress: newItem.totalProgress || 0,
+            titlePt: newItem.titlePT,
             units: newItem.units ? JSON.stringify(newItem.units) : null,
             courseProgress: newItem.courseProgress ? JSON.stringify(newItem.courseProgress) : null,
             sortOrder: newItem.sortOrder,
             updatedAt: new Date(),
         });
-        
+
         const all = await db.select().from(dashboardItems);
         res.json({ success: true, data: all.map(formatItem), message: 'Course added' });
     } catch (error) {
@@ -120,16 +140,16 @@ app.post('/api/courses/add', async (req, res) => {
 app.post('/api/courses/move', async (req, res) => {
     try {
         const { itemIds, targetFolderId } = req.body;
-        
+
         for (const id of itemIds) {
             await db.update(dashboardItems)
-                .set({ 
+                .set({
                     parentFolderId: targetFolderId,
                     updatedAt: new Date(),
                 })
                 .where(eq(dashboardItems.id, id));
         }
-        
+
         const all = await db.select().from(dashboardItems);
         res.json({ success: true, data: all.map(formatItem), message: 'Items moved' });
     } catch (error) {
@@ -145,26 +165,26 @@ app.get('/api/stats', async (req, res) => {
         const stat = stats[0] || null;
 
         if (stat) {
-             // Map DB fields back to Frontend Interface (UserStats)
-             const frontendStats = {
-                 ...stat,
-                 // DB has 'totalXp', 'currentStreak' etc via Drizzle camelCase mapping if defined, 
-                 // BUT better-sqlite3 returns raw rows if not careful? 
-                 // Drizzle handles the mapping from snake_case (DB) to camelCase (Schema).
-                 // We just need to parse JSON fields.
-                 purchasedItems: stat.purchasedItems ? JSON.parse(stat.purchasedItems) : [],
-                 // Map Renamed Fields just in case frontend expects old names?
-                 // No, frontend expects: totalXp, coins, currentStreak...
-                 // But wait, frontend MIGHT expect 'streak' if we didn't update frontend types?
-                 // Spec says: "Update user_stats table to match src/types/index.ts exactly."
-                 // So we return exactly what the schema defines (which matches types).
-                 
-                 // Legacy compatibility (optional, if frontend still uses 'streak')
-                 streak: stat.currentStreak, 
-                 lastActivity: stat.lastStudyDate,
-                 stars: stat.totalXp, // Backwards compat
-             };
-             res.json({ success: true, data: frontendStats });
+            // Map DB fields back to Frontend Interface (UserStats)
+            const frontendStats = {
+                ...stat,
+                // DB has 'totalXp', 'currentStreak' etc via Drizzle camelCase mapping if defined, 
+                // BUT better-sqlite3 returns raw rows if not careful? 
+                // Drizzle handles the mapping from snake_case (DB) to camelCase (Schema).
+                // We just need to parse JSON fields.
+                purchasedItems: stat.purchasedItems ? JSON.parse(stat.purchasedItems) : [],
+                // Map Renamed Fields just in case frontend expects old names?
+                // No, frontend expects: totalXp, coins, currentStreak...
+                // But wait, frontend MIGHT expect 'streak' if we didn't update frontend types?
+                // Spec says: "Update user_stats table to match src/types/index.ts exactly."
+                // So we return exactly what the schema defines (which matches types).
+
+                // Legacy compatibility (optional, if frontend still uses 'streak')
+                streak: stat.currentStreak,
+                lastActivity: stat.lastStudyDate,
+                stars: stat.totalXp, // Backwards compat
+            };
+            res.json({ success: true, data: frontendStats });
         } else {
             res.json({ success: true, data: null });
         }
@@ -176,7 +196,7 @@ app.get('/api/stats', async (req, res) => {
 app.post('/api/stats', async (req, res) => {
     try {
         const newStats = req.body;
-        
+
         // Map Frontend fields -> DB fields
         const values = {
             totalXp: newStats.totalXp ?? newStats.stars ?? 0,
@@ -193,7 +213,7 @@ app.post('/api/stats', async (req, res) => {
         // Upsert Logic (SQLite does not support ON CONFLICT in Drizzle's `insert()` well for all drivers, 
         // sticking to robust check-then-update)
         const existing = await db.select().from(userStats).limit(1);
-        
+
         if (existing.length > 0) {
             await db.update(userStats)
                 .set(values)
@@ -201,7 +221,7 @@ app.post('/api/stats', async (req, res) => {
         } else {
             await db.insert(userStats).values(values);
         }
-        
+
         res.json({ success: true, message: 'Stats saved' });
     } catch (error) {
         console.error('POST /api/stats error:', error);
