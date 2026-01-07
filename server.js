@@ -28,23 +28,30 @@ if (fs.existsSync(distPath)) {
 
 // HELPER: Format DB Items for Frontend
 // Konvertiert DB-Felder zu Frontend-Interface (Course/Folder)
-const formatItem = (item) => ({
-    id: item.id,
-    type: item.type,
-    title: item.name,  // DB hat 'name', Frontend erwartet 'title'
-    titlePT: item.titlePt,  // Portugiesischer Titel
-    icon: item.icon || '📚',  // Default Emoji falls nicht gesetzt
-    themeColor: item.themeColor,
-    parentFolderId: item.parentFolderId,
-    // Nur für Kurse
-    professor: item.professor,
-    totalProgress: item.totalProgress || 0,
-    units: item.units ? JSON.parse(item.units) : [],
-    courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
-    // Meta
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-});
+const formatItem = (item) => {
+    const base = {
+        id: item.id,
+        type: item.type,
+        title: item.name,  // DB hat 'name', Frontend erwartet 'title'
+        icon: item.icon || '📚',
+        themeColor: item.themeColor,
+        parentFolderId: item.parentFolderId,
+    };
+
+    if (item.type === 'course') {
+        return {
+            ...base,
+            titlePT: item.titlePt,
+            professor: item.professor,
+            totalProgress: item.totalProgress || 0,
+            units: item.units ? JSON.parse(item.units) : [],
+            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+        };
+    }
+
+    // Folder - keine course-spezifischen Felder
+    return base;
+};
 
 // ============ COURSES API ============
 

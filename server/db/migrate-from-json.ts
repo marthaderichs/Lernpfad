@@ -138,17 +138,17 @@ function migrateData(db: Database.Database, courses: any[], stats: any) {
       console.log(`   ✅ ${item.type || 'course'}: "${item.name || item.title}" (${item.icon || '📚'})`);
     }
 
-    // Stats migrieren mit Mapping
+    // Stats migrieren mit Mapping (unterstützt alte UND neue Feldnamen)
     if (stats) {
       insertStats.run(
-        stats.stars || 0, // MAP: stars -> total_xp
-        stats.coins || 0, // New field, default 0
-        stats.streak || 0, // MAP: streak -> current_streak
-        stats.lastActivity || null, // MAP: lastActivity -> last_study_date
-        JSON.stringify(stats.purchasedItems || []), // New field, default []
-        stats.activeAvatar || '🦸', // New field, default emoji
-        stats.darkMode ? 1 : 0, // New field, map boolean to int
-        stats.systemPrompt || null
+        stats.totalXp ?? stats.stars ?? 0, // Beide: totalXp (neu) oder stars (alt)
+        stats.coins ?? 0,
+        stats.currentStreak ?? stats.streak ?? 0, // Beide: currentStreak (neu) oder streak (alt)
+        stats.lastStudyDate ?? stats.lastActivity ?? null, // Beide Varianten
+        JSON.stringify(stats.purchasedItems ?? []),
+        stats.activeAvatar ?? '🦸',
+        stats.darkMode ? 1 : 0,
+        stats.systemPrompt ?? null
       );
       console.log('   ✅ User Stats migriert');
     }
