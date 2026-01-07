@@ -53,7 +53,7 @@
 - [~] Task: Conductor - User Manual Verification 'Phase 4: API Refactoring' (Protocol in workflow.md)
 
 ## Phase 5: Verification & Cleanup
-- [ ] Task: Full System Test
+- [x] Task: Full System Test [6b564c4]
     - Start application locally.
     - Verify frontend loads data correctly.
     - Create a new course (verify persistence).
