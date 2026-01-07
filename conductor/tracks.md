@@ -17,3 +17,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## [x] Track: Bilingual Support & Fixes
 *Link: [./conductor/tracks/bilingual_support_fixes_20260104/](./conductor/tracks/bilingual_support_fixes_20260104/)*
+
+---
+
+## [x] Track: Refactor SQLite Backend & Fix UserStats Schema
+*Link: [./conductor/tracks/backend_sqlite_refactor_20260107/](./conductor/tracks/backend_sqlite_refactor_20260107/)*
