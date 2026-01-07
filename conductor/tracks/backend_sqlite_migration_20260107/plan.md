@@ -62,7 +62,7 @@
     - Restart server (verify data retention).
 - [x] Task: Document Rollback Procedure [1391b0a]
     - Note: If issues arise, revert server.js to use JSON files, delete `lernpfad.db`.
-- [ ] Task: Documentation
+- [x] Task: Documentation [ca59697]
     - Update `README.md` or `PROJEKT_ANALYSE.md` with new DB info.
     - Document how to access the SQLite DB for debugging.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Verification & Cleanup' (Protocol in workflow.md)
