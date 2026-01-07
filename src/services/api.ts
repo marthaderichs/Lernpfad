@@ -1,5 +1,5 @@
 import { Course, UserStats, ShopItem, DashboardItem, Folder } from '../types';
-import { INITIAL_COURSES, SHOP_ITEMS, SYSTEM_PROMPT } from '../constants';
+import { SHOP_ITEMS, SYSTEM_PROMPT } from '../constants';
 
 // Backend API URL
 // In production: API is on same origin (served by Express)
@@ -22,13 +22,19 @@ export const loadCourses = async (): Promise<DashboardItem[]> => {
         if (result.success && result.data) {
             return result.data;
         }
+
+        // Server antwortete, aber keine Daten vorhanden
+        if (result.success && result.data === null) {
+            console.log("Keine Kurse auf dem Server. Starte mit leerem Array.");
+            return [];
+        }
     } catch (e) {
         console.error("Failed to load items from server:", e);
     }
 
-    // First time or server error: save initial courses
-    await saveCourses(INITIAL_COURSES);
-    return INITIAL_COURSES;
+    // Bei Fehler: Leeres Array zurückgeben, NICHT überschreiben!
+    console.warn("Konnte Kurse nicht laden. Gebe leeres Array zurück.");
+    return [];
 };
 
 export const saveCourses = async (items: DashboardItem[]): Promise<void> => {
