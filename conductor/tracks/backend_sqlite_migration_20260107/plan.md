@@ -47,7 +47,7 @@
 - [x] Task: Refactor Stats Endpoints [3b37086]
     - `GET /api/stats`: Select from `user_stats`.
     - `POST /api/stats`: Upsert logic for `user_stats`.
-- [ ] Task: Integrate Migration on Startup
+- [x] Task: Integrate Migration on Startup [9b8b5de]
     - Update `Dockerfile` CMD to run migration before server: `CMD ["sh", "-c", "node server/db/migrate-from-json.js && node server.js"]`
     - Alternative: Import and run migration at top of `server.js` (synchronous).
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: API Refactoring' (Protocol in workflow.md)
