@@ -38,7 +38,7 @@
 - [x] Task: Full API Verification [84bdd1b]
     - Verify all endpoints (`/api/stats`, `/api/courses` etc.) with `curl`.
     - Check that `UserStats` returned matches the frontend interface exactly.
-- [ ] Task: Clean up
+- [x] Task: Clean up [1c834b0]
     - Remove temporary test files.
     - Delete the old `data/lernpfad.db` (locally) to force a fresh migration test.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification & Cleanup' (Protocol in workflow.md)
