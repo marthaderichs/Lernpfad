@@ -12,6 +12,8 @@
 *   **Runtime:** Node.js
 *   **Framework:** Express
 *   **Language:** JavaScript/TypeScript (inferred from mixed file types)
+*   **Database:** SQLite (with `better-sqlite3` driver)
+*   **ORM:** Drizzle ORM
 
 ## Testing
 *   **Runner:** Vitest
