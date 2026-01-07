@@ -11,7 +11,7 @@
     - Ensure `Dockerfile` exposes `DATA_DIR` environment variable.
 - [~] Task: Conductor - User Manual Verification 'Phase 1: Setup & Dependencies' (Protocol in workflow.md)
 
-## Phase 2: Database Layer Implementation
+## Phase 2: Database Layer Implementation [checkpoint: c4bc06b]
 - [x] Task: Define Database Schema (`server/db/schema.ts`) [5a24abc]
     - Define `dashboard_items` table (id, type, name, themeColor, parentFolderId, units, courseProgress, sortOrder, timestamps).
     - Define `user_stats` table (id, stars, streak, lastActivity, systemPrompt, timestamps).
@@ -19,7 +19,7 @@
     - Implement SQLite connection using `better-sqlite3`.
     - Enable WAL mode.
     - Initialize Drizzle ORM instance.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Migration Logic
 - [ ] Task: Create Migration Script (`server/db/migrate-from-json.ts`)
