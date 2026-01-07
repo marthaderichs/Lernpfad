@@ -28,7 +28,7 @@
     - Update GET/POST `/api/stats` to use new field names.
     - Ensure `updatedAt` is updated on changes.
     - Implement defaults for missing fields in POST requests.
-- [ ] Task: Update Course Endpoints (`server.js`)
+- [x] Task: Update Course Endpoints (`server.js`) [6e62769]
     - Remove manual `JSON.stringify` if `formatItem` handles it? (No, `formatItem` is for output. Need to check input handling).
     - Ensure `updatedAt` is updated on `POST /api/courses` and `POST /api/courses/add`.
     - Use manual `JSON.stringify` for DB inserts (since `mode: 'json'` is removed).
