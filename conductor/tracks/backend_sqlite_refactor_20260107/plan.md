@@ -20,7 +20,7 @@
     - Verify data mapping is correct.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema & Migration Update' (Protocol in workflow.md)
 
-## Phase 2: API & Logic Refactoring
+## Phase 2: API & Logic Refactoring [checkpoint: fb7f6da]
 - [x] Task: Implement `formatItem` Helper (`server.js`) [6e62769]
     - Create `const formatItem = (item) => ...` to handle JSON parsing.
     - Replace duplicated parsing logic in all endpoints.
@@ -32,7 +32,7 @@
     - Remove manual `JSON.stringify` if `formatItem` handles it? (No, `formatItem` is for output. Need to check input handling).
     - Ensure `updatedAt` is updated on `POST /api/courses` and `POST /api/courses/add`.
     - Use manual `JSON.stringify` for DB inserts (since `mode: 'json'` is removed).
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: API & Logic Refactoring' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: API & Logic Refactoring' (Protocol in workflow.md)
 
 ## Phase 3: Verification & Cleanup
 - [ ] Task: Full API Verification
