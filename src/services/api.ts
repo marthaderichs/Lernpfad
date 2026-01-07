@@ -43,11 +43,11 @@ export const saveCourses = async (items: DashboardItem[]): Promise<void> => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(items)
     });
-    
+
     if (!response.ok) {
         throw new Error(`Speichern fehlgeschlagen: ${response.statusText}`);
     }
-    
+
     const result = await response.json();
     if (!result.success) {
         throw new Error(result.message || 'Speichern fehlgeschlagen');
@@ -147,12 +147,20 @@ export const loadUserStats = async (): Promise<UserStats> => {
 
             return stats;
         }
+
+        // Server antwortete, aber keine Daten vorhanden (erster Start)
+        if (result.success && result.data === null) {
+            console.log("Keine Stats auf dem Server. Starte mit Default-Werten.");
+            // Bei erstem Start ist es OK zu speichern
+            await saveUserStats(INITIAL_STATS);
+            return INITIAL_STATS;
+        }
     } catch (e) {
         console.error("Failed to load stats from server:", e);
     }
 
-    // First time: save initial stats
-    await saveUserStats(INITIAL_STATS);
+    // Bei Fehler: Default-Werte zurückgeben, aber NICHT überschreiben!
+    console.warn("Konnte Stats nicht laden. Gebe Default-Werte zurück (ohne zu speichern).");
     return INITIAL_STATS;
 };
 
@@ -162,11 +170,11 @@ export const saveUserStats = async (stats: UserStats): Promise<void> => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(stats)
     });
-    
+
     if (!response.ok) {
         throw new Error(`Stats speichern fehlgeschlagen: ${response.statusText}`);
     }
-    
+
     const result = await response.json();
     if (!result.success) {
         throw new Error(result.message || 'Stats speichern fehlgeschlagen');
