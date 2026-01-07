@@ -102,6 +102,13 @@ app.post('/api/courses', async (req, res) => {
                     units: item.units ? JSON.stringify(item.units) : null,
                     courseProgress: item.courseProgress ? JSON.stringify(item.courseProgress) : null,
                     sortOrder: item.sortOrder,
+
+                    // Missing fields to prevent data loss on save
+                    icon: item.icon,
+                    professor: item.professor,
+                    totalProgress: item.totalProgress,
+                    titlePt: item.titlePT,
+
                     updatedAt: new Date(), // Update timestamp
                 }).run();
             }
