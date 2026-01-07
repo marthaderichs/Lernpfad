@@ -1,9 +1,14 @@
+// server.js - NEUE VERSION MIT SQLITE
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import writeFileAtomic from 'write-file-atomic';
+import fs from 'fs';
+
+// Datenbank-Import
+import { db } from './server/db/index.js';
+import { dashboardItems, userStats } from './server/db/schema.js';
+import { eq } from 'drizzle-orm';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,82 +16,64 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Database file paths
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
-const COURSES_FILE = path.join(DATA_DIR, 'courses.json');
-const STATS_FILE = path.join(DATA_DIR, 'stats.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Serve static files from the dist folder (production build)
+// Static files
 const distPath = path.join(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
 }
 
-// Helper functions (ASYNC)
-const readJSON = async (filePath, defaultValue) => {
-    try {
-        const exists = await fs.promises.access(filePath).then(() => true).catch(() => false);
-        if (exists) {
-            const data = await fs.promises.readFile(filePath, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (e) {
-        console.error(`Error reading ${filePath}:`, e);
-    }
-    return defaultValue;
-};
-
-const writeJSON = async (filePath, data) => {
-    try {
-        // Safety: Create a backup .bak file before overwriting
-        if (fs.existsSync(filePath)) {
-            try {
-                await fs.promises.copyFile(filePath, `${filePath}.bak`);
-            } catch (backupError) {
-                console.warn(`Warning: Failed to create backup for ${filePath}`, backupError);
-                // Proceed anyway, as we still want to save new data
-            }
-        }
-
-        await writeFileAtomic(filePath, JSON.stringify(data, null, 2), 'utf-8');
-        return true;
-    } catch (e) {
-        console.error(`Error writing ${filePath}:`, e);
-        return false;
-    }
-};
-
 // ============ COURSES API ============
 
-// GET all courses
+// GET all courses/folders
 app.get('/api/courses', async (req, res) => {
     try {
-        const courses = await readJSON(COURSES_FILE, null);
-        res.json({ success: true, data: courses });
+        const items = await db.select().from(dashboardItems);
+        
+        // Konvertiere JSON-Strings zurück zu Objekten
+        const formatted = items.map(item => ({
+            ...item,
+            units: item.units ? JSON.parse(item.units) : undefined,
+            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+        }));
+        
+        res.json({ success: true, data: formatted });
     } catch (error) {
+        console.error('GET /api/courses error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
-// POST save all courses
+// POST save all courses (Bulk-Update)
 app.post('/api/courses', async (req, res) => {
     try {
-        const courses = req.body;
-        if (await writeJSON(COURSES_FILE, courses)) {
-            res.json({ success: true, message: 'Courses saved' });
-        } else {
-            res.status(500).json({ success: false, message: 'Failed to save courses' });
-        }
+        const items = req.body;
+        
+        // Transaction: Lösche alle und füge neu ein
+        // ACHTUNG: Das ist ein Kompromiss für Kompatibilität mit dem alten Frontend
+        await db.transaction(async (tx) => {
+            await tx.delete(dashboardItems);
+            
+            for (const item of items) {
+                await tx.insert(dashboardItems).values({
+                    id: item.id,
+                    type: item.type || 'course',
+                    name: item.name || item.title,
+                    themeColor: item.themeColor,
+                    parentFolderId: item.parentFolderId,
+                    units: item.units ? JSON.stringify(item.units) : null,
+                    courseProgress: item.courseProgress ? JSON.stringify(item.courseProgress) : null,
+                    sortOrder: item.sortOrder,
+                });
+            }
+        });
+        
+        res.json({ success: true, message: 'Courses saved' });
     } catch (error) {
+        console.error('POST /api/courses error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -95,14 +82,17 @@ app.post('/api/courses', async (req, res) => {
 app.delete('/api/courses/:id', async (req, res) => {
     try {
         const courseId = req.params.id;
-        const courses = await readJSON(COURSES_FILE, []);
-        const updated = courses.filter(c => c.id !== courseId);
+        await db.delete(dashboardItems).where(eq(dashboardItems.id, courseId));
+        
+        const remaining = await db.select().from(dashboardItems);
+        // Formatieren für Rückgabe
+        const formatted = remaining.map(item => ({
+            ...item,
+            units: item.units ? JSON.parse(item.units) : undefined,
+            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+        }));
 
-        if (await writeJSON(COURSES_FILE, updated)) {
-            res.json({ success: true, data: updated, message: 'Course deleted' });
-        } else {
-            res.status(500).json({ success: false, message: 'Failed to delete course' });
-        }
+        res.json({ success: true, data: formatted, message: 'Course deleted' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -111,15 +101,28 @@ app.delete('/api/courses/:id', async (req, res) => {
 // POST add a new course
 app.post('/api/courses/add', async (req, res) => {
     try {
-        const newCourse = req.body;
-        const courses = await readJSON(COURSES_FILE, []);
-        courses.push(newCourse);
+        const newItem = req.body;
+        
+        await db.insert(dashboardItems).values({
+            id: newItem.id,
+            type: newItem.type || 'course',
+            name: newItem.name || newItem.title,
+            themeColor: newItem.themeColor,
+            parentFolderId: newItem.parentFolderId,
+            units: newItem.units ? JSON.stringify(newItem.units) : null,
+            courseProgress: newItem.courseProgress ? JSON.stringify(newItem.courseProgress) : null,
+            sortOrder: newItem.sortOrder,
+        });
+        
+        const all = await db.select().from(dashboardItems);
+        // Formatieren
+        const formatted = all.map(item => ({
+            ...item,
+            units: item.units ? JSON.parse(item.units) : undefined,
+            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+        }));
 
-        if (await writeJSON(COURSES_FILE, courses)) {
-            res.json({ success: true, data: courses, message: 'Course added' });
-        } else {
-            res.status(500).json({ success: false, message: 'Failed to add course' });
-        }
+        res.json({ success: true, data: formatted, message: 'Course added' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -129,19 +132,22 @@ app.post('/api/courses/add', async (req, res) => {
 app.post('/api/courses/move', async (req, res) => {
     try {
         const { itemIds, targetFolderId } = req.body;
-        const courses = await readJSON(COURSES_FILE, []);
-
-        const updated = courses.map(item =>
-            itemIds.includes(item.id)
-                ? { ...item, parentFolderId: targetFolderId }
-                : item
-        );
-
-        if (await writeJSON(COURSES_FILE, updated)) {
-            res.json({ success: true, data: updated, message: 'Items moved' });
-        } else {
-            res.status(500).json({ success: false, message: 'Failed to move items' });
+        
+        for (const id of itemIds) {
+            await db.update(dashboardItems)
+                .set({ parentFolderId: targetFolderId })
+                .where(eq(dashboardItems.id, id));
         }
+        
+        const all = await db.select().from(dashboardItems);
+        // Formatieren
+        const formatted = all.map(item => ({
+             ...item,
+            units: item.units ? JSON.parse(item.units) : undefined,
+            courseProgress: item.courseProgress ? JSON.parse(item.courseProgress) : undefined,
+        }));
+
+        res.json({ success: true, data: formatted, message: 'Items moved' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -149,25 +155,41 @@ app.post('/api/courses/move', async (req, res) => {
 
 // ============ USER STATS API ============
 
-// GET user stats
 app.get('/api/stats', async (req, res) => {
     try {
-        const stats = await readJSON(STATS_FILE, null);
-        res.json({ success: true, data: stats });
+        const stats = await db.select().from(userStats).limit(1);
+        res.json({ success: true, data: stats[0] || null });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
-// POST save user stats
 app.post('/api/stats', async (req, res) => {
     try {
-        const stats = req.body;
-        if (await writeJSON(STATS_FILE, stats)) {
-            res.json({ success: true, message: 'Stats saved' });
+        const newStats = req.body;
+        
+        // Upsert: Update wenn existiert, sonst Insert
+        const existing = await db.select().from(userStats).limit(1);
+        
+        if (existing.length > 0) {
+            await db.update(userStats)
+                .set({
+                    stars: newStats.stars,
+                    streak: newStats.streak,
+                    lastActivity: newStats.lastActivity,
+                    systemPrompt: newStats.systemPrompt,
+                })
+                .where(eq(userStats.id, 1));
         } else {
-            res.status(500).json({ success: false, message: 'Failed to save stats' });
+            await db.insert(userStats).values({
+                stars: newStats.stars || 0,
+                streak: newStats.streak || 0,
+                lastActivity: newStats.lastActivity,
+                systemPrompt: newStats.systemPrompt,
+            });
         }
+        
+        res.json({ success: true, message: 'Stats saved' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -179,13 +201,10 @@ app.get('/api/health', (req, res) => {
 });
 
 // ============ SPA FALLBACK ============
-// For client-side routing - serve index.html for all non-API routes
 app.use((req, res) => {
-    // Skip API routes (they should already be handled)
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ success: false, message: 'API endpoint not found' });
     }
-
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
@@ -194,14 +213,18 @@ app.use((req, res) => {
     }
 });
 
-// Start server
+// ============ START SERVER ============
+
+// Migration beim Start ausführen (optional, aber sicher)
+// import { execSync } from 'child_process';
+// try {
+//   console.log('Führe Datenbank-Migration aus...');
+//   execSync('node server/db/migrate-from-json.js', { stdio: 'inherit' });
+// } catch (e) {
+//   console.error('Migration fehlgeschlagen, aber starte Server trotzdem:', e.message);
+// }
+
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('');
-    console.log('🚀 LernPfad Server gestartet!');
-    console.log('   (Async I/O enabled - Enterprise Grade)');
-    console.log('');
+    console.log('🚀 LernPfad Server gestartet! (SQLite Backend)');
     console.log(`   URL: http://localhost:${PORT}`);
-    console.log('');
-    console.log('📁 Daten werden gespeichert in:', DATA_DIR);
-    console.log('');
 });
